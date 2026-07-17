@@ -96,7 +96,10 @@ export const CloudDB = (() => {
     const uid = _uid();
     
     if (!message.id) {
-      message.id = 'msg_' + Date.now() + '_' + Math.random().toString(36).substr(2,5);
+      const rand = typeof crypto !== 'undefined' && crypto.randomUUID 
+        ? crypto.randomUUID().split('-')[0]
+        : Math.random().toString(36).substring(2, 7);
+      message.id = 'msg_' + Date.now() + '_' + rand;
     }
     
     if (!uid || !db || !fbFirestoreModule) {

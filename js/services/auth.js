@@ -91,7 +91,7 @@ export const Auth = (() => {
     if (!firebaseAuth || !fbAuthModule) return null;
     try {
       const result = await fbAuthModule.getRedirectResult(firebaseAuth);
-      if (result && result.user) {
+      if (result?.user) {
         await upsertUserProfile(result.user);
         return result.user;
       }

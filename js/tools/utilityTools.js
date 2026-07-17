@@ -94,9 +94,10 @@ export const UtilityTools = (() => {
       const sentences = (t.match(/[.!?]+/g) || []).length;
       // ~200 wpm average reading speed
       const secRaw = Math.ceil((words / 200) * 60);
-      const readLabel = words === 0 ? '0s'
-        : secRaw < 60 ? secRaw + 's'
-        : Math.ceil(secRaw / 60) + ' min';
+      let readLabel;
+      if (words === 0) readLabel = '0s';
+      else if (secRaw < 60) readLabel = secRaw + 's';
+      else readLabel = Math.ceil(secRaw / 60) + ' min';
 
       document.getElementById('ut-wc-words').textContent  = words.toLocaleString();
       document.getElementById('ut-wc-chars').textContent  = chars.toLocaleString();
@@ -592,9 +593,9 @@ export const UtilityTools = (() => {
       let totalPts = 0, totalPctPoints = 0, totalCreds = 0;
 
       tbody.querySelectorAll('tr').forEach(row => {
-        const cred  = parseFloat(row.querySelector('.gpa-cred')?.value);
+        const cred  = Number.parseFloat(row.querySelector('.gpa-cred')?.value);
         const grade = (row.querySelector('.gpa-grade')?.value || '').trim().toUpperCase();
-        if (!grade || isNaN(cred) || cred <= 0) return;
+        if (!grade || Number.isNaN(cred) || cred <= 0) return;
 
         let pts;
         let rowPct;
@@ -602,8 +603,8 @@ export const UtilityTools = (() => {
           pts = LETTER[grade];
           rowPct = LETTER_PCT[grade];
         } else {
-          const pct = parseFloat(grade.replace('%', ''));
-          if (isNaN(pct)) return;
+          const pct = Number.parseFloat(grade.replace('%', ''));
+          if (Number.isNaN(pct)) return;
           rowPct = pct;
           if (pct >= 90) pts = 4.0;
           else if (pct >= 80) pts = 3.0;
@@ -620,12 +621,19 @@ export const UtilityTools = (() => {
 
       const gpa  = totalPts / totalCreds;
       const pct  = totalPctPoints / totalCreds;
-      const grade = gpa >= 3.7 ? 'A' : gpa >= 3.3 ? 'A−' : gpa >= 3.0 ? 'B+'
-        : gpa >= 2.7 ? 'B' : gpa >= 2.3 ? 'B−' : gpa >= 2.0 ? 'C+' : gpa >= 1.7 ? 'C' : 'D';
+      
+      let finalGrade = 'D';
+      if (gpa >= 3.7) finalGrade = 'A';
+      else if (gpa >= 3.3) finalGrade = 'A−';
+      else if (gpa >= 3.0) finalGrade = 'B+';
+      else if (gpa >= 2.7) finalGrade = 'B';
+      else if (gpa >= 2.3) finalGrade = 'B−';
+      else if (gpa >= 2.0) finalGrade = 'C+';
+      else if (gpa >= 1.7) finalGrade = 'C';
 
       document.getElementById('ut-gpa-gpa').textContent   = gpa.toFixed(2);
       document.getElementById('ut-gpa-pct').textContent   = pct.toFixed(1) + '%';
-      document.getElementById('ut-gpa-grade').textContent = grade;
+      document.getElementById('ut-gpa-grade').textContent = finalGrade;
       document.getElementById('ut-gpa-result').style.display = '';
     });
   }

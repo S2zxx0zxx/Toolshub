@@ -35,8 +35,8 @@ export const AIRouter = (() => {
     
     let toolResults = [];
     // 3. Tool Routing & Execution
-    if (intentData && intentData.requiresTool && intentData.tool) {
-      if (onToolStart) onToolStart(intentData.tool);
+    if (intentData?.requiresTool && intentData?.tool) {
+      onToolStart?.(intentData.tool);
       
       const result = await ToolExecutor.execute(intentData.tool, intentData.parameters || {});
       toolResults.push(result);

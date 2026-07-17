@@ -269,6 +269,7 @@ const Settings = (() => {
       Toast.show('Logged out. See you soon!');
       setTimeout(() => location.reload(), 1400);
     } catch (err) {
+      console.error('Logout error:', err);
       Toast.show('Failed to log out.');
     }
   }
@@ -481,12 +482,12 @@ const PWA = (() => {
     });
 
     document.getElementById('installAppRow')?.addEventListener('click', () => {
-      document.getElementById('installSheetOverlay').style.display = 'flex';
-      // tiny delay to allow display:flex to apply before adding is-open
-      setTimeout(() => {
-        document.querySelector('#installSheetOverlay .sheet').classList.add('is-open');
-      }, 10);
-    });
+    document.getElementById('installSheetOverlay').style.display = 'flex';
+    // tiny delay to allow display:flex to apply before adding is-open
+    setTimeout(() => {
+      document.querySelector('#installSheetOverlay .sheet')?.classList.add('is-open');
+    }, 10);
+  });
 
     document.getElementById('installSheetCloseBtn')?.addEventListener('click', closeInstallSheet);
     document.getElementById('installCancelBtn')?.addEventListener('click', closeInstallSheet);
