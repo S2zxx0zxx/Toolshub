@@ -55,16 +55,19 @@ const BottomSheet = (() => {
 
     // Existing projects
     projects.forEach(p => {
-      const row = document.createElement('div');
+      const row = document.createElement('button');
       row.className = 'project-item';
+      row.style.width = '100%';
+      row.style.textAlign = 'left';
       row.innerHTML = `
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
           style="width:18px;height:18px;color:var(--accent);flex-shrink:0;">
           <path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/>
         </svg>
-        <span class="project-item-name">${p.name}</span>
+        <span class="project-item-name"></span>
         ${p.id === activeId ? `<svg class="project-item-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>` : ''}
       `;
+      row.querySelector('.project-item-name').textContent = p.name;
       row.addEventListener('click', () => {
         Storage.setActiveProject(p.id);
         if (trailEl) {
@@ -130,8 +133,8 @@ const BottomSheet = (() => {
     const current = Storage.getToolAccess();
 
     list.innerHTML = ACCESS_OPTIONS.map(o => `
-      <div class="list-row ${o.id === current ? 'is-selected' : ''}"
-           role="button" data-access="${o.id}" style="cursor:pointer;">
+      <button class="list-row ${o.id === current ? 'is-selected' : ''}"
+           data-access="${o.id}">
         <div class="list-row-body">
           <div class="list-row-title">${o.label}</div>
           ${o.sub ? `<div class="list-row-subtitle">${o.sub}</div>` : ''}
@@ -142,7 +145,7 @@ const BottomSheet = (() => {
             <polyline points="20 6 9 17 4 12"/>
           </svg>
         </div>
-      </div>
+      </button>
     `).join('');
 
     list.querySelectorAll('[data-access]').forEach(row => {

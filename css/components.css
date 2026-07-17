@@ -101,6 +101,7 @@
 /* ---------- LIST ROW (settings, sheet options) ---------- */
 .list-row {
   display: flex; align-items: center; gap: var(--sp-3);
+  width: 100%; text-align: left;
   padding: var(--sp-4);
   border-radius: var(--r-lg);
   transition: background var(--dur-fast) var(--ease);

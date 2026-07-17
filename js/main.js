@@ -65,8 +65,16 @@ const Settings = (() => {
   }
 
   function saveProfile() {
-    const name  = document.getElementById('profileNameInput')?.value.trim()  || '';
-    const email = document.getElementById('profileEmailInput')?.value.trim() || '';
+    const nameInput = document.getElementById('profileNameInput');
+    const emailInput = document.getElementById('profileEmailInput');
+
+    if (emailInput && !emailInput.checkValidity()) {
+      emailInput.reportValidity();
+      return;
+    }
+
+    const name  = nameInput?.value.trim()  || '';
+    const email = emailInput?.value.trim() || '';
     if (!name) return;
 
     Storage.setProfile({ name, email });
@@ -145,7 +153,7 @@ const Settings = (() => {
             <div class="manage-tools-title">${cat.title}</div>
             <div class="manage-tools-sub">${cat.sub}</div>
           </div>
-          <div class="toggle ${isEnabled ? 'is-on' : ''}" data-cat-id="${cat.id}"></div>
+          <button class="toggle ${isEnabled ? 'is-on' : ''}" data-cat-id="${cat.id}" aria-pressed="${isEnabled}"></button>
         </div>
       `;
     }).join('');
@@ -168,9 +176,11 @@ const Settings = (() => {
           }
           currentEnabled.delete(catId);
           toggleEl.classList.remove('is-on');
+          toggleEl.setAttribute('aria-pressed', 'false');
         } else {
           currentEnabled.add(catId);
           toggleEl.classList.add('is-on');
+          toggleEl.setAttribute('aria-pressed', 'true');
         }
 
         const newIds = [...currentEnabled];

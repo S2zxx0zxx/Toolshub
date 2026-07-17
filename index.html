@@ -155,42 +155,42 @@
           <div class="settings-group">
             <div class="settings-group-label">Account</div>
             <!-- Profile row — now has id -->
-            <div class="list-row" role="button" id="profileRow">
+            <button class="list-row" id="profileRow">
               <div class="list-row-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
               <div class="list-row-body"><div class="list-row-title">Profile</div></div>
               <div class="list-row-trail"><svg class="list-row-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></div>
-            </div>
+            </button>
             <!-- Billing row — now has id -->
-            <div class="list-row" role="button" id="billingRow">
+            <button class="list-row" id="billingRow">
               <div class="list-row-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg></div>
               <div class="list-row-body"><div class="list-row-title">Billing</div></div>
               <div class="list-row-trail"><svg class="list-row-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></div>
-            </div>
+            </button>
           </div>
 
           <div class="settings-group">
             <div class="settings-group-label">Tools &amp; Connectors</div>
-            <div class="list-row" role="button" id="manageToolsRow">
+            <button class="list-row" id="manageToolsRow">
               <div class="list-row-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.77z"/></svg></div>
               <div class="list-row-body"><div class="list-row-title">Manage Tools</div><div class="list-row-subtitle">6 categories enabled</div></div>
               <div class="list-row-trail"><svg class="list-row-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></div>
-            </div>
+            </button>
           </div>
 
           <div class="settings-group">
             <div class="settings-group-label">Preferences</div>
-            <div class="list-row" role="button" id="themeToggleRow">
+            <button class="list-row" id="themeToggleRow">
               <div class="list-row-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg></div>
               <div class="list-row-body"><div class="list-row-title">Color mode</div></div>
               <div class="list-row-trail"><span id="themeLabel">Dark</span><svg class="list-row-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></div>
-            </div>
+            </button>
           </div>
 
           <div class="settings-group">
-            <div class="list-row settings-logout" role="button" id="logoutBtn">
+            <button class="list-row settings-logout" id="logoutBtn">
               <div class="list-row-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg></div>
               <div class="list-row-body"><div class="list-row-title">Log out</div></div>
-            </div>
+            </button>
           </div>
 
         </div>
@@ -297,7 +297,7 @@
 </div><!-- /app -->
 
 <!-- ============ TOAST ============ -->
-<div id="toastContainer"></div>
+<div id="toastContainer" aria-live="polite" aria-atomic="true"></div>
 
 <!-- ============ "+" ADD-TO-CHAT SHEET ============ -->
 <div class="sheet-overlay" id="addSheetOverlay">
@@ -311,35 +311,35 @@
       <span style="width:40px;"></span>
     </div>
     <div class="sheet-body">
-      <div class="list-row" role="button" id="uploadFileRow">
+      <button class="list-row" id="uploadFileRow">
         <div class="list-row-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l9.19-9.19a4 4 0 015.66 5.66l-9.2 9.19a2 2 0 01-2.83-2.83l8.49-8.48"/></svg></div>
         <div class="list-row-body"><div class="list-row-title">Upload File</div></div>
         <div class="list-row-trail"><svg class="list-row-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></div>
-      </div>
+      </button>
       <div class="addchat-divider"></div>
-      <div class="list-row" role="button">
+      <button class="list-row">
         <div class="list-row-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></div>
         <div class="list-row-body"><div class="list-row-title">Web search</div></div>
         <div class="list-row-trail"><div class="toggle" id="webSearchToggle"></div></div>
-      </div>
+      </button>
       <!-- Add to project — now has id, trail text node for live update -->
-      <div class="list-row" role="button" id="addToProjectRow">
+      <button class="list-row" id="addToProjectRow">
         <div class="list-row-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg></div>
         <div class="list-row-body"><div class="list-row-title">Add to project</div></div>
         <div class="list-row-trail" id="addToProjectTrail">None <svg class="list-row-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></div>
-      </div>
+      </button>
       <!-- Tool access — now has id, trail text node for live update -->
-      <div class="list-row" role="button" id="toolAccessRow">
+      <button class="list-row" id="toolAccessRow">
         <div class="list-row-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.77z"/></svg></div>
         <div class="list-row-body"><div class="list-row-title">Tool access</div></div>
         <div class="list-row-trail" id="toolAccessTrail">Auto <svg class="list-row-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></div>
-      </div>
+      </button>
       <!-- Connectors — now has id -->
-      <div class="list-row" role="button" id="connectorsRow">
+      <button class="list-row" id="connectorsRow">
         <div class="list-row-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 010 20 15.3 15.3 0 010-20z"/></svg></div>
         <div class="list-row-body"><div class="list-row-title">Connectors</div></div>
         <div class="list-row-trail"><svg class="list-row-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></div>
-      </div>
+      </button>
     </div>
   </div>
 </div>
@@ -454,9 +454,9 @@
 </div>
 
 <!-- CDN Libraries for utility & file tools -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js" integrity="sha384-3zSEDfvllQohrq0PHL1fOXJuC/jSOO34H46t6UQfobFOmxE5BpjjaIJY5F2/bMnU" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" integrity="sha384-JcnsjUPPylna1s1fvi1u12X5qjY5OL56iySh75FdtrwhO/SWXgMjoVqcKyIIWOLk" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js" integrity="sha384-weMABwrltA6jWR8DDe9Jp5blk+tZQh7ugpCsF3JwSA53WZM9/14PjS5LAJNHNjAI" crossorigin="anonymous"></script>
 
 <script src="js/storage.js"></script>
 <script src="js/toast.js"></script>

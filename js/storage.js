@@ -110,7 +110,7 @@ const Storage = (() => {
 
     // ---------- PROFILE ----------
     getProfile() {
-      return _safeGet(KEYS.PROFILE, { name: 'Satyam', email: 'satyam@digiriseindia.tech' });
+      return _safeGet(KEYS.PROFILE, { name: 'Your Name', email: 'you@example.com' });
     },
     setProfile(profile) {
       _safeSet(KEYS.PROFILE, profile);

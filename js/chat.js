@@ -234,8 +234,12 @@ const Chat = (() => {
     // Share button — Pattern A: real Web Share API with clipboard fallback + toast
     document.getElementById('shareBtn')?.addEventListener('click', async () => {
       const title = currentChat ? currentChat.title : 'ToolsHub';
-      const url   = location.href;
-      const text  = `Check out this chat on ToolsHub: "${title}"`;
+      const url   = currentChat
+        ? location.origin + location.pathname + '#chat=' + currentChat.id
+        : location.href;
+      const text  = currentChat
+        ? `Check out my ToolsHub chat: "${title}"`
+        : 'Check out ToolsHub';
 
       if (navigator.share) {
         try {

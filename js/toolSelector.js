@@ -160,7 +160,11 @@ const ToolSelector = (() => {
 
   function getPinned() {
     const pinned = [];
-    DATA.forEach(cat => cat.tools.forEach(t => { if (t.pinned) pinned.push({ ...t, categoryId: cat.id }); }));
+    const enabledIds = window.Storage ? Storage.getEnabledCategories() : null;
+    DATA.forEach(cat => {
+      if (enabledIds !== null && !enabledIds.includes(cat.id)) return;
+      cat.tools.forEach(t => { if (t.pinned) pinned.push({ ...t, categoryId: cat.id }); });
+    });
     return pinned;
   }
 
@@ -348,6 +352,7 @@ const ToolSelector = (() => {
     setEnabledCategories(ids) {
       if (window.Storage) Storage.setEnabledCategories(ids);
       renderCategoryLevel();
+      renderPins();
     },
   };
 })();

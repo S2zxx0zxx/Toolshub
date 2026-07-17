@@ -55,9 +55,13 @@
   z-index: 6; /* above settings (z:5) */
   display: flex;
   flex-direction: column;
+  visibility: hidden;       /* hides from AT and prevents focus when off-screen */
+  pointer-events: none;     /* belt-and-suspenders: no mouse/touch either */
 }
 .screen-sub.is-open {
   transform: translateX(0);
+  visibility: visible;
+  pointer-events: auto;
 }
 
 /* ---- PROFILE SCREEN SPECIFICS ---- */
