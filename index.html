@@ -2,7 +2,8 @@
 <html lang="en" data-theme="dark">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="apple-touch-icon" href="assets/icon-192.png">
 <title>ToolsHub</title>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -113,7 +114,7 @@
           </div>
 
           <div class="input-card">
-            <textarea class="input-textarea" id="inputTextarea" rows="1" placeholder="Choose a tool to get started..."></textarea>
+            <textarea class="input-textarea" id="inputTextarea" rows="1" placeholder="Choose a tool to get started..." aria-label="Chat input"></textarea>
             <div class="input-actions">
               <div class="input-actions-left">
                 <button class="btn-icon" id="addBtn" aria-label="Add to chat">
@@ -354,7 +355,7 @@
     </div>
   </div>
 </div>
-<input type="file" id="hiddenFileInput" style="display:none;">
+<input type="file" id="hiddenFileInput" aria-label="Upload file" style="display:none;">
 
 <!-- ============ TOOL SELECTOR SHEET (2-level) ============ -->
 <div class="sheet-overlay" id="toolSheetOverlay">

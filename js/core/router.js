@@ -7,7 +7,7 @@ export const Router = (() => {
 
   function navigate(screen) {
     currentScreen = screen;
-    document.getElementById('app').setAttribute('data-screen', screen);
+    document.getElementById('app').dataset.screen = screen;
     if (screen === 'settings' && window.matchMedia('(max-width: 860px)').matches) {
       Sidebar.close();
     }

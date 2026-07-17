@@ -4,8 +4,7 @@
    Every read/write in the app goes through here.
    ============================================ */
 
-import { State } from '../core/state.js';
-import { Events } from '../core/events.js';
+
 
 export const Storage = (() => {
   const KEYS = {
@@ -122,10 +121,10 @@ export const Storage = (() => {
     // ---------- CLEAR ALL (logout) ----------
     clearAll() {
       Object.values(KEYS).forEach(k => {
-        try { localStorage.removeItem(k); } catch (_) {}
+        try { localStorage.removeItem(k); } catch (e) { console.warn('Clear failed', e); }
       });
       // also clear derived active-project key
-      try { localStorage.removeItem(KEYS.PROJECTS + '_active'); } catch (_) {}
+      try { localStorage.removeItem(KEYS.PROJECTS + '_active'); } catch (e) { console.warn('Clear failed', e); }
     },
   };
 })();

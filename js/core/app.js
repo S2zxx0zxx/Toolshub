@@ -26,13 +26,13 @@ const Settings = (() => {
 
   // ---------- THEME ----------
   function applyTheme(theme) {
-    document.documentElement.setAttribute('data-theme', theme);
+    document.documentElement.dataset.theme = theme;
     document.getElementById('themeLabel').textContent = theme === 'dark' ? 'Dark' : 'Light';
     Storage.setTheme(theme);
   }
 
   function toggleTheme() {
-    const current = document.documentElement.getAttribute('data-theme');
+    const current = document.documentElement.dataset.theme;
     applyTheme(current === 'dark' ? 'light' : 'dark');
   }
 
@@ -159,37 +159,39 @@ const Settings = (() => {
 
     // Wire toggles
     container.querySelectorAll('.toggle').forEach(toggleEl => {
-      toggleEl.addEventListener('click', (e) => {
-        e.stopPropagation();
-        const catId = toggleEl.dataset.catId;
-
-        // Re-read current state from DOM
-        const currentEnabled = new Set(
-          [...container.querySelectorAll('.toggle.is-on')].map(t => t.dataset.catId)
-        );
-        if (currentEnabled.has(catId)) {
-          // Don't allow disabling the last enabled category
-          if (currentEnabled.size === 1) {
-            Toast.show("Can't disable all categories.");
-            return;
-          }
-          currentEnabled.delete(catId);
-          toggleEl.classList.remove('is-on');
-          toggleEl.setAttribute('aria-pressed', 'false');
-        } else {
-          currentEnabled.add(catId);
-          toggleEl.classList.add('is-on');
-          toggleEl.setAttribute('aria-pressed', 'true');
-        }
-
-        const newIds = [...currentEnabled];
-        // If all categories are enabled, store null (default) to keep it clean
-        const allIds = ToolSelector.DATA.map(c => c.id);
-        const allEnabled = allIds.every(id => newIds.includes(id));
-        ToolSelector.setEnabledCategories(allEnabled ? null : newIds);
-        updateManageToolsSubtitle();
-      });
+      toggleEl.addEventListener('click', (e) => handleCategoryToggle(e, toggleEl, container));
     });
+  }
+
+  function handleCategoryToggle(e, toggleEl, container) {
+    e.stopPropagation();
+    const catId = toggleEl.dataset.catId;
+
+    // Re-read current state from DOM
+    const currentEnabled = new Set(
+      [...container.querySelectorAll('.toggle.is-on')].map(t => t.dataset.catId)
+    );
+    if (currentEnabled.has(catId)) {
+      // Don't allow disabling the last enabled category
+      if (currentEnabled.size === 1) {
+        Toast.show("Can't disable all categories.");
+        return;
+      }
+      currentEnabled.delete(catId);
+      toggleEl.classList.remove('is-on');
+      toggleEl.setAttribute('aria-pressed', 'false');
+    } else {
+      currentEnabled.add(catId);
+      toggleEl.classList.add('is-on');
+      toggleEl.setAttribute('aria-pressed', 'true');
+    }
+
+    const newIds = [...currentEnabled];
+    // If all categories are enabled, store null (default) to keep it clean
+    const allIds = ToolSelector.DATA.map(c => c.id);
+    const allEnabled = allIds.every(id => newIds.includes(id));
+    ToolSelector.setEnabledCategories(allEnabled ? null : newIds);
+    updateManageToolsSubtitle();
   }
 
   // =========================================================
@@ -206,7 +208,7 @@ const Settings = (() => {
     Storage.clearAll();
     closeLogoutSheet();
     // Reset theme to dark (default)
-    document.documentElement.setAttribute('data-theme', 'dark');
+    document.documentElement.dataset.theme = 'dark';
     // Brief toast then reload
     Toast.show('Logged out. See you soon!');
     setTimeout(() => location.reload(), 1400);
