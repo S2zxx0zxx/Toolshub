@@ -12,10 +12,8 @@ const urlsToCache = [
   '/css/layout/screens-extra.css',
   '/js/core/app.js',
   '/js/core/events.js',
-  '/js/core/state.js',
   '/js/core/router.js',
   '/js/services/localSettings.js',
-  '/js/services/storage.js',
   '/js/services/firebase.js',
   '/js/services/auth.js',
   '/js/services/cloudDb.js',
@@ -49,18 +47,17 @@ self.addEventListener('install', event => {
 
 self.addEventListener('fetch', event => {
   event.respondWith(
-    caches.match(event.request)
-      .then(response => {
-        if (response) {
-          // cache-first: return cache but update network in background
-          fetch(event.request).then(res => {
-            caches.open(CACHE_NAME).then(cache => {
-              cache.put(event.request, res);
-            });
-          }).catch(() => {});
-          return response;
-        }
-        return fetch(event.request);
+    fetch(event.request)
+      .then(networkResponse => {
+        // Network-first strategy: always fetch latest from network if online
+        return caches.open(CACHE_NAME).then(cache => {
+          cache.put(event.request, networkResponse.clone());
+          return networkResponse;
+        });
+      })
+      .catch(() => {
+        // If offline, fallback to cache
+        return caches.match(event.request);
       })
   );
 });
