@@ -230,6 +230,29 @@ const Chat = (() => {
       updateSendState();
       autoExpand();
     });
+
+    // Share button — Pattern A: real Web Share API with clipboard fallback + toast
+    document.getElementById('shareBtn')?.addEventListener('click', async () => {
+      const title = currentChat ? currentChat.title : 'ToolsHub';
+      const url   = location.href;
+      const text  = `Check out this chat on ToolsHub: "${title}"`;
+
+      if (navigator.share) {
+        try {
+          await navigator.share({ title, text, url });
+          return; // native sheet handled it
+        } catch (err) {
+          if (err.name === 'AbortError') return; // user cancelled, no toast needed
+        }
+      }
+      // fallback: copy to clipboard
+      try {
+        await navigator.clipboard.writeText(url);
+        Toast.show('Link copied.');
+      } catch (_) {
+        Toast.show('Could not copy link.');
+      }
+    });
   }
 
   return { init, newChat, loadChat, sendMessage };

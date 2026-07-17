@@ -1,0 +1,264 @@
+/* ============================================
+   TOOLSHUB — SCREENS EXTRA
+   Supplemental CSS for:
+   - Toast component
+   - Profile sub-screen (#screenProfile)
+   - Billing sub-screen (#screenBilling)
+   - Manage Tools sub-screen (#screenManageTools)
+   - Upgrade sheet (#upgradeSheetOverlay)
+   - Log-out confirm sheet (#logoutSheetOverlay)
+   - Add-to-project sheet (#projectSheetOverlay)
+   - Tool-access sheet (#toolAccessSheetOverlay)
+
+   Rules: only existing design tokens used.
+   New sub-screens follow the exact same translateX(100%)
+   mechanic as .screen-settings in layout.css.
+   ============================================ */
+
+/* ---- TOAST ---- */
+#toastContainer {
+  position: fixed;
+  bottom: calc(var(--input-bar-h) + 12px);
+  left: 50%;
+  transform: translateX(-50%) translateY(12px);
+  z-index: var(--z-toast);
+  background: var(--bg-surface-3);
+  color: var(--text-primary);
+  font-size: var(--fs-sm);
+  font-weight: 500;
+  padding: var(--sp-3) var(--sp-5);
+  border-radius: var(--r-full);
+  box-shadow: var(--sh-md);
+  border: 1px solid var(--border-med);
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transition:
+    opacity var(--dur-base) var(--ease),
+    transform var(--dur-base) var(--ease);
+}
+#toastContainer.toast-visible {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+/* ---- SUB-SCREENS (Profile, Billing, Manage Tools) ----
+   Identical transition mechanic to .screen-settings:
+   absolute, full-inset, translateX(100%) default,
+   translateX(0) when [data-screen] matches. */
+.screen-sub {
+  position: absolute;
+  inset: 0;
+  background: var(--bg-app);
+  transform: translateX(100%);
+  transition: transform var(--dur-slow) var(--ease);
+  z-index: 6; /* above settings (z:5) */
+  display: flex;
+  flex-direction: column;
+}
+.screen-sub.is-open {
+  transform: translateX(0);
+}
+
+/* ---- PROFILE SCREEN SPECIFICS ---- */
+.profile-avatar-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--sp-2);
+  padding: var(--sp-6) var(--sp-5) var(--sp-4);
+}
+.profile-avatar-xl {
+  width: 72px; height: 72px;
+  border-radius: var(--r-full);
+  background: var(--accent);
+  color: var(--accent-text-on);
+  display: inline-flex; align-items: center; justify-content: center;
+  font-weight: 600; font-size: var(--fs-xl);
+  flex-shrink: 0;
+}
+.profile-name-display {
+  font-size: var(--fs-md);
+  font-weight: 600;
+  color: var(--text-primary);
+}
+.profile-email-display {
+  font-size: var(--fs-sm);
+  color: var(--text-muted);
+}
+
+/* ---- EDITABLE FIELD (inside settings-inner groups) ---- */
+.field-input {
+  width: 100%;
+  background: var(--bg-surface-2);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--r-md);
+  padding: var(--sp-3) var(--sp-4);
+  font-size: var(--fs-base);
+  color: var(--text-primary);
+  outline: none;
+  transition: border-color var(--dur-fast) var(--ease);
+}
+.field-input:focus {
+  border-color: var(--accent);
+}
+.field-label {
+  font-size: var(--fs-xs);
+  font-weight: 500;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: var(--sp-2);
+  display: block;
+}
+.field-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-5);
+}
+
+/* ---- BILLING SCREEN ---- */
+.billing-plan-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  padding: var(--sp-1) var(--sp-3);
+  border-radius: var(--r-full);
+  background: var(--bg-surface-3);
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  color: var(--text-secondary);
+  border: 1px solid var(--border-subtle);
+}
+
+/* ---- MANAGE TOOLS: toggle rows ---- */
+.manage-tools-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--sp-4);
+  border-radius: var(--r-lg);
+  gap: var(--sp-3);
+}
+.manage-tools-row:hover {
+  background: var(--bg-surface-2);
+}
+.manage-tools-meta {
+  flex: 1;
+  min-width: 0;
+}
+.manage-tools-title {
+  font-size: var(--fs-base);
+  font-weight: 500;
+  color: var(--text-primary);
+}
+.manage-tools-sub {
+  font-size: var(--fs-xs);
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+/* ---- UPGRADE SHEET ---- */
+.upgrade-feature-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  margin-bottom: var(--sp-5);
+}
+.upgrade-feature-item {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  padding: var(--sp-3) var(--sp-2);
+  border-bottom: 1px solid var(--border-subtle);
+  font-size: var(--fs-sm);
+  color: var(--text-secondary);
+}
+.upgrade-feature-item:last-child { border-bottom: none; }
+.upgrade-check {
+  width: 16px; height: 16px;
+  color: var(--success);
+  flex-shrink: 0;
+}
+.upgrade-plan-name {
+  font-size: var(--fs-md);
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: var(--sp-1);
+}
+.upgrade-plan-price {
+  font-size: var(--fs-sm);
+  color: var(--text-muted);
+  margin-bottom: var(--sp-4);
+}
+
+/* ---- LOGOUT CONFIRM SHEET ---- */
+.logout-confirm-title {
+  font-size: var(--fs-md);
+  font-weight: 600;
+  color: var(--text-primary);
+  text-align: center;
+  margin-bottom: var(--sp-2);
+}
+.logout-confirm-sub {
+  font-size: var(--fs-sm);
+  color: var(--text-muted);
+  text-align: center;
+  margin-bottom: var(--sp-5);
+}
+.sheet-btn-row {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+}
+
+/* ---- PROJECT / TOOL-ACCESS SHEETS ---- */
+.project-item {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  padding: var(--sp-4);
+  border-radius: var(--r-lg);
+  cursor: pointer;
+  transition: background var(--dur-fast) var(--ease);
+}
+.project-item:hover { background: var(--bg-surface-2); }
+.project-item-name {
+  flex: 1;
+  font-size: var(--fs-base);
+  color: var(--text-primary);
+}
+.project-item-check {
+  width: 18px; height: 18px;
+  color: var(--accent);
+}
+.project-new-input-wrap {
+  display: flex;
+  gap: var(--sp-2);
+  padding: var(--sp-3) 0 var(--sp-2);
+}
+.project-new-input {
+  flex: 1;
+  background: var(--bg-surface-2);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--r-md);
+  padding: var(--sp-3) var(--sp-4);
+  font-size: var(--fs-base);
+  color: var(--text-primary);
+  outline: none;
+  transition: border-color var(--dur-fast) var(--ease);
+}
+.project-new-input:focus { border-color: var(--accent); }
+
+/* tool-access option row selected state */
+.list-row.is-selected .list-row-trail svg.access-check {
+  display: block;
+}
+.list-row .list-row-trail svg.access-check {
+  display: none;
+  width: 18px; height: 18px;
+  color: var(--accent);
+}
+.list-row.is-selected {
+  background: var(--accent-soft);
+}

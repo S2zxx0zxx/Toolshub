@@ -15,6 +15,7 @@
 <link rel="stylesheet" href="css/chat.css">
 <link rel="stylesheet" href="css/bottomsheet.css">
 <link rel="stylesheet" href="css/tools.css">
+<link rel="stylesheet" href="css/screens-extra.css">
 </head>
 <body>
 
@@ -148,17 +149,19 @@
           <div class="settings-upgrade-card">
             <div class="settings-upgrade-title">Get more with Pro</div>
             <div class="settings-upgrade-sub">Higher limits, priority tools, and early access to new categories.</div>
-            <button class="btn btn-primary">Upgrade</button>
+            <button class="btn btn-primary" id="upgradeBtn">Upgrade</button>
           </div>
 
           <div class="settings-group">
             <div class="settings-group-label">Account</div>
-            <div class="list-row" role="button">
+            <!-- Profile row — now has id -->
+            <div class="list-row" role="button" id="profileRow">
               <div class="list-row-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
               <div class="list-row-body"><div class="list-row-title">Profile</div></div>
               <div class="list-row-trail"><svg class="list-row-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></div>
             </div>
-            <div class="list-row" role="button">
+            <!-- Billing row — now has id -->
+            <div class="list-row" role="button" id="billingRow">
               <div class="list-row-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg></div>
               <div class="list-row-body"><div class="list-row-title">Billing</div></div>
               <div class="list-row-trail"><svg class="list-row-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></div>
@@ -166,10 +169,10 @@
           </div>
 
           <div class="settings-group">
-            <div class="settings-group-label">Tools & Connectors</div>
+            <div class="settings-group-label">Tools &amp; Connectors</div>
             <div class="list-row" role="button" id="manageToolsRow">
               <div class="list-row-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.77z"/></svg></div>
-              <div class="list-row-body"><div class="list-row-title">Manage Tools</div><div class="list-row-subtitle">3 categories enabled</div></div>
+              <div class="list-row-body"><div class="list-row-title">Manage Tools</div><div class="list-row-subtitle">6 categories enabled</div></div>
               <div class="list-row-trail"><svg class="list-row-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></div>
             </div>
           </div>
@@ -192,10 +195,109 @@
 
         </div>
       </div>
-    </div>
 
-  </div>
-</div>
+      <!-- ===== PROFILE SUB-SCREEN ===== -->
+      <div class="screen-sub" id="screenProfile">
+        <div class="settings-topbar">
+          <button class="btn-icon" id="profileBackBtn" aria-label="Back">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+          </button>
+          <span class="settings-topbar-title">Profile</span>
+          <button class="btn btn-ghost" id="profileSaveBtn" style="height:36px;padding:0 var(--sp-4);font-size:var(--fs-sm);">Save</button>
+        </div>
+        <div class="settings-body scroll-y">
+          <div class="settings-inner">
+            <div class="profile-avatar-section">
+              <div class="profile-avatar-xl">S</div>
+              <div class="profile-name-display" id="profileNameDisplay">Satyam</div>
+              <div class="profile-email-display" id="profileEmailDisplay">satyam@digiriseindia.tech</div>
+            </div>
+            <div class="settings-group">
+              <div class="settings-group-label">Edit details</div>
+              <div class="field-group" style="padding:var(--sp-4);background:var(--bg-surface);border-radius:var(--r-lg);border:1px solid var(--border-subtle);">
+                <div>
+                  <label class="field-label" for="profileNameInput">Display name</label>
+                  <input class="field-input" id="profileNameInput" type="text" placeholder="Your name" maxlength="48">
+                </div>
+                <div>
+                  <label class="field-label" for="profileEmailInput">Email</label>
+                  <input class="field-input" id="profileEmailInput" type="email" placeholder="your@email.com" maxlength="120">
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== BILLING SUB-SCREEN ===== -->
+      <div class="screen-sub" id="screenBilling">
+        <div class="settings-topbar">
+          <button class="btn-icon" id="billingBackBtn" aria-label="Back">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+          </button>
+          <span class="settings-topbar-title">Billing</span>
+          <span style="width:40px;"></span>
+        </div>
+        <div class="settings-body scroll-y">
+          <div class="settings-inner">
+            <div class="settings-account-card">
+              <div>
+                <div style="font-size:var(--fs-sm);color:var(--text-muted);margin-bottom:var(--sp-2);">Current plan</div>
+                <div style="display:flex;align-items:center;gap:var(--sp-3);">
+                  <span style="font-size:var(--fs-md);font-weight:600;color:var(--text-primary);">Free</span>
+                  <span class="billing-plan-badge">Active</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="settings-group">
+              <div class="settings-group-label">Usage</div>
+              <div class="list-row" style="cursor:default;">
+                <div class="list-row-body"><div class="list-row-title">Messages this month</div><div class="list-row-subtitle">Resets on the 1st</div></div>
+                <div class="list-row-trail" style="font-size:var(--fs-sm);font-weight:600;color:var(--text-primary);">—</div>
+              </div>
+              <div class="list-row" style="cursor:default;">
+                <div class="list-row-body"><div class="list-row-title">Payment method</div></div>
+                <div class="list-row-trail" style="font-size:var(--fs-sm);color:var(--text-muted);">None on file</div>
+              </div>
+            </div>
+
+            <button class="btn btn-primary" id="billingUpgradeBtn" style="width:100%;">Upgrade to Pro</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== MANAGE TOOLS SUB-SCREEN ===== -->
+      <div class="screen-sub" id="screenManageTools">
+        <div class="settings-topbar">
+          <button class="btn-icon" id="manageToolsBackBtn" aria-label="Back">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+          </button>
+          <span class="settings-topbar-title">Manage Tools</span>
+          <span style="width:40px;"></span>
+        </div>
+        <div class="settings-body scroll-y">
+          <div class="settings-inner">
+            <div class="settings-group">
+              <div class="settings-group-label">Visible categories</div>
+              <div style="background:var(--bg-surface);border-radius:var(--r-lg);border:1px solid var(--border-subtle);overflow:hidden;">
+                <div id="manageToolsList"></div>
+              </div>
+              <div style="font-size:var(--fs-xs);color:var(--text-muted);padding:var(--sp-2) var(--sp-1);">
+                Disabled categories are hidden from the tool selector. At least one must stay enabled.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /screenSettings -->
+
+  </div><!-- /main-col -->
+</div><!-- /app -->
+
+<!-- ============ TOAST ============ -->
+<div id="toastContainer"></div>
 
 <!-- ============ "+" ADD-TO-CHAT SHEET ============ -->
 <div class="sheet-overlay" id="addSheetOverlay">
@@ -220,17 +322,20 @@
         <div class="list-row-body"><div class="list-row-title">Web search</div></div>
         <div class="list-row-trail"><div class="toggle" id="webSearchToggle"></div></div>
       </div>
-      <div class="list-row" role="button">
+      <!-- Add to project — now has id, trail text node for live update -->
+      <div class="list-row" role="button" id="addToProjectRow">
         <div class="list-row-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg></div>
         <div class="list-row-body"><div class="list-row-title">Add to project</div></div>
-        <div class="list-row-trail">None <svg class="list-row-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></div>
+        <div class="list-row-trail" id="addToProjectTrail">None <svg class="list-row-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></div>
       </div>
-      <div class="list-row" role="button">
+      <!-- Tool access — now has id, trail text node for live update -->
+      <div class="list-row" role="button" id="toolAccessRow">
         <div class="list-row-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.77z"/></svg></div>
         <div class="list-row-body"><div class="list-row-title">Tool access</div></div>
-        <div class="list-row-trail">Auto <svg class="list-row-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></div>
+        <div class="list-row-trail" id="toolAccessTrail">Auto <svg class="list-row-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></div>
       </div>
-      <div class="list-row" role="button">
+      <!-- Connectors — now has id -->
+      <div class="list-row" role="button" id="connectorsRow">
         <div class="list-row-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 010 20 15.3 15.3 0 010-20z"/></svg></div>
         <div class="list-row-body"><div class="list-row-title">Connectors</div></div>
         <div class="list-row-trail"><svg class="list-row-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></div>
@@ -262,12 +367,99 @@
   </div>
 </div>
 
+<!-- ============ UPGRADE SHEET ============ -->
+<div class="sheet-overlay" id="upgradeSheetOverlay">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-head">
+      <button class="btn-icon" id="upgradeSheetCloseBtn" aria-label="Close">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+      <span class="sheet-title">ToolsHub Pro</span>
+      <span style="width:40px;"></span>
+    </div>
+    <div class="sheet-body">
+      <div class="upgrade-plan-name">Pro Plan</div>
+      <div class="upgrade-plan-price">Coming soon · Early access waitlist open</div>
+      <div class="upgrade-feature-list">
+        <div class="upgrade-feature-item">
+          <svg class="upgrade-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+          Unlimited messages per day
+        </div>
+        <div class="upgrade-feature-item">
+          <svg class="upgrade-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+          Priority access to new tool categories
+        </div>
+        <div class="upgrade-feature-item">
+          <svg class="upgrade-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+          Faster response times
+        </div>
+        <div class="upgrade-feature-item">
+          <svg class="upgrade-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+          Extended file processing limits
+        </div>
+      </div>
+      <button class="btn btn-primary" id="upgradeNotifyBtn" style="width:100%;">Notify me when Pro launches</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ LOG OUT CONFIRM SHEET ============ -->
+<div class="sheet-overlay" id="logoutSheetOverlay">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-body" style="padding:var(--sp-6) var(--sp-5) var(--sp-6);">
+      <div class="logout-confirm-title">Log out?</div>
+      <div class="logout-confirm-sub">Your chat history and settings will be cleared from this device.</div>
+      <div class="sheet-btn-row">
+        <button class="btn btn-primary" id="logoutConfirmBtn" style="width:100%;background:var(--danger);color:#fff;">Log out</button>
+        <button class="btn btn-ghost" id="logoutCancelBtn" style="width:100%;">Cancel</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ ADD TO PROJECT SHEET ============ -->
+<div class="sheet-overlay" id="projectSheetOverlay">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-head">
+      <button class="btn-icon" id="projectSheetCloseBtn" aria-label="Close">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+      <span class="sheet-title">Add to project</span>
+      <span style="width:40px;"></span>
+    </div>
+    <div class="sheet-body">
+      <div id="projectSheetList"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ TOOL ACCESS SHEET ============ -->
+<div class="sheet-overlay" id="toolAccessSheetOverlay">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-head">
+      <button class="btn-icon" id="toolAccessSheetCloseBtn" aria-label="Close">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+      <span class="sheet-title">Tool access</span>
+      <span style="width:40px;"></span>
+    </div>
+    <div class="sheet-body">
+      <div id="toolAccessList"></div>
+    </div>
+  </div>
+</div>
+
 <!-- CDN Libraries for utility & file tools -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
 
 <script src="js/storage.js"></script>
+<script src="js/toast.js"></script>
 <script src="js/toolSelector.js"></script>
 <script src="js/utilityTools.js"></script>
 <script src="js/fileTools.js"></script>

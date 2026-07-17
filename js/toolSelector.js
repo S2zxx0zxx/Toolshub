@@ -179,10 +179,16 @@ const ToolSelector = (() => {
     });
   }
 
-  // ---------- RENDER: level 1 (categories) ----------
+  // ---------- RENDER: level 1 (categories) — respects enabled-category filter ----------
   function renderCategoryLevel() {
     const el = document.getElementById('categoryLevel');
-    el.innerHTML = DATA.map(cat => `
+    if (!el) return;
+
+    // null means all enabled (default); otherwise filter to the saved id list
+    const enabledIds = window.Storage ? Storage.getEnabledCategories() : null;
+    const visible = enabledIds === null ? DATA : DATA.filter(c => enabledIds.includes(c.id));
+
+    el.innerHTML = visible.map(cat => `
       <div class="category-card" data-cat-id="${cat.id}">
         <div class="category-icon">${icon(cat.icon)}</div>
         <div class="category-body">
@@ -338,6 +344,11 @@ const ToolSelector = (() => {
     renderToolLevel,
     backToCategoryLevel,
     renderPromptCards,
+    // called by Manage Tools screen to persist + refresh selector
+    setEnabledCategories(ids) {
+      if (window.Storage) Storage.setEnabledCategories(ids);
+      renderCategoryLevel();
+    },
   };
 })();
 

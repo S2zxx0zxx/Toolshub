@@ -6,9 +6,13 @@
 
 const Storage = (() => {
   const KEYS = {
-    CHATS: 'toolshub_chats',
-    THEME: 'toolshub_theme',
-    ACTIVE_CHAT: 'toolshub_active_chat',
+    CHATS:              'toolshub_chats',
+    THEME:              'toolshub_theme',
+    ACTIVE_CHAT:        'toolshub_active_chat',
+    ENABLED_CATEGORIES: 'toolshub_enabled_categories', // array of enabled category ids, null = all enabled
+    PROJECTS:           'toolshub_projects',            // array of { id, name }
+    TOOL_ACCESS:        'toolshub_tool_access',         // 'auto' | 'always-ask' | 'off'
+    PROFILE:            'toolshub_profile',             // { name, email }
   };
 
   function _safeGet(key, fallback) {
@@ -66,6 +70,59 @@ const Storage = (() => {
     },
     setTheme(theme) {
       _safeSet(KEYS.THEME, theme);
+    },
+
+    // ---------- ENABLED CATEGORIES ----------
+    // null means "all enabled" (default, first-run state)
+    getEnabledCategories() {
+      return _safeGet(KEYS.ENABLED_CATEGORIES, null);
+    },
+    setEnabledCategories(ids) {
+      _safeSet(KEYS.ENABLED_CATEGORIES, ids);
+    },
+
+    // ---------- PROJECTS ----------
+    getProjects() {
+      return _safeGet(KEYS.PROJECTS, []);
+    },
+    saveProject(project) {
+      const list = this.getProjects();
+      const idx = list.findIndex(p => p.id === project.id);
+      if (idx >= 0) list[idx] = project;
+      else list.push(project);
+      _safeSet(KEYS.PROJECTS, list);
+    },
+    getActiveProject() {
+      // active project id is stored as first item convention — read from projects
+      return _safeGet(KEYS.PROJECTS + '_active', null);
+    },
+    setActiveProject(projectId) {
+      _safeSet(KEYS.PROJECTS + '_active', projectId);
+    },
+
+    // ---------- TOOL ACCESS ----------
+    getToolAccess() {
+      return _safeGet(KEYS.TOOL_ACCESS, 'auto');
+    },
+    setToolAccess(value) {
+      _safeSet(KEYS.TOOL_ACCESS, value);
+    },
+
+    // ---------- PROFILE ----------
+    getProfile() {
+      return _safeGet(KEYS.PROFILE, { name: 'Satyam', email: 'satyam@digiriseindia.tech' });
+    },
+    setProfile(profile) {
+      _safeSet(KEYS.PROFILE, profile);
+    },
+
+    // ---------- CLEAR ALL (logout) ----------
+    clearAll() {
+      Object.values(KEYS).forEach(k => {
+        try { localStorage.removeItem(k); } catch (_) {}
+      });
+      // also clear derived active-project key
+      try { localStorage.removeItem(KEYS.PROJECTS + '_active'); } catch (_) {}
     },
   };
 })();
