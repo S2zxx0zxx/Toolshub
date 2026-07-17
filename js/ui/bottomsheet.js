@@ -4,7 +4,7 @@
    Also wires: Add-to-project, Tool-access, Connectors rows.
    ============================================ */
 
-import { Storage } from '../services/storage.js';
+import { LocalSettings } from '../services/localSettings.js';
 import { ToolSelector } from '../tools/registry.js';
 import { UtilityTools } from '../tools/utilityTools.js';
 import { FileTools } from '../tools/fileTools.js';
@@ -54,8 +54,8 @@ export const BottomSheet = (() => {
     const trailEl = document.getElementById('addToProjectTrail');
     if (!list) return;
 
-    const projects    = Storage.getProjects();
-    const activeId    = Storage.getActiveProject();
+    const projects    = LocalSettings.getProjects();
+    const activeId    = LocalSettings.getActiveProject();
     const activeProj  = projects.find(p => p.id === activeId) || null;
 
     list.innerHTML = '';
@@ -76,7 +76,7 @@ export const BottomSheet = (() => {
       `;
       row.querySelector('.project-item-name').textContent = p.name;
       row.addEventListener('click', () => {
-        Storage.setActiveProject(p.id);
+        LocalSettings.setActiveProject(p.id);
         if (window.Chat) window.Chat.assignProject(p.id);
         if (window.Sidebar) window.Sidebar.renderProjects();
         if (trailEl) {
@@ -108,8 +108,8 @@ export const BottomSheet = (() => {
       const name = input ? input.value.trim() : '';
       if (!name) return;
       const newProj = { id: 'p_' + Date.now().toString(36), name };
-      Storage.saveProject(newProj);
-      Storage.setActiveProject(newProj.id);
+      LocalSettings.saveProject(newProj);
+      LocalSettings.setActiveProject(newProj.id);
       if (window.Chat) window.Chat.assignProject(newProj.id);
       if (window.Sidebar) window.Sidebar.renderProjects();
 
@@ -144,7 +144,7 @@ export const BottomSheet = (() => {
     const trailEl = document.getElementById('toolAccessTrail');
     if (!list) return;
 
-    const current = Storage.getToolAccess();
+    const current = LocalSettings.getToolAccess();
 
     list.innerHTML = ACCESS_OPTIONS.map(o => `
       <button class="list-row ${o.id === current ? 'is-selected' : ''}"
@@ -165,7 +165,7 @@ export const BottomSheet = (() => {
     list.querySelectorAll('[data-access]').forEach(row => {
       row.addEventListener('click', () => {
         const val = row.dataset.access;
-        Storage.setToolAccess(val);
+        LocalSettings.setToolAccess(val);
         const opt = ACCESS_OPTIONS.find(o => o.id === val);
         if (trailEl && opt) {
           trailEl.childNodes[0].textContent = opt.label + ' ';
@@ -238,7 +238,7 @@ export const BottomSheet = (() => {
     // Restore tool-access trail text on load
     const trailEl = document.getElementById('toolAccessTrail');
     if (trailEl) {
-      const current = Storage.getToolAccess();
+      const current = LocalSettings.getToolAccess();
       const opt = ACCESS_OPTIONS.find(o => o.id === current);
       if (opt) trailEl.childNodes[0].textContent = opt.label + ' ';
     }
@@ -246,8 +246,8 @@ export const BottomSheet = (() => {
     // Restore active project trail text on load
     const projTrailEl = document.getElementById('addToProjectTrail');
     if (projTrailEl) {
-      const activeId = Storage.getActiveProject();
-      const proj = activeId ? Storage.getProjects().find(p => p.id === activeId) : null;
+      const activeId = LocalSettings.getActiveProject();
+      const proj = activeId ? LocalSettings.getProjects().find(p => p.id === activeId) : null;
       if (proj) projTrailEl.childNodes[0].textContent = proj.name + ' ';
     }
   }

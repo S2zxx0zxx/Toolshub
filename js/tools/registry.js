@@ -4,7 +4,7 @@
    + pinned sidebar shortcuts + prompt cards
    ============================================ */
 
-import { Storage } from '../services/storage.js';
+import { LocalSettings } from '../services/localSettings.js';
 
 export const ToolSelector = (() => {
 
@@ -162,7 +162,7 @@ export const ToolSelector = (() => {
 
   function getPinned() {
     const pinned = [];
-    const enabledIds = window.Storage ? Storage.getEnabledCategories() : null;
+    const enabledIds = window.LocalSettings ? LocalSettings.getEnabledCategories() : null;
     DATA.forEach(cat => {
       if (enabledIds !== null && !enabledIds.includes(cat.id)) return;
       cat.tools.forEach(t => { if (t.pinned) pinned.push({ ...t, categoryId: cat.id }); });
@@ -191,7 +191,7 @@ export const ToolSelector = (() => {
     if (!el) return;
 
     // null means all enabled (default); otherwise filter to the saved id list
-    const enabledIds = window.Storage ? Storage.getEnabledCategories() : null;
+    const enabledIds = window.LocalSettings ? LocalSettings.getEnabledCategories() : null;
     const visible = enabledIds === null ? DATA : DATA.filter(c => enabledIds.includes(c.id));
 
     el.innerHTML = visible.map(cat => `
@@ -353,7 +353,7 @@ export const ToolSelector = (() => {
     renderPromptCards,
     // called by Manage Tools screen to persist + refresh selector
     setEnabledCategories(ids) {
-      if (window.Storage) Storage.setEnabledCategories(ids);
+      if (window.LocalSettings) LocalSettings.setEnabledCategories(ids);
       renderCategoryLevel();
       renderPins();
     },

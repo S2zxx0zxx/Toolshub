@@ -14,14 +14,20 @@ const urlsToCache = [
   '/js/core/events.js',
   '/js/core/state.js',
   '/js/core/router.js',
+  '/js/services/localSettings.js',
   '/js/services/storage.js',
+  '/js/services/firebase.js',
+  '/js/services/auth.js',
+  '/js/services/cloudDb.js',
   '/js/tools/registry.js',
   '/js/tools/utilityTools.js',
   '/js/tools/fileTools.js',
   '/js/ui/sidebar.js',
   '/js/ui/bottomsheet.js',
   '/js/ui/chatEngine.js',
-  '/js/ui/toast.js'
+  '/js/ui/toast.js',
+  '/js/ai/prompt.js',
+  '/js/services/aiApi.js'
 ];
 
 self.addEventListener('install', event => {

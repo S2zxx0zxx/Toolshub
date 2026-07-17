@@ -4,10 +4,13 @@
    send flow, chat lifecycle (new/load/save)
    ============================================ */
 
-import { Storage } from '../services/storage.js';
+import { LocalSettings } from '../services/localSettings.js';
+import { CloudDB } from '../services/cloudDb.js';
 import { ToolSelector } from '../tools/registry.js';
 import { Sidebar } from './sidebar.js';
 import { Toast } from './toast.js';
+import { PromptManager } from '../ai/prompt.js';
+import { aiApi } from '../services/aiApi.js';
 
 export const Chat = (() => {
   let currentChat = null; // { id, title, toolId, messages, createdAt, updatedAt }
@@ -24,37 +27,46 @@ export const Chat = (() => {
       messages: [],
       createdAt: Date.now(),
       updatedAt: Date.now(),
-      projectId: Storage.getActiveProject() || null,
+      projectId: LocalSettings.getActiveProject() || null,
     };
-    Storage.setActiveChatId(currentChat.id);
+    LocalSettings.setActiveChatId(currentChat.id);
     renderEmptyState();
     document.getElementById('chatTitle').textContent = 'New chat';
-    Sidebar.renderHistory();
   }
 
-  function loadChat(chatId) {
-    const chat = Storage.getChat(chatId);
-    if (!chat) return;
-    currentChat = chat;
-    Storage.setActiveChatId(chatId);
-    document.getElementById('chatTitle').textContent = chat.title;
+  async function loadChat(chatId, chatMetadata = null) {
+    // metadata is optional, used to populate title immediately
+    currentChat = {
+      id: chatId,
+      title: chatMetadata ? chatMetadata.title : 'Loading...',
+      toolId: chatMetadata ? chatMetadata.toolId : null,
+      messages: [],
+      createdAt: chatMetadata ? chatMetadata.createdAt : Date.now(),
+      updatedAt: chatMetadata ? chatMetadata.updatedAt : Date.now(),
+      projectId: chatMetadata ? chatMetadata.projectId : null,
+    };
+    LocalSettings.setActiveChatId(chatId);
+    document.getElementById('chatTitle').textContent = currentChat.title;
 
-    if (chat.toolId) ToolSelector.selectTool(chat.toolId, { silent: true });
+    if (currentChat.toolId) ToolSelector.selectTool(currentChat.toolId, { silent: true });
 
-    if (chat.messages.length === 0) {
+    renderEmptyState();
+    
+    const messages = await CloudDB.loadChatMessages(chatId);
+    currentChat.messages = messages;
+
+    if (currentChat.messages.length === 0) {
       renderEmptyState();
     } else {
       renderMessages();
     }
-    Sidebar.renderHistory();
   }
 
-  function assignProject(projectId) {
+  async function assignProject(projectId) {
     if (!currentChat) return;
     currentChat.projectId = projectId;
     currentChat.updatedAt = Date.now();
-    persist();
-    Sidebar.renderHistory();
+    await CloudDB.saveConversation(currentChat);
   }
 
   function renderEmptyState() {
@@ -130,7 +142,7 @@ export const Chat = (() => {
   }
 
   // ---------- SEND FLOW ----------
-  function sendMessage(text) {
+  async function sendMessage(text) {
     if (!text.trim()) return;
     if (!currentChat) newChat();
 
@@ -138,22 +150,41 @@ export const Chat = (() => {
     if (currentChat.messages.length === 0) {
       currentChat.title = text.slice(0, 48) + (text.length > 48 ? '…' : '');
       document.getElementById('chatTitle').textContent = currentChat.title;
+      await CloudDB.saveConversation(currentChat);
     }
 
-    currentChat.messages.push({ role: 'user', text, ts: Date.now() });
+    const userMsg = { id: 'msg_' + Date.now(), role: 'user', text, ts: Date.now() };
+    currentChat.messages.push(userMsg);
     currentChat.updatedAt = Date.now();
     renderMessages();
-    persist();
+    
+    // Save to Firestore
+    await CloudDB.saveMessage(currentChat.id, userMsg);
 
     showTypingIndicator();
-    // placeholder fake response — replace with real API call later
-    setTimeout(() => {
+
+    try {
+      // Build messages payload, filtering out errors
+      const validMessages = currentChat.messages.filter(m => !m.isError && m.text.trim().length > 0);
+      const messagesPayload = [
+        { role: 'system', content: PromptManager.getSystemPrompt() },
+        ...validMessages.map(m => ({ role: m.role, content: m.text }))
+      ];
+
+      const stream = aiApi.chatStream(messagesPayload);
+      await consumeStream(stream);
+    } catch (err) {
       hideTypingIndicator();
-      const activeTool = ToolSelector.getActiveTool();
-      const toolName = activeTool ? activeTool.tool.title : 'this tool';
-      const reply = `This is a placeholder response from ${toolName}. Connect your backend API here to generate real output.`;
-      streamAssistantReply(reply);
-    }, 900);
+      appendErrorMessage(err.message || "AI service temporarily unavailable.");
+    }
+  }
+
+  async function appendErrorMessage(errorText) {
+    const errMsg = { id: 'msg_' + Date.now(), role: 'assistant', text: `[Error] ${errorText}`, ts: Date.now(), isError: true };
+    currentChat.messages.push(errMsg);
+    currentChat.updatedAt = Date.now();
+    renderMessages();
+    await CloudDB.saveMessage(currentChat.id, errMsg);
   }
 
   function showTypingIndicator() {
@@ -182,8 +213,9 @@ export const Chat = (() => {
     document.getElementById('typingIndicator')?.remove();
   }
 
-  // fake typewriter streaming effect (real streaming plugs in here later)
-  function streamAssistantReply(fullText) {
+  async function consumeStream(streamGenerator) {
+    hideTypingIndicator();
+
     const activeTool = ToolSelector.getActiveTool();
     const toolId = activeTool ? activeTool.tool.id : null;
     
@@ -209,30 +241,38 @@ export const Chat = (() => {
     list.appendChild(el);
     const bubble = el.querySelector('.msg-bubble');
 
-    let i = 0;
-    const speed = 14; // ms per character
-    function tick() {
-      if (i <= fullText.length) {
-        bubble.textContent = fullText.slice(0, i);
-        currentChat.messages[msgIndex].text = fullText.slice(0, i);
-        scrollToBottom();
-        i += 2;
-        setTimeout(tick, speed);
-      } else {
+    let fullText = '';
+    
+    try {
+      for await (const chunk of streamGenerator) {
+        fullText += chunk;
         bubble.textContent = fullText;
-        currentChat.messages[msgIndex].text = fullText;
-        currentChat.updatedAt = Date.now();
-        persist();
-        renderMessages(); // re-render to attach action buttons on final state
+        scrollToBottom();
       }
+    } catch (err) {
+      fullText += `\n\n[Error: ${err.message}]`;
+      bubble.textContent = fullText;
+      currentChat.messages[msgIndex].isError = true;
     }
-    tick();
+
+    // Finalize UI
+    currentChat.messages[msgIndex].text = fullText;
+    currentChat.updatedAt = Date.now();
+    
+    // Save generated message to Firestore
+    await CloudDB.saveMessage(currentChat.id, currentChat.messages[msgIndex]);
+    
+    // Track usage (approximation for now, as tokenizer is backend-only typically)
+    const tokensCount = Math.floor(fullText.length / 4);
+    await CloudDB.trackUsage(tokensCount);
+    renderMessages(); // re-render to attach action buttons on final state
   }
 
-  function persist() {
-    if (currentChat) Storage.saveChat(currentChat);
-    Sidebar.renderHistory();
+  async function persist() {
+    if (currentChat) await CloudDB.saveConversation(currentChat);
+    await Sidebar.renderHistory();
   }
+
 
   function init() {
     const textarea = document.getElementById('inputTextarea');

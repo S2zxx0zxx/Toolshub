@@ -3,7 +3,7 @@
    Drawer open/close (mobile) + chat history list
    ============================================ */
 
-import { Storage } from '../services/storage.js';
+import { LocalSettings } from '../services/localSettings.js';
 
 export const Sidebar = (() => {
 
@@ -36,13 +36,13 @@ export const Sidebar = (() => {
     const container = document.getElementById('sidebarProjectsList');
     if (!container) return;
 
-    const projects = Storage.getProjects();
+    const projects = LocalSettings.getProjects();
     if (projects.length === 0) {
       container.innerHTML = '';
       return;
     }
 
-    const activeId = Storage.getActiveProject();
+    const activeId = LocalSettings.getActiveProject();
     let html = `<div class="sidebar-group-label">Projects</div>`;
     projects.forEach(p => {
       html += `<div class="chat-item ${p.id === activeId ? 'is-active' : ''}" data-project-id="${p.id}">
@@ -54,19 +54,30 @@ export const Sidebar = (() => {
 
     container.querySelectorAll('.chat-item').forEach(node => {
       node.addEventListener('click', () => {
-        Storage.setActiveProject(node.dataset.projectId);
+        LocalSettings.setActiveProject(node.dataset.projectId);
         renderProjects();
         renderHistory();
       });
     });
   }
 
+  let currentChats = [];
+
+  function setChats(chats) {
+    currentChats = chats;
+    renderHistory();
+  }
+
   function renderHistory() {
     const container = document.getElementById('chatHistoryGroups');
     if (!container) return;
 
-    let chats = Storage.getAllChats().sort((a, b) => b.updatedAt - a.updatedAt);
-    const activeProject = Storage.getActiveProject();
+    let chats = [...currentChats].sort((a, b) => {
+      const tsA = a.updatedAt?.toMillis ? a.updatedAt.toMillis() : a.updatedAt;
+      const tsB = b.updatedAt?.toMillis ? b.updatedAt.toMillis() : b.updatedAt;
+      return (tsB || 0) - (tsA || 0);
+    });
+    const activeProject = LocalSettings.getActiveProject();
     
     if (activeProject) {
       chats = chats.filter(c => c.projectId === activeProject);
@@ -77,9 +88,12 @@ export const Sidebar = (() => {
     }
 
     const groups = { Today: [], Yesterday: [], Older: [] };
-    chats.forEach(c => groups[groupLabel(c.updatedAt)].push(c));
+    chats.forEach(c => {
+      const ts = c.updatedAt?.toMillis ? c.updatedAt.toMillis() : c.updatedAt;
+      groups[groupLabel(ts || Date.now())].push(c);
+    });
 
-    const activeId = Storage.getActiveChatId();
+    const activeId = LocalSettings.getActiveChatId();
     let html = '';
     
     if (activeProject) {
@@ -102,14 +116,15 @@ export const Sidebar = (() => {
     container.querySelectorAll('.chat-item').forEach(node => {
       if (node.id === 'backToAllChats') {
         node.addEventListener('click', () => {
-          Storage.setActiveProject(null);
+          LocalSettings.setActiveProject(null);
           renderProjects();
           renderHistory();
         });
         return;
       }
       node.addEventListener('click', () => {
-        if (window.Chat) window.Chat.loadChat(node.dataset.chatId);
+        const chatData = chats.find(c => c.id === node.dataset.chatId);
+        if (window.Chat) window.Chat.loadChat(node.dataset.chatId, chatData);
         if (window.matchMedia('(max-width: 860px)').matches) close();
       });
     });
@@ -129,5 +144,5 @@ export const Sidebar = (() => {
     renderHistory();
   }
 
-  return { init, open, close, toggle, renderHistory, renderProjects };
+  return { init, open, close, toggle, renderHistory, renderProjects, setChats };
 })();

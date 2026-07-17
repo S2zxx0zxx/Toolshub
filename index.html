@@ -50,7 +50,7 @@
         <!-- populated by sidebar.js: Projects -->
       </div>
       <div class="sidebar-group" id="chatHistoryGroups">
-        <!-- populated by storage.js: Today / Yesterday / Older -->
+        <!-- populated by localSettings.js: Today / Yesterday / Older -->
       </div>
     </div>
 
@@ -195,6 +195,10 @@
             <button class="list-row" id="installAppRow" style="display:none;">
               <div class="list-row-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg></div>
               <div class="list-row-body"><div class="list-row-title">Install App</div></div>
+            </button>
+            <button class="list-row" id="logoutRow" style="color: var(--danger, #ff4d4f);">
+              <div class="list-row-icon" style="color: var(--danger, #ff4d4f);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg></div>
+              <div class="list-row-body"><div class="list-row-title">Log out</div></div>
             </button>
           </div>
 
@@ -496,5 +500,25 @@
 <script src="https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js" integrity="sha384-weMABwrltA6jWR8DDe9Jp5blk+tZQh7ugpCsF3JwSA53WZM9/14PjS5LAJNHNjAI" crossorigin="anonymous"></script>
 
 <script type="module" src="js/core/app.js"></script>
+<!-- ============ AUTH OVERLAY ============ -->
+<div id="authOverlay" style="display: flex; position: fixed; top:0; left:0; right:0; bottom:0; background: var(--bg-primary); z-index: 9999; align-items: center; justify-content: center;">
+  <div style="width:100%; max-width:400px; padding: 24px; display:flex; flex-direction:column; gap: 16px;">
+    <h2 style="text-align:center; font-family:var(--font-display); font-size: 28px; margin-bottom: 8px;">ToolsHub</h2>
+    
+    <div style="display:flex; flex-direction:column; gap:12px;">
+      <input type="text" id="authName" placeholder="Display Name" style="display:none; min-height:44px; border-radius:8px; border:1px solid var(--border-color); padding: 8px 12px; font-size:15px; background:var(--bg-secondary); color:var(--text-primary); outline:none;">
+      <input type="email" id="authEmail" placeholder="Email" style="min-height:44px; border-radius:8px; border:1px solid var(--border-color); padding: 8px 12px; font-size:15px; background:var(--bg-secondary); color:var(--text-primary); outline:none;">
+      <input type="password" id="authPassword" placeholder="Password" style="min-height:44px; border-radius:8px; border:1px solid var(--border-color); padding: 8px 12px; font-size:15px; background:var(--bg-secondary); color:var(--text-primary); outline:none;">
+      
+      <button id="authSubmitBtn" style="background:var(--accent); color:#fff; border:none; padding:12px; border-radius:8px; font-weight:600; font-size:15px; cursor:pointer; margin-top:8px;">Sign In</button>
+      
+      <div style="text-align:center; margin-top:16px; font-size:14px; color:var(--text-secondary);">
+        <span id="authToggleText">Don't have an account?</span> 
+        <a href="#" id="authToggleBtn" style="color:var(--accent); text-decoration:none; font-weight:500;">Sign up</a>
+      </div>
+    </div>
+  </div>
+</div>
+
 </body>
 </html>

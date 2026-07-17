@@ -4,13 +4,15 @@
    upgrade sheet, logout confirm, manage tools,
    profile, billing — app bootstrap.
    ============================================ */
-import { Storage } from '../services/storage.js';
+import { LocalSettings } from '../services/localSettings.js';
 import { Toast } from '../ui/toast.js';
 import { Sidebar } from '../ui/sidebar.js';
 import { BottomSheet } from '../ui/bottomsheet.js';
 import { Chat } from '../ui/chatEngine.js';
 import { ToolSelector } from '../tools/registry.js';
 import { Router } from './router.js';
+import { Auth } from '../services/auth.js';
+import { CloudDB } from '../services/cloudDb.js';
 
 const Settings = (() => {
 
@@ -28,7 +30,7 @@ const Settings = (() => {
   function applyTheme(theme) {
     document.documentElement.dataset.theme = theme;
     document.getElementById('themeLabel').textContent = theme === 'dark' ? 'Dark' : 'Light';
-    Storage.setTheme(theme);
+    LocalSettings.setTheme(theme);
   }
 
   function toggleTheme() {
@@ -48,7 +50,7 @@ const Settings = (() => {
   // PROFILE SCREEN
   // =========================================================
   function openProfile() {
-    const profile = Storage.getProfile();
+    const profile = LocalSettings.getProfile();
     // Populate fields
     const nameInput  = document.getElementById('profileNameInput');
     const emailInput = document.getElementById('profileEmailInput');
@@ -76,7 +78,7 @@ const Settings = (() => {
     const email = emailInput?.value.trim() || '';
     if (!name) return;
 
-    Storage.setProfile({ name, email });
+    LocalSettings.setProfile({ name, email });
 
     // Live-update sidebar and settings email
     const sidebarName = document.querySelector('.sidebar-user-name');
@@ -126,7 +128,7 @@ const Settings = (() => {
   function updateManageToolsSubtitle() {
     const sub = document.querySelector('#manageToolsRow .list-row-subtitle');
     if (!sub) return;
-    const enabledIds = Storage.getEnabledCategories();
+    const enabledIds = LocalSettings.getEnabledCategories();
     const count = enabledIds === null ? ToolSelector.DATA.length : enabledIds.length;
     sub.textContent = `${count} ${count === 1 ? 'category' : 'categories'} enabled`;
   }
@@ -140,7 +142,7 @@ const Settings = (() => {
     const container = document.getElementById('manageToolsList');
     if (!container) return;
 
-    const enabledIds = Storage.getEnabledCategories();
+    const enabledIds = LocalSettings.getEnabledCategories();
     // null = all enabled
     const enabledSet = enabledIds ? new Set(enabledIds) : new Set(ToolSelector.DATA.map(c => c.id));
 
@@ -197,21 +199,17 @@ const Settings = (() => {
   // =========================================================
   // LOGOUT CONFIRM SHEET
   // =========================================================
-  function openLogoutSheet() {
-    openOverlay(document.getElementById('logoutSheetOverlay'));
-  }
-  function closeLogoutSheet() {
-    closeOverlay(document.getElementById('logoutSheetOverlay'));
-  }
-
-  function confirmLogout() {
-    Storage.clearAll();
-    closeLogoutSheet();
-    // Reset theme to dark (default)
-    document.documentElement.dataset.theme = 'dark';
-    // Brief toast then reload
-    Toast.show('Logged out. See you soon!');
-    setTimeout(() => location.reload(), 1400);
+  async function confirmLogout() {
+    if (!confirm("Are you sure you want to log out?")) return;
+    try {
+      await Auth.logout();
+      LocalSettings.clearAll();
+      document.documentElement.dataset.theme = 'dark';
+      Toast.show('Logged out. See you soon!');
+      setTimeout(() => location.reload(), 1400);
+    } catch (err) {
+      Toast.show('Failed to log out.');
+    }
   }
 
   // =========================================================
@@ -224,10 +222,10 @@ const Settings = (() => {
     document.getElementById('themeToggleRow')?.addEventListener('click', toggleTheme);
 
     // Restore saved theme
-    applyTheme(Storage.getTheme());
+    applyTheme(LocalSettings.getTheme());
 
     // Restore profile display name in sidebar
-    const profile = Storage.getProfile();
+    const profile = LocalSettings.getProfile();
     const sidebarName = document.querySelector('.sidebar-user-name');
     if (sidebarName) sidebarName.textContent = profile.name;
     const settingsEmail = document.querySelector('.settings-account-email');
@@ -246,6 +244,9 @@ const Settings = (() => {
     document.getElementById('upgradeBtn')?.addEventListener('click', openUpgradeSheet);
     document.getElementById('billingUpgradeBtn')?.addEventListener('click', openUpgradeSheet);
     document.getElementById('upgradeSheetCloseBtn')?.addEventListener('click', closeUpgradeSheet);
+
+    // ---- Logout button ----
+    document.getElementById('logoutRow')?.addEventListener('click', confirmLogout);
     document.getElementById('upgradeSheetOverlay')?.addEventListener('click', e => {
       if (e.target.id === 'upgradeSheetOverlay') closeUpgradeSheet();
     });
@@ -358,4 +359,84 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // always show empty state with no tool selected on fresh load
   Chat.newChat();
+
+  // ---------- AUTHENTICATION UI ----------
+  let isSignupMode = false;
+  const authOverlay = document.getElementById('authOverlay');
+  const authEmail = document.getElementById('authEmail');
+  const authPassword = document.getElementById('authPassword');
+  const authName = document.getElementById('authName');
+  const authSubmitBtn = document.getElementById('authSubmitBtn');
+  const authToggleBtn = document.getElementById('authToggleBtn');
+  const authToggleText = document.getElementById('authToggleText');
+
+  authToggleBtn.addEventListener('click', (e) => {
+    e.preventDefault();
+    isSignupMode = !isSignupMode;
+    authName.style.display = isSignupMode ? 'block' : 'none';
+    authSubmitBtn.textContent = isSignupMode ? 'Sign Up' : 'Sign In';
+    authToggleText.textContent = isSignupMode ? 'Already have an account?' : "Don't have an account?";
+    authToggleBtn.textContent = isSignupMode ? 'Sign in' : 'Sign up';
+  });
+
+  authSubmitBtn.addEventListener('click', async () => {
+    const email = authEmail.value.trim();
+    const pass = authPassword.value;
+    const name = authName.value.trim();
+
+    if (!email || !pass || (isSignupMode && !name)) {
+      Toast.show('Please fill in all fields.');
+      return;
+    }
+
+    try {
+      authSubmitBtn.disabled = true;
+      authSubmitBtn.textContent = 'Processing...';
+      if (isSignupMode) {
+        await Auth.signup(email, pass, name);
+      } else {
+        await Auth.login(email, pass);
+      }
+    } catch (err) {
+      Toast.show(err.message || 'Authentication failed.');
+      authSubmitBtn.disabled = false;
+      authSubmitBtn.textContent = isSignupMode ? 'Sign Up' : 'Sign In';
+    }
+  });
+
+  Auth.onAuthStateChanged(user => {
+    if (user) {
+      // User is logged in
+      authOverlay.style.display = 'none';
+      const name = user.displayName || user.email.split('@')[0];
+      const initial = name.charAt(0).toUpperCase();
+      
+      const avatarEl = document.querySelector('.sidebar-avatar');
+      const nameEl = document.querySelector('.sidebar-user-name');
+      const settingsAvatarEl = document.querySelector('.settings-avatar-lg');
+      const settingsEmailEl = document.querySelector('.settings-account-email');
+      
+      if (avatarEl) avatarEl.textContent = initial;
+      if (nameEl) nameEl.textContent = name;
+      if (settingsAvatarEl) settingsAvatarEl.textContent = initial;
+      if (settingsEmailEl) settingsEmailEl.textContent = user.email;
+      
+      Toast.show(`Welcome, ${name}!`);
+
+      // Migrate local chats if any
+      CloudDB.migrateLocalChats().then(() => {
+        // Subscribe to real-time chats for sidebar
+        CloudDB.subscribeConversations((chats) => {
+          Sidebar.setChats(chats);
+        });
+      });
+      
+    } else {
+      // User logged out
+      authOverlay.style.display = 'flex';
+      authSubmitBtn.disabled = false;
+      authSubmitBtn.textContent = isSignupMode ? 'Sign Up' : 'Sign In';
+      Sidebar.setChats([]); // clear sidebar
+    }
+  });
 });
