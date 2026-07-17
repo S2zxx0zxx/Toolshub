@@ -139,6 +139,8 @@
               </div>
             </div>
           </div>
+          <!-- Bug 1 fix: AI status indicator — updated by JS on load and after key save -->
+          <div id="aiStatusIndicator" style="text-align:center;padding:4px 0 2px;font-size:11px;opacity:0.75;cursor:default;" title="Go to Settings → API Keys to connect Groq">🔴 AI: Demo mode</div>
         </div>
       </div>
 
@@ -319,9 +321,10 @@
             <div class="settings-group">
               <div class="settings-group-label">Groq AI Provider</div>
               <div class="field-group" style="padding:var(--sp-4);background:var(--bg-surface);border-radius:var(--r-lg);border:1px solid var(--border-subtle);">
-                <div>
+                <div style="position:relative;">
                   <label class="field-label" for="groqApiKeyInput">GROQ API KEY</label>
-                  <input class="field-input" id="groqApiKeyInput" type="password" placeholder="gsk_..." autocomplete="off">
+                  <input class="field-input" id="groqApiKeyInput" type="password" placeholder="gsk_..." autocomplete="off" style="padding-right:44px;">
+                  <button type="button" id="groqKeyToggle" title="Show/hide key" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--text-muted);padding:4px;" onclick="const i=document.getElementById('groqApiKeyInput');i.type=i.type==='password'?'text':'password';">👁</button>
                 </div>
               </div>
             </div>

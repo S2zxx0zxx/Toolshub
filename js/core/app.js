@@ -152,8 +152,28 @@ const Settings = (() => {
       else localStorage.removeItem('TAVILY_API_KEY');
     }
     
-    Toast.show('API Keys saved to your browser.');
+    // Validate the Groq key and show AI status
+    const groqKey = localStorage.getItem('GROQ_API_KEY');
+    if (groqKey) {
+      if (!groqKey.startsWith('gsk_') || groqKey.length < 20) {
+        Toast.show('⚠️ Key format looks wrong — Groq keys start with gsk_');
+      } else {
+        Toast.show('✅ Groq API key saved. AI mode: Connected.');
+      }
+    } else {
+      Toast.show('API keys cleared. AI mode: Demo (mock responses).');
+    }
+    updateAiStatusIndicator();
     closeSubScreen('screenApiKeys');
+  }
+
+  function updateAiStatusIndicator() {
+    const indicator = document.getElementById('aiStatusIndicator');
+    if (!indicator) return;
+    const hasKey = !!localStorage.getItem('GROQ_API_KEY');
+    indicator.textContent = hasKey ? '🟢 AI: Connected' : '🔴 AI: Demo mode';
+    indicator.title = hasKey ? 'Groq API key is set — real AI responses active.' : 'No Groq key set — showing simulated responses. Go to Settings → API Keys.';
+    indicator.style.color = hasKey ? 'var(--accent, #7c5cfc)' : 'var(--text-muted)';
   }
 
   // =========================================================
@@ -251,16 +271,31 @@ const Settings = (() => {
   // =========================================================
   function initPullToRefresh() {
     let startY = 0;
+    let startX = 0;
     let currentY = 0;
     let isPulling = false;
+    let ptrCoolingDown = false; // debounce: ignore rapid repeat gestures
+    const TRIGGER_THRESHOLD = 160; // px — raised from 120 to require deliberate gesture
     const pwaContainer = document.querySelector('.main-col');
     const indicator = document.getElementById('ptr-indicator');
     if (!pwaContainer || !indicator) return;
 
+    function resetState() {
+      isPulling = false;
+      startY = 0;
+      startX = 0;
+      currentY = 0;
+      indicator.style.transform = '';
+      indicator.classList.remove('is-visible', 'is-refreshing');
+    }
+
     pwaContainer.addEventListener('touchstart', e => {
-      if (pwaContainer.scrollTop <= 0) {
+      // Only begin tracking if we're at scroll top AND not cooling down from a previous gesture
+      if (pwaContainer.scrollTop <= 5 && !ptrCoolingDown) {
         startY = e.touches[0].clientY;
+        startX = e.touches[0].clientX;
         isPulling = true;
+        currentY = startY;
       }
     }, { passive: true });
 
@@ -268,12 +303,22 @@ const Settings = (() => {
       if (!isPulling) return;
       currentY = e.touches[0].clientY;
       const pullDistance = currentY - startY;
+      const horizDistance = Math.abs(e.touches[0].clientX - startX);
 
-      if (pullDistance > 0 && pwaContainer.scrollTop <= 0) {
+      // Bug 3 fix: require vertical intent to be at least 2x horizontal movement
+      // This prevents diagonal scrolls from triggering PTR
+      if (horizDistance > pullDistance * 0.5 && pullDistance < 30) {
+        // Looks like a horizontal swipe — abort PTR tracking
+        resetState();
+        return;
+      }
+
+      if (pullDistance > 0 && pwaContainer.scrollTop <= 5) {
         indicator.classList.add('is-visible');
-        const transformY = Math.min(pullDistance * 0.4, 60);
+        const transformY = Math.min(pullDistance * 0.4, 70);
         indicator.style.transform = `translateY(${transformY}px)`;
-        if (pullDistance > 120) {
+        // Visual cue: show "release to refresh" only past threshold
+        if (pullDistance > TRIGGER_THRESHOLD) {
           indicator.classList.add('is-refreshing');
         } else {
           indicator.classList.remove('is-refreshing');
@@ -283,15 +328,47 @@ const Settings = (() => {
 
     pwaContainer.addEventListener('touchend', () => {
       if (!isPulling) return;
-      isPulling = false;
       const pullDistance = currentY - startY;
       
-      indicator.style.transform = '';
-      if (pullDistance > 120) {
+      if (pullDistance > TRIGGER_THRESHOLD) {
+        // Require explicit confirmation before reloading — never auto-erase in-progress chat
         indicator.classList.add('is-refreshing');
-        setTimeout(() => location.reload(), 600); // Reload after showing spinner briefly
+        Toast.show('Pull again to refresh app', 3000);
+        // 2-second cooldown — user must do a second deliberate pull to confirm
+        ptrCoolingDown = true;
+        setTimeout(() => {
+          ptrCoolingDown = false;
+          resetState();
+        }, 2500);
+        isPulling = false;
+        currentY = 0;
       } else {
-        indicator.classList.remove('is-visible');
+        resetState();
+      }
+    }, { passive: true });
+
+    // Second-pull confirmation: if user pulls again within the cooldown window, reload
+    // We implement this by checking a flag set by the "tap to reload" toast path instead.
+    // The actual reload is only triggered by the explicit "Update available" toast action
+    // OR a second pull-down gesture while ptrCoolingDown is still true.
+    pwaContainer.addEventListener('touchstart', e => {
+      if (ptrCoolingDown && pwaContainer.scrollTop <= 5) {
+        const y = e.touches[0].clientY;
+        // Store for second-pull detection
+        pwaContainer._ptrConfirmY = y;
+      }
+    }, { passive: true });
+    pwaContainer.addEventListener('touchend', e => {
+      if (ptrCoolingDown && pwaContainer._ptrConfirmY) {
+        const dist = (e.changedTouches[0]?.clientY || 0) - pwaContainer._ptrConfirmY;
+        if (dist > 80) {
+          ptrCoolingDown = false;
+          pwaContainer._ptrConfirmY = null;
+          indicator.classList.add('is-refreshing');
+          setTimeout(() => location.reload(), 400);
+        } else {
+          pwaContainer._ptrConfirmY = null;
+        }
       }
     }, { passive: true });
   }
@@ -308,6 +385,9 @@ const Settings = (() => {
 
     // Restore saved theme
     applyTheme(LocalSettings.getTheme());
+
+    // Set AI status indicator on load
+    updateAiStatusIndicator();
 
     // Restore profile display name in sidebar
     const profile = LocalSettings.getProfile();
@@ -575,4 +655,8 @@ document.addEventListener('DOMContentLoaded', async () => {
       });
     }
   });
+
+  // Bug 2: Handle Google redirect sign-in result (fires after user returns from Google OAuth page)
+  // This is safe to call on every page load; it's a no-op when no redirect happened.
+  Auth.handleRedirectResult().catch(e => console.warn('Redirect result error:', e));
 });

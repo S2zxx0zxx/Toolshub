@@ -52,36 +52,54 @@ export const Auth = (() => {
     }
   }
 
+  // Shared helper: upsert a user's Firestore profile document after any sign-in method
+  async function upsertUserProfile(user) {
+    if (!db || !fbFirestoreModule) return;
+    const userRef = fbFirestoreModule.doc(db, 'users', user.uid);
+    const snap = await fbFirestoreModule.getDoc(userRef);
+    if (!snap.exists()) {
+      await fbFirestoreModule.setDoc(userRef, {
+        uid: user.uid,
+        email: user.email,
+        displayName: user.displayName || user.email?.split('@')[0] || 'User',
+        photoURL: user.photoURL || null,
+        createdAt: fbFirestoreModule.serverTimestamp(),
+        updatedAt: fbFirestoreModule.serverTimestamp(),
+        role: "user",
+        plan: "free",
+        credits: 0
+      });
+    }
+  }
+
   async function signInWithGoogle() {
     if (!firebaseAuth || !fbAuthModule) throw new Error("Firebase Auth is disabled or misconfigured.");
     try {
       const provider = new fbAuthModule.GoogleAuthProvider();
-      const userCredential = await fbAuthModule.signInWithPopup(firebaseAuth, provider);
-      const user = userCredential.user;
-      
-      // Upsert user profile
-      if (db && fbFirestoreModule) {
-        const userRef = fbFirestoreModule.doc(db, 'users', user.uid);
-        const snap = await fbFirestoreModule.getDoc(userRef);
-        if (!snap.exists()) {
-          await fbFirestoreModule.setDoc(userRef, {
-            uid: user.uid,
-            email: user.email,
-            displayName: user.displayName || user.email.split('@')[0],
-            photoURL: user.photoURL || null,
-            createdAt: fbFirestoreModule.serverTimestamp(),
-            updatedAt: fbFirestoreModule.serverTimestamp(),
-            role: "user",
-            plan: "free",
-            credits: 0
-          });
-        }
-      }
-      return user;
+      // Use redirect (not popup) — popup is unreliable on mobile Chrome and gets blocked.
+      // The page will navigate away to Google and back; onAuthStateChanged handles the result.
+      await fbAuthModule.signInWithRedirect(firebaseAuth, provider);
+      // Note: execution does NOT continue here — the page navigates away.
     } catch (error) {
       console.error("Google Sign In error:", error);
       throw error;
     }
+  }
+
+  // Call this once on app init to collect the result of a completed redirect sign-in.
+  async function handleRedirectResult() {
+    if (!firebaseAuth || !fbAuthModule) return null;
+    try {
+      const result = await fbAuthModule.getRedirectResult(firebaseAuth);
+      if (result && result.user) {
+        await upsertUserProfile(result.user);
+        return result.user;
+      }
+    } catch (error) {
+      // Silently ignore — common on first load when no redirect happened
+      console.warn("getRedirectResult:", error.code || error.message);
+    }
+    return null;
   }
 
   function getCurrentUser() {
@@ -115,6 +133,7 @@ export const Auth = (() => {
     login,
     logout,
     signInWithGoogle,
+    handleRedirectResult,
     getCurrentUser,
     onAuthStateChanged,
     getUserProfile
