@@ -422,6 +422,11 @@ export const Chat = (() => {
       if (window.matchMedia('(max-width: 860px)').matches) Sidebar.close();
     });
 
+    document.getElementById('homeLogoBtn')?.addEventListener('click', () => {
+      newChat();
+      if (window.matchMedia('(max-width: 860px)').matches) Sidebar.close();
+    });
+
     // prompt card clicks feed the input
     document.getElementById('promptCards')?.addEventListener('click', (e) => {
       const card = e.target.closest('.prompt-card');
