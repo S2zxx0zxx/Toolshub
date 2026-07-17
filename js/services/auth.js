@@ -1,33 +1,23 @@
-import { 
-  createUserWithEmailAndPassword, 
-  signInWithEmailAndPassword, 
-  signOut, 
-  onAuthStateChanged as firebaseOnAuthStateChanged,
-  updateProfile,
-  signInWithPopup,
-  GoogleAuthProvider
-} from 'https://www.gstatic.com/firebasejs/10.9.0/firebase-auth.js';
-import { doc, setDoc, serverTimestamp, getDoc } from 'https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js';
-import { auth as firebaseAuth, db } from './firebase.js';
+import { auth as firebaseAuth, db, fbAuthModule, fbFirestoreModule } from './firebase.js';
 
 export const Auth = (() => {
 
   async function signup(email, password, displayName) {
-    if (!firebaseAuth) throw new Error("Firebase Auth is disabled or misconfigured.");
+    if (!firebaseAuth || !fbAuthModule) throw new Error("Firebase Auth is disabled or misconfigured.");
     try {
-      const userCredential = await createUserWithEmailAndPassword(firebaseAuth, email, password);
+      const userCredential = await fbAuthModule.createUserWithEmailAndPassword(firebaseAuth, email, password);
       const user = userCredential.user;
       
-      await updateProfile(user, { displayName });
+      await fbAuthModule.updateProfile(user, { displayName });
 
-      if (db) {
-        await setDoc(doc(db, 'users', user.uid), {
+      if (db && fbFirestoreModule) {
+        await fbFirestoreModule.setDoc(fbFirestoreModule.doc(db, 'users', user.uid), {
           uid: user.uid,
           email: user.email,
           displayName: displayName,
           photoURL: user.photoURL || null,
-          createdAt: serverTimestamp(),
-          updatedAt: serverTimestamp(),
+          createdAt: fbFirestoreModule.serverTimestamp(),
+          updatedAt: fbFirestoreModule.serverTimestamp(),
           role: "user",
           plan: "free",
           credits: 0
@@ -42,9 +32,9 @@ export const Auth = (() => {
   }
 
   async function login(email, password) {
-    if (!firebaseAuth) throw new Error("Firebase Auth is disabled or misconfigured.");
+    if (!firebaseAuth || !fbAuthModule) throw new Error("Firebase Auth is disabled or misconfigured.");
     try {
-      const userCredential = await signInWithEmailAndPassword(firebaseAuth, email, password);
+      const userCredential = await fbAuthModule.signInWithEmailAndPassword(firebaseAuth, email, password);
       return userCredential.user;
     } catch (error) {
       console.error("Login error:", error);
@@ -53,9 +43,9 @@ export const Auth = (() => {
   }
 
   async function logout() {
-    if (!firebaseAuth) return;
+    if (!firebaseAuth || !fbAuthModule) return;
     try {
-      await signOut(firebaseAuth);
+      await fbAuthModule.signOut(firebaseAuth);
     } catch (error) {
       console.error("Logout error:", error);
       throw error;
@@ -63,24 +53,24 @@ export const Auth = (() => {
   }
 
   async function signInWithGoogle() {
-    if (!firebaseAuth) throw new Error("Firebase Auth is disabled or misconfigured.");
+    if (!firebaseAuth || !fbAuthModule) throw new Error("Firebase Auth is disabled or misconfigured.");
     try {
-      const provider = new GoogleAuthProvider();
-      const userCredential = await signInWithPopup(firebaseAuth, provider);
+      const provider = new fbAuthModule.GoogleAuthProvider();
+      const userCredential = await fbAuthModule.signInWithPopup(firebaseAuth, provider);
       const user = userCredential.user;
       
       // Upsert user profile
-      if (db) {
-        const userRef = doc(db, 'users', user.uid);
-        const snap = await getDoc(userRef);
+      if (db && fbFirestoreModule) {
+        const userRef = fbFirestoreModule.doc(db, 'users', user.uid);
+        const snap = await fbFirestoreModule.getDoc(userRef);
         if (!snap.exists()) {
-          await setDoc(userRef, {
+          await fbFirestoreModule.setDoc(userRef, {
             uid: user.uid,
             email: user.email,
             displayName: user.displayName || user.email.split('@')[0],
             photoURL: user.photoURL || null,
-            createdAt: serverTimestamp(),
-            updatedAt: serverTimestamp(),
+            createdAt: fbFirestoreModule.serverTimestamp(),
+            updatedAt: fbFirestoreModule.serverTimestamp(),
             role: "user",
             plan: "free",
             credits: 0
@@ -99,17 +89,17 @@ export const Auth = (() => {
   }
 
   function onAuthStateChanged(callback) {
-    if (!firebaseAuth) {
+    if (!firebaseAuth || !fbAuthModule) {
       callback(null);
       return () => {};
     }
-    return firebaseOnAuthStateChanged(firebaseAuth, callback);
+    return fbAuthModule.onAuthStateChanged(firebaseAuth, callback);
   }
 
   async function getUserProfile(uid) {
-    if (!db) return null;
+    if (!db || !fbFirestoreModule) return null;
     try {
-      const docSnap = await getDoc(doc(db, 'users', uid));
+      const docSnap = await fbFirestoreModule.getDoc(fbFirestoreModule.doc(db, 'users', uid));
       if (docSnap.exists()) {
         return docSnap.data();
       }

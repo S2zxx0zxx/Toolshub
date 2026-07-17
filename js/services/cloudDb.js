@@ -1,9 +1,5 @@
-import { db } from './firebase.js';
+import { db, fbFirestoreModule } from './firebase.js';
 import { Auth } from './auth.js';
-import { 
-  collection, doc, setDoc, getDocs, query, orderBy, 
-  onSnapshot, serverTimestamp, deleteDoc, increment 
-} from 'https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js';
 
 export const CloudDB = (() => {
   let conversationsUnsubscribe = null;
@@ -15,17 +11,17 @@ export const CloudDB = (() => {
 
   function subscribeConversations(callback) {
     const uid = _uid();
-    if (!uid) { callback([]); return; }
+    if (!uid || !db || !fbFirestoreModule) { callback([]); return; }
     
     if (conversationsUnsubscribe) conversationsUnsubscribe();
     
     try {
-      const q = query(
-        collection(db, `users/${uid}/conversations`), 
-        orderBy('updatedAt', 'desc')
+      const q = fbFirestoreModule.query(
+        fbFirestoreModule.collection(db, `users/${uid}/conversations`), 
+        fbFirestoreModule.orderBy('updatedAt', 'desc')
       );
       
-      conversationsUnsubscribe = onSnapshot(q, (snapshot) => {
+      conversationsUnsubscribe = fbFirestoreModule.onSnapshot(q, (snapshot) => {
         const chats = [];
         snapshot.forEach(doc => {
           chats.push({ id: doc.id, ...doc.data() });
@@ -40,14 +36,14 @@ export const CloudDB = (() => {
 
   async function loadChatMessages(chatId) {
     const uid = _uid();
-    if (!uid) return [];
+    if (!uid || !db || !fbFirestoreModule) return [];
     
     try {
-      const q = query(
-        collection(db, `users/${uid}/conversations/${chatId}/messages`),
-        orderBy('timestamp', 'asc')
+      const q = fbFirestoreModule.query(
+        fbFirestoreModule.collection(db, `users/${uid}/conversations/${chatId}/messages`),
+        fbFirestoreModule.orderBy('timestamp', 'asc')
       );
-      const snap = await getDocs(q);
+      const snap = await fbFirestoreModule.getDocs(q);
       const messages = [];
       snap.forEach(doc => {
         const data = doc.data();
@@ -69,17 +65,17 @@ export const CloudDB = (() => {
 
   async function saveConversation(chat) {
     const uid = _uid();
-    if (!uid) return;
+    if (!uid || !db || !fbFirestoreModule) return;
     
     try {
       const { id, title, toolId, projectId } = chat;
-      const convRef = doc(db, `users/${uid}/conversations`, id);
+      const convRef = fbFirestoreModule.doc(db, `users/${uid}/conversations`, id);
       
-      await setDoc(convRef, {
+      await fbFirestoreModule.setDoc(convRef, {
         title: title || 'New chat',
         toolId: toolId || null,
         projectId: projectId || null,
-        updatedAt: serverTimestamp()
+        updatedAt: fbFirestoreModule.serverTimestamp()
       }, { merge: true });
     } catch (e) {
       console.warn("CloudDB saveConversation failed:", e);
@@ -88,24 +84,24 @@ export const CloudDB = (() => {
 
   async function saveMessage(chatId, message) {
     const uid = _uid();
-    if (!uid) return;
+    if (!uid || !db || !fbFirestoreModule) return;
     
     try {
       const msgId = message.id || ('msg_' + Date.now() + '_' + Math.random().toString(36).substr(2,5));
       message.id = msgId;
       
-      await setDoc(doc(db, `users/${uid}/conversations/${chatId}/messages`, msgId), {
+      await fbFirestoreModule.setDoc(fbFirestoreModule.doc(db, `users/${uid}/conversations/${chatId}/messages`, msgId), {
         role: message.role,
         content: message.text || '',
-        timestamp: serverTimestamp(),
+        timestamp: fbFirestoreModule.serverTimestamp(),
         model: message.model || 'llama-3.3-70b-versatile',
         tokensUsed: message.tokensUsed || 0,
         toolId: message.toolId || null,
         isError: message.isError || false
       });
 
-      await setDoc(doc(db, `users/${uid}/conversations`, chatId), {
-        updatedAt: serverTimestamp(),
+      await fbFirestoreModule.setDoc(fbFirestoreModule.doc(db, `users/${uid}/conversations`, chatId), {
+        updatedAt: fbFirestoreModule.serverTimestamp(),
         lastMessage: message.text ? message.text.slice(0, 100) : ''
       }, { merge: true });
     } catch (e) {
@@ -114,29 +110,30 @@ export const CloudDB = (() => {
   }
 
   async function deleteConversation(chatId) {
-    await deleteDoc(doc(db, `users/${_uid()}/conversations`, chatId));
+    if (!db || !fbFirestoreModule) return;
+    await fbFirestoreModule.deleteDoc(fbFirestoreModule.doc(db, `users/${_uid()}/conversations`, chatId));
   }
   
   async function trackUsage(tokensCount) {
-    if (!tokensCount) return;
-    const usageRef = doc(db, `users/${_uid()}/usage`, 'current');
-    await setDoc(usageRef, {
-      requestsToday: increment(1),
-      tokensUsed: increment(tokensCount),
-      lastRequest: serverTimestamp(),
-      updatedAt: serverTimestamp()
+    if (!tokensCount || !db || !fbFirestoreModule) return;
+    const usageRef = fbFirestoreModule.doc(db, `users/${_uid()}/usage`, 'current');
+    await fbFirestoreModule.setDoc(usageRef, {
+      requestsToday: fbFirestoreModule.increment(1),
+      tokensUsed: fbFirestoreModule.increment(tokensCount),
+      lastRequest: fbFirestoreModule.serverTimestamp(),
+      updatedAt: fbFirestoreModule.serverTimestamp()
     }, { merge: true });
   }
 
   async function logToolExecution(metadata) {
-    if (!metadata) return;
+    if (!metadata || !db || !fbFirestoreModule) return;
     try {
-      const toolRef = doc(collection(db, `users/${_uid()}/toolHistory`));
-      await setDoc(toolRef, {
+      const toolRef = fbFirestoreModule.doc(fbFirestoreModule.collection(db, `users/${_uid()}/toolHistory`));
+      await fbFirestoreModule.setDoc(toolRef, {
         toolId: metadata.toolId,
         executionTime: metadata.executionTime,
         version: metadata.version || '1.0',
-        timestamp: serverTimestamp()
+        timestamp: fbFirestoreModule.serverTimestamp()
       });
     } catch (e) {
       console.warn("Failed to log tool execution:", e);

@@ -13,6 +13,7 @@ import { ToolSelector } from '../tools/registry.js';
 import { Router } from './router.js';
 import { Auth } from '../services/auth.js';
 import { CloudDB } from '../services/cloudDb.js';
+import { initFirebase } from '../services/firebase.js';
 
 const Settings = (() => {
 
@@ -349,7 +350,7 @@ const PWA = (() => {
 })();
 
 /* ---------- APP BOOTSTRAP ---------- */
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
   PWA.init();
   ToolSelector.init();
   Sidebar.init();
@@ -359,6 +360,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // always show empty state with no tool selected on fresh load
   Chat.newChat();
+
+  // Initialize Firebase dynamically to avoid network-blocking module crashes
+  await initFirebase();
 
   // ---------- AUTHENTICATION UI ----------
   let isSignupMode = false;

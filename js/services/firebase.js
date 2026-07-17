@@ -1,9 +1,9 @@
-import { initializeApp, getApps, getApp } from 'https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js';
-import { getAuth } from 'https://www.gstatic.com/firebasejs/10.9.0/firebase-auth.js';
-import { getFirestore, enableIndexedDbPersistence } from 'https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js';
-import { getStorage } from 'https://www.gstatic.com/firebasejs/10.9.0/firebase-storage.js';
+let app = null;
+let auth = null;
+let db = null;
+let storage = null;
+let isInitialized = false;
 
-// Replace with actual config
 const firebaseConfig = {
   apiKey: "AIzaSyD295HUs8qit9LopB0pVNlkPMo0QpQssGc",
   authDomain: "toolshub-87859.firebaseapp.com",
@@ -14,32 +14,50 @@ const firebaseConfig = {
   measurementId: "G-7LG85XY2C5"
 };
 
-let app, auth, db, storage;
-try {
-  app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
-  auth = getAuth(app);
-  db = getFirestore(app);
-  storage = getStorage(app);
-} catch (error) {
-  console.error("Firebase initialization error (Running in Guest/Local Mode):", error);
-  auth = null;
-  db = null;
-  storage = null;
-}
+let fbAppModule = null;
+let fbAuthModule = null;
+let fbFirestoreModule = null;
+let fbStorageModule = null;
 
-export { auth, db, storage };
-
-// Enable offline persistence
-if (db) {
+async function initFirebase() {
+  if (isInitialized) return true;
   try {
-    enableIndexedDbPersistence(db).catch((err) => {
-      if (err.code == 'failed-precondition') {
-        console.warn("Multiple tabs open, persistence can only be enabled in one tab at a a time.");
-      } else if (err.code == 'unimplemented') {
-        console.warn("The current browser does not support all of the features required to enable persistence.");
+    const [appMod, authMod, firestoreMod, storageMod] = await Promise.all([
+      import('https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js'),
+      import('https://www.gstatic.com/firebasejs/10.9.0/firebase-auth.js'),
+      import('https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js'),
+      import('https://www.gstatic.com/firebasejs/10.9.0/firebase-storage.js')
+    ]);
+    
+    fbAppModule = appMod;
+    fbAuthModule = authMod;
+    fbFirestoreModule = firestoreMod;
+    fbStorageModule = storageMod;
+
+    app = appMod.getApps().length === 0 ? appMod.initializeApp(firebaseConfig) : appMod.getApp();
+    auth = authMod.getAuth(app);
+    db = firestoreMod.getFirestore(app);
+    storage = storageMod.getStorage(app);
+
+    if (db) {
+      try {
+        await firestoreMod.enableIndexedDbPersistence(db);
+      } catch (e) {
+        console.warn("Could not enable persistence", e);
       }
-    });
-  } catch (e) {
-    console.warn("Could not enable persistence", e);
+    }
+
+    isInitialized = true;
+    return true;
+  } catch (error) {
+    console.error("Firebase initialization failed (Running in Guest/Local Mode):", error);
+    return false;
   }
 }
+
+export { 
+  initFirebase, 
+  app, auth, db, storage, 
+  fbAppModule, fbAuthModule, fbFirestoreModule, fbStorageModule,
+  isInitialized
+};
