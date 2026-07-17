@@ -88,9 +88,8 @@ const Settings = (() => {
     if (settingsEmail) settingsEmail.textContent = email;
 
     // Update profile display
-    document.getElementById('profileNameDisplay')?.textContent && (
-      document.getElementById('profileNameDisplay').textContent = name
-    );
+    const nameDisplayEl = document.getElementById('profileNameDisplay');
+    if (nameDisplayEl) nameDisplayEl.textContent = name;
 
     Toast.show('Profile saved.');
     closeSubScreen('screenProfile');
@@ -290,7 +289,7 @@ const Settings = (() => {
       indicator.style.transform = '';
       if (pullDistance > 120) {
         indicator.classList.add('is-refreshing');
-        setTimeout(() => location.reload(true), 600); // Reload after showing spinner briefly
+        setTimeout(() => location.reload(), 600); // Reload after showing spinner briefly
       } else {
         indicator.classList.remove('is-visible');
       }

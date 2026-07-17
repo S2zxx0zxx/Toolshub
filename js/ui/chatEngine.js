@@ -100,6 +100,26 @@ export const Chat = (() => {
     
     const bubbleStyle = m.isError ? 'color: var(--danger, #ff4d4f); background: rgba(255,77,79,0.1); border: 1px solid rgba(255,77,79,0.2);' : '';
 
+    // isMock flag for Demo Mode badge
+    if (m.isMock) {
+      return `
+        <div class="msg msg-assistant">
+          <div style="flex: 1;">
+            <div style="display:flex; align-items:center; gap:var(--sp-2); margin-bottom:var(--sp-1); color:var(--text-muted); font-size:var(--fs-xs);">
+              <div style="width:16px; height:16px; color:var(--text-secondary);">${svgIcon}</div>
+              <div><strong>${escapeHtml(title)} Agent</strong></div>
+              <span style="margin-left:4px; padding:2px 7px; border-radius:99px; font-size:10px; font-weight:600; background:var(--bg-surface-2); color:var(--text-muted); border:1px dashed var(--border-med); letter-spacing:0.5px;">DEMO</span>
+            </div>
+            <div class="msg-bubble markdown-body" style="border:1px dashed var(--border-med); ${bubbleStyle}">${renderMarkdown(m.text)}</div>
+            <div class="msg-actions">
+              <button class="msg-action-btn" data-action="copy" title="Copy">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+              </button>
+            </div>
+          </div>
+        </div>`;
+    }
+
     return `
       <div class="msg msg-assistant">
         <div style="flex: 1;">
@@ -131,6 +151,59 @@ export const Chat = (() => {
       btn.onclick = () => {
         const text = btn.closest('.msg').querySelector('.msg-bubble').textContent;
         navigator.clipboard?.writeText(text);
+        Toast.show('Copied!');
+      };
+    });
+
+    // Fix #3 — Regenerate button
+    document.querySelectorAll('.msg-action-btn[data-action="regen"]').forEach(btn => {
+      btn.onclick = async () => {
+        if (!currentChat) return;
+        // Find the user message just before this assistant message
+        const msgEl = btn.closest('.msg');
+        const allMsgs = [...document.querySelectorAll('#msgList .msg')];
+        const myIndex = allMsgs.indexOf(msgEl);
+        if (myIndex <= 0) return;
+        // Walk backwards to find the previous user message
+        const userMsg = currentChat.messages
+          .slice(0, myIndex)
+          .reverse()
+          .find(m => m.role === 'user');
+        if (!userMsg) return;
+        // Remove the current assistant message from the array and UI, then resend
+        const assistantMsgIndex = currentChat.messages.findLastIndex((m, i) => m.role === 'assistant' && i >= myIndex);
+        if (assistantMsgIndex !== -1) currentChat.messages.splice(assistantMsgIndex, 1);
+        renderMessages();
+        try {
+          showTypingIndicator();
+          const chatHistory = currentChat.messages.filter(m => m.role === 'user' || m.role === 'assistant');
+          const streamGenerator = AIRouter.processInput(userMsg.text, chatHistory, (toolId) => {
+            hideTypingIndicator();
+            showTypingIndicator(toolId);
+          });
+          await consumeStream(streamGenerator);
+        } catch (err) {
+          appendErrorMessage(err.message || 'Regeneration failed.');
+        }
+      };
+    });
+
+    // Fix #3 — Thumbs up / down feedback
+    document.querySelectorAll('.msg-action-btn[data-action="up"], .msg-action-btn[data-action="down"]').forEach(btn => {
+      btn.onclick = () => {
+        const action = btn.dataset.action;
+        const msgEl = btn.closest('.msg');
+        // Clear sibling feedback buttons first
+        msgEl.querySelectorAll('.msg-action-btn[data-action="up"], .msg-action-btn[data-action="down"]').forEach(b => b.classList.remove('is-active'));
+        btn.classList.toggle('is-active');
+        // Best-effort: store feedback on the message object
+        if (currentChat) {
+          const allMsgs = [...document.querySelectorAll('#msgList .msg')];
+          const idx = allMsgs.indexOf(msgEl);
+          if (idx !== -1 && currentChat.messages[idx]) {
+            currentChat.messages[idx].feedback = btn.classList.contains('is-active') ? action : null;
+          }
+        }
       };
     });
   }
@@ -176,8 +249,14 @@ export const Chat = (() => {
     currentChat.updatedAt = Date.now();
     renderMessages();
     
-    // Save to Firestore
+    // Save to Firestore/LocalStorage (CloudDB handles routing)
     await CloudDB.saveMessage(currentChat.id, userMsg);
+
+    // Fix #2 — For guest mode (no Firestore subscription), force sidebar to re-render.
+    // Firestore onSnapshot handles logged-in users automatically.
+    if (!CloudDB.isSubscribed()) {
+      Sidebar.setChats(LocalSettings.getAllChats());
+    }
 
     try {
       showTypingIndicator();
@@ -267,9 +346,15 @@ export const Chat = (() => {
     const bubble = el.querySelector('.msg-bubble');
 
     let fullText = '';
+    let isMock = false;
     
     try {
       for await (const chunk of streamGenerator) {
+        // __isMock sentinel from aiApi — don't render, just flag
+        if (chunk && typeof chunk === 'object' && chunk.__isMock) {
+          isMock = true;
+          continue;
+        }
         fullText += chunk;
         // Efficiently render markdown while streaming (can be heavy, but DOMPurify is fast)
         bubble.innerHTML = renderMarkdown(fullText);
@@ -283,9 +368,10 @@ export const Chat = (() => {
 
     // Finalize UI
     currentChat.messages[msgIndex].text = fullText;
+    if (isMock) currentChat.messages[msgIndex].isMock = true;
     currentChat.updatedAt = Date.now();
     
-    // Save generated message to Firestore
+    // Save generated message to Firestore/LocalStorage
     await CloudDB.saveMessage(currentChat.id, currentChat.messages[msgIndex]);
     
     // Track usage (approximation for now, as tokenizer is backend-only typically)

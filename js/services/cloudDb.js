@@ -192,6 +192,11 @@ export const CloudDB = (() => {
     }
   }
 
+  // Fix #2: expose whether a live Firestore subscription is active (false = guest mode)
+  function isSubscribed() {
+    return conversationsUnsubscribe !== null;
+  }
+
   return {
     subscribeConversations,
     loadChatMessages,
@@ -200,6 +205,7 @@ export const CloudDB = (() => {
     deleteConversation,
     trackUsage,
     logToolExecution,
-    migrateLocalChats
+    migrateLocalChats,
+    isSubscribed
   };
 })();

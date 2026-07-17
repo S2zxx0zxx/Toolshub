@@ -393,7 +393,7 @@ export const ExecutionRegistry = (() => {
     version: '1.0',
     inputSchema: { required: ['expression'] },
     permissions: ['basic'],
-    requiresAuth: true,
+    requiresAuth: false,
     execute: async (params) => {
       return await CalculatorService.evaluate(params.expression);
     }
@@ -407,7 +407,7 @@ export const ExecutionRegistry = (() => {
     version: '1.0',
     inputSchema: { required: ['city'] },
     permissions: ['basic'],
-    requiresAuth: true,
+    requiresAuth: false,
     execute: async (params) => {
       return await WeatherService.getWeather(params.city);
     }
@@ -421,7 +421,7 @@ export const ExecutionRegistry = (() => {
     version: '1.0',
     inputSchema: { required: ['query'] },
     permissions: ['basic'],
-    requiresAuth: true,
+    requiresAuth: false,
     execute: async (params) => {
       return await SearchService.searchWeb(params.query);
     }

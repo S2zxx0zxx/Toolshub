@@ -73,6 +73,10 @@ export const aiApi = (() => {
     }
   }
 
+  // SECURITY NOTE: Keys stored in localStorage and used directly in Authorization headers
+  // are visible to anyone with DevTools/Network access. This is a known limitation of
+  // the current client-only architecture. Do not use a key with billing limits you're
+  // not comfortable exposing from the browser.
   function getApiKey() {
     return localStorage.getItem('GROQ_API_KEY') || null;
   }
@@ -82,7 +86,12 @@ export const aiApi = (() => {
     if (apiKey) {
       yield* fetchGroqStream(messages, apiKey);
     } else {
-      yield* mockStreamResponse(messages);
+      // No API key — yield mock chunks tagged with a sentinel so UI can badge them
+      for await (const chunk of mockStreamResponse(messages)) {
+        yield chunk;
+      }
+      // Signal mock mode to consumer via a special object after all chunks
+      yield { __isMock: true };
     }
   }
 

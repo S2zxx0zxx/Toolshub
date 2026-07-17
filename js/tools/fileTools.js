@@ -438,14 +438,27 @@ export const FileTools = (() => {
 
       // Parse "1-3,5,7-9" → [0, 1, 2, 4, 6, 7, 8] (0-indexed)
       const pages = new Set();
+      const invalidParts = [];
       rangeStr.split(',').forEach(part => {
-        const [a, b] = part.trim().split('-').map(Number);
-        if (b !== undefined) {
+        const raw = part.trim();
+        const segs = raw.split('-').map(Number);
+        const [a, b] = segs;
+        if (isNaN(a) || (segs.length > 1 && isNaN(b))) {
+          invalidParts.push(raw);
+          return;
+        }
+        if (segs.length > 1) {
           for (let i = a; i <= b; i++) pages.add(i);
         } else {
           pages.add(a);
         }
       });
+
+      if (invalidParts.length > 0) {
+        alert('Invalid range segment(s): ' + invalidParts.join(', ') + ' — use format like 1-3,5,7-9');
+        return;
+      }
+
       const indices = [...pages]
         .filter(p => p >= 1 && (!totalPages || p <= totalPages))
         .map(p => p - 1)

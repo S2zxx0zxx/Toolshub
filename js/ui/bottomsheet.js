@@ -8,6 +8,7 @@ import { LocalSettings } from '../services/localSettings.js';
 import { ToolSelector } from '../tools/registry.js';
 import { UtilityTools } from '../tools/utilityTools.js';
 import { FileTools } from '../tools/fileTools.js';
+import { Toast } from './toast.js';
 import { Chat } from './chatEngine.js';
 import { Sidebar } from './sidebar.js';
 
