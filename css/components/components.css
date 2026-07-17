@@ -232,3 +232,40 @@
   50% { stroke-dasharray: 89, 200; stroke-dashoffset: -35px; }
   100% { stroke-dasharray: 89, 200; stroke-dashoffset: -124px; }
 }
+
+/* =========================================
+   SCROLL TO BOTTOM BUTTON
+   ========================================= */
+.scroll-bottom-btn {
+  position: absolute;
+  bottom: 80px; /* Right above the input zone */
+  right: 20px;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--bg-elevated, #fff);
+  border: 1px solid var(--border, #e5e5e5);
+  color: var(--text-main, #333);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 50;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(10px);
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+.scroll-bottom-btn.is-visible {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+.scroll-bottom-btn:hover {
+  background: var(--bg-hover, #f5f5f5);
+}
+.scroll-bottom-btn svg {
+  width: 20px;
+  height: 20px;
+}

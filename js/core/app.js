@@ -160,7 +160,7 @@ const Settings = (() => {
     }
     
     // Validate the Groq key and show AI status
-    const groqKey = localStorage.getItem('GROQ_API_KEY');
+    const groqKey = localStorage.getItem('GROQ_API_KEY') || (window.ENV && window.ENV.GROQ_API_KEY);
     if (groqKey) {
       if (!groqKey.startsWith('gsk_') || groqKey.length < 20) {
         Toast.show('⚠️ Key format looks wrong — Groq keys start with gsk_');
@@ -177,7 +177,7 @@ const Settings = (() => {
   function updateAiStatusIndicator() {
     const indicator = document.getElementById('aiStatusIndicator');
     if (!indicator) return;
-    const hasKey = !!localStorage.getItem('GROQ_API_KEY');
+    const hasKey = !!localStorage.getItem('GROQ_API_KEY') || !!(window.ENV && window.ENV.GROQ_API_KEY);
     indicator.textContent = hasKey ? '🟢 AI: Connected' : '🔴 AI: Demo mode';
     indicator.title = hasKey ? 'Groq API key is set — real AI responses active.' : 'No Groq key set — showing simulated responses. Go to Settings → API Keys.';
     indicator.style.color = hasKey ? 'var(--accent, #7c5cfc)' : 'var(--text-muted)';

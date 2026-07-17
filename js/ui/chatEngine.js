@@ -227,9 +227,14 @@ export const Chat = (() => {
     }
   }
 
-  function scrollToBottom() {
+  let isAutoScrollPaused = false;
+
+  function scrollToBottom(force = false) {
     const body = document.getElementById('chatBody');
-    body.scrollTop = body.scrollHeight;
+    if (!body) return;
+    if (force || !isAutoScrollPaused) {
+      body.scrollTop = body.scrollHeight;
+    }
   }
 
   // ---------- SEND FLOW ----------
@@ -426,6 +431,24 @@ export const Chat = (() => {
       newChat();
       if (window.matchMedia('(max-width: 860px)').matches) Sidebar.close();
     });
+
+    const chatBody = document.getElementById('chatBody');
+    const scrollBtn = document.getElementById('scrollToBottomBtn');
+    if (chatBody && scrollBtn) {
+      chatBody.addEventListener('scroll', () => {
+        const isNearBottom = chatBody.scrollHeight - chatBody.scrollTop - chatBody.clientHeight < 50;
+        if (isNearBottom) {
+          isAutoScrollPaused = false;
+          scrollBtn.classList.remove('is-visible');
+        } else {
+          isAutoScrollPaused = true;
+          scrollBtn.classList.add('is-visible');
+        }
+      });
+      scrollBtn.addEventListener('click', () => {
+        scrollToBottom(true);
+      });
+    }
 
     // prompt card clicks feed the input
     document.getElementById('promptCards')?.addEventListener('click', (e) => {
