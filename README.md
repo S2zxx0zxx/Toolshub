@@ -1,53 +1,46 @@
-# ToolsHub — Frontend Shell
+# ToolsHub
 
-Pure HTML/CSS/JS chat interface, Claude-style UI, backend-ready.
+A powerful AI-driven application featuring a modern chat interface, robust tool execution architecture, and Firebase Backend integration.
 
-## Structure
+## Features
+
+- **Modern Chat Interface**: Responsive UI with dynamic chat bubbles, typing indicators, and markdown support.
+- **AI Agent Framework**: Intelligent tool routing system that intercepts intents and executes local/remote tools dynamically via Groq AI.
+- **Tool Architecture**: Supports utility tools (Time, Weather, Calculator, Search, Web Fetching) and custom functions.
+- **Firebase Backend**: Fully integrated with Firebase Authentication (Email/Password + Google Sign-In) and Firestore for persistent user profiles and chats.
+- **PWA Ready**: Works completely offline via robust Service Worker caching and LocalStorage fallbacks.
+
+## Architecture & Structure
+
 ```
-index.html
-css/
-  variables.css    → design tokens (colors, spacing, radius, shadows, motion, fonts)
-  layout.css       → app shell, screen states, settings screen
-  components.css   → buttons, chips, toggles, list-rows, skeleton, typing dots
-  sidebar.css      → drawer nav
-  chat.css         → top bar, messages, empty state, input bar
-  bottomsheet.css  → "+" sheet & 2-level tool selector sheet
-js/
-  storage.js       → localStorage wrapper (chats, theme, active chat)
-  toolSelector.js  → Category → Tool data model + render logic
-  sidebar.js       → drawer open/close + chat history list
-  bottomsheet.js   → "+" sheet and tool selector sheet controllers
-  chat.js          → message rendering, fake streaming, send flow
-  main.js          → settings nav, theme toggle, app bootstrap
+c:/toolshub/
+├── index.html            → Core Application Shell (UI and Templates)
+├── css/                  → Modular Design System
+│   ├── core/variables.css→ Design tokens (colors, fonts, radius)
+│   ├── layout/           → Core layout structural files (chat, sidebar, layout)
+│   └── components/       → Reusable UI components (bottomsheet, tools, etc)
+└── js/                   → Application Logic
+    ├── core/             → Core wiring (app.js, events.js, router.js)
+    ├── services/         → External integrations (firebase.js, aiApi.js, auth.js)
+    │   └── tools/        → Implementations of specific tools
+    ├── tools/            → AI Tooling Framework (registry, permissions, executor)
+    └── ui/               → View logic (chatEngine, bottomsheet, sidebar)
 ```
 
-## Where to plug in your backend
+## Setup & Deployment
 
-**1. Real AI responses** — `js/chat.js`, function `sendMessage()`:
-Currently uses a `setTimeout` + placeholder text, then calls `streamAssistantReply()`.
-Replace the `setTimeout` block with your actual API call (fetch/EventSource for real streaming),
-then call `streamAssistantReply(realText)` or adapt `streamAssistantReply` to append
-real streamed chunks as they arrive instead of slicing a known full string.
+1. **Firebase**:
+   - Application is wired to Firebase project `toolshub-87859`.
+   - Update `firebase.js` if migrating to a new environment.
+   - Run `npx firebase-tools deploy --only auth` to deploy authentication configuration based on `firebase.json`.
 
-**2. Tool definitions** — `js/toolSelector.js`, the `DATA` array:
-Each tool has `id`, `title`, `sub`, `icon`, `placeholder`, optional `pinned`.
-Add a `promptTemplate` or `apiEndpoint` field per tool if different tools hit different backend routes.
+2. **AI Backend**:
+   - Powered by `llama-3.3-70b-versatile` via Groq.
+   - `aiApi.js` handles streaming and JSON mode extraction.
 
-**3. Auth / user identity** — currently hardcoded "Satyam" / "S" avatar in `index.html`
-(`.sidebar-footer`, `.settings-account-card`). Wire these to your auth system.
+## Extending the App (Adding New Tools)
 
-**4. File upload** — `#hiddenFileInput` in `index.html` is wired to open on "Upload File" row click
-(`js/bottomsheet.js`). Add a `change` listener to actually upload/attach the file.
-
-## Design tokens
-All colors/spacing/radius/motion values are centralized in `css/variables.css`.
-Light theme override is under `[data-theme="light"]` in the same file.
-Change `--accent` there to re-brand the whole app in one place.
-
-## Tested
-- Mobile (390px) and desktop (1440px) layouts
-- Dark/light theme toggle with persistence
-- 2-level tool selector (category → tool) with back navigation
-- localStorage persistence across page refresh
-- Keyboard shortcuts: Enter to send, Shift+Enter for newline
-- "+" sheet toggles, chat history grouping (Today/Yesterday/Older)
+To add a new tool to the AI Agent:
+1. Define the tool schema in `js/tools/registry.js`.
+2. Map the implementation in the `TOOL_EXECUTORS` object inside `registry.js`.
+3. The AI will automatically become aware of the tool and can invoke it in response to user queries.

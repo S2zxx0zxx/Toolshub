@@ -1,7 +1,0 @@
-feat: complete Firebase SaaS backend integration (Phase 4)
-
-- Integrated Firebase Auth for sign up and login
-- Added cloudDb.js for Firestore read/writes
-- Fixed sidebar metadata passing for loadChat
-- Ensured timestamp safety in Firestore saving
-- Handled migration of localStorage chats to Firestore
