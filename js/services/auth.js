@@ -11,25 +11,26 @@ import { auth as firebaseAuth, db } from './firebase.js';
 export const Auth = (() => {
 
   async function signup(email, password, displayName) {
+    if (!firebaseAuth) throw new Error("Firebase Auth is disabled or misconfigured.");
     try {
       const userCredential = await createUserWithEmailAndPassword(firebaseAuth, email, password);
       const user = userCredential.user;
       
-      // Update profile with display name
       await updateProfile(user, { displayName });
 
-      // Create user document in Firestore
-      await setDoc(doc(db, 'users', user.uid), {
-        uid: user.uid,
-        email: user.email,
-        displayName: displayName,
-        photoURL: user.photoURL || null,
-        createdAt: serverTimestamp(),
-        updatedAt: serverTimestamp(),
-        role: "user",
-        plan: "free",
-        credits: 0
-      });
+      if (db) {
+        await setDoc(doc(db, 'users', user.uid), {
+          uid: user.uid,
+          email: user.email,
+          displayName: displayName,
+          photoURL: user.photoURL || null,
+          createdAt: serverTimestamp(),
+          updatedAt: serverTimestamp(),
+          role: "user",
+          plan: "free",
+          credits: 0
+        });
+      }
 
       return user;
     } catch (error) {
@@ -39,6 +40,7 @@ export const Auth = (() => {
   }
 
   async function login(email, password) {
+    if (!firebaseAuth) throw new Error("Firebase Auth is disabled or misconfigured.");
     try {
       const userCredential = await signInWithEmailAndPassword(firebaseAuth, email, password);
       return userCredential.user;
@@ -49,6 +51,7 @@ export const Auth = (() => {
   }
 
   async function logout() {
+    if (!firebaseAuth) return;
     try {
       await signOut(firebaseAuth);
     } catch (error) {
@@ -58,14 +61,19 @@ export const Auth = (() => {
   }
 
   function getCurrentUser() {
-    return firebaseAuth.currentUser;
+    return firebaseAuth ? firebaseAuth.currentUser : null;
   }
 
   function onAuthStateChanged(callback) {
+    if (!firebaseAuth) {
+      callback(null);
+      return () => {};
+    }
     return firebaseOnAuthStateChanged(firebaseAuth, callback);
   }
 
   async function getUserProfile(uid) {
+    if (!db) return null;
     try {
       const docSnap = await getDoc(doc(db, 'users', uid));
       if (docSnap.exists()) {

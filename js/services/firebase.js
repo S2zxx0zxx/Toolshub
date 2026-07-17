@@ -13,26 +13,32 @@ const firebaseConfig = {
   appId: "YOUR_APP_ID"
 };
 
-let app;
+let app, auth, db, storage;
 try {
   app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
+  auth = getAuth(app);
+  db = getFirestore(app);
+  storage = getStorage(app);
 } catch (error) {
-  console.error("Firebase initialization error:", error);
+  console.error("Firebase initialization error (Running in Guest/Local Mode):", error);
+  auth = null;
+  db = null;
+  storage = null;
 }
 
-export const auth = getAuth(app);
-export const db = getFirestore(app);
-export const storage = getStorage(app);
+export { auth, db, storage };
 
 // Enable offline persistence
-try {
-  enableIndexedDbPersistence(db).catch((err) => {
-    if (err.code == 'failed-precondition') {
-      console.warn("Multiple tabs open, persistence can only be enabled in one tab at a a time.");
-    } else if (err.code == 'unimplemented') {
-      console.warn("The current browser does not support all of the features required to enable persistence.");
-    }
-  });
-} catch (e) {
-  console.warn("Could not enable persistence", e);
+if (db) {
+  try {
+    enableIndexedDbPersistence(db).catch((err) => {
+      if (err.code == 'failed-precondition') {
+        console.warn("Multiple tabs open, persistence can only be enabled in one tab at a a time.");
+      } else if (err.code == 'unimplemented') {
+        console.warn("The current browser does not support all of the features required to enable persistence.");
+      }
+    });
+  } catch (e) {
+    console.warn("Could not enable persistence", e);
+  }
 }
