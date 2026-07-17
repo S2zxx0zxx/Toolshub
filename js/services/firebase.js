@@ -36,16 +36,15 @@ async function initFirebase() {
 
     app = appMod.getApps().length === 0 ? appMod.initializeApp(firebaseConfig) : appMod.getApp();
     auth = authMod.getAuth(app);
-    db = firestoreMod.getFirestore(app);
-    storage = storageMod.getStorage(app);
-
-    if (db) {
-      try {
-        await firestoreMod.enableIndexedDbPersistence(db);
-      } catch (e) {
-        console.warn("Could not enable persistence", e);
-      }
+    try {
+      db = firestoreMod.initializeFirestore(app, {
+        localCache: firestoreMod.persistentLocalCache()
+      });
+    } catch (e) {
+      // Fallback if already initialized
+      db = firestoreMod.getFirestore(app);
     }
+    storage = storageMod.getStorage(app);
 
     isInitialized = true;
     return true;
