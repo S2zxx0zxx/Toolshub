@@ -14,6 +14,7 @@
 <link rel="stylesheet" href="css/sidebar.css">
 <link rel="stylesheet" href="css/chat.css">
 <link rel="stylesheet" href="css/bottomsheet.css">
+<link rel="stylesheet" href="css/tools.css">
 </head>
 <body>
 
@@ -88,6 +89,8 @@
           </div>
 
           <div class="msg-list" id="msgList" style="display:none;"></div>
+          <!-- Utility/File tool inline panel — shown instead of emptyState for mode:'utility' tools -->
+          <div id="utilityPanel" style="display:none;"></div>
         </div>
       </div>
 
@@ -259,8 +262,15 @@
   </div>
 </div>
 
+<!-- CDN Libraries for utility & file tools -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+
 <script src="js/storage.js"></script>
 <script src="js/toolSelector.js"></script>
+<script src="js/utilityTools.js"></script>
+<script src="js/fileTools.js"></script>
 <script src="js/sidebar.js"></script>
 <script src="js/bottomsheet.js"></script>
 <script src="js/chat.js"></script>

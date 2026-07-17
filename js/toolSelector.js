@@ -8,6 +8,7 @@ const ToolSelector = (() => {
 
   // ---------- ICON LIBRARY (inline SVG paths, stroke-based) ----------
   const ICONS = {
+    // ---- existing icons (do not modify) ----
     social:     '<path d="M17 2H7a5 5 0 00-5 5v10a5 5 0 005 5h10a5 5 0 005-5V7a5 5 0 00-5-5z"/><path d="M16 11.37A4 4 0 1112.63 8 4 4 0 0116 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/>',
     web:        '<circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 010 20 15.3 15.3 0 010-20z"/>',
     edu:        '<path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c0 1.66 2.69 3 6 3s6-1.34 6-3v-5"/>',
@@ -22,6 +23,27 @@ const ToolSelector = (() => {
     score:      '<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>',
     humanize:   '<circle cx="12" cy="8" r="5"/><path d="M20 21a8 8 0 00-16 0"/>',
     email:      '<path d="M4 4h16a2 2 0 012 2v12a2 2 0 01-2 2H4a2 2 0 01-2-2V6a2 2 0 012-2z"/><polyline points="22 6 12 13 2 6"/>',
+    // ---- new icons for Quick Utilities ----
+    utilities:  '<path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>',
+    wordcount:  '<line x1="21" y1="6" x2="3" y2="6"/><line x1="17" y1="12" x2="3" y2="12"/><line x1="13" y1="18" x2="3" y2="18"/>',
+    qrcode:     '<rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="3" height="3"/><rect x="18" y="14" width="3" height="3"/><rect x="14" y="18" width="3" height="3"/><rect x="18" y="18" width="3" height="3"/>',
+    password:   '<rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/>',
+    casetext:   '<polyline points="4 7 4 4 20 4 20 7"/><line x1="9" y1="20" x2="15" y2="20"/><line x1="12" y1="4" x2="12" y2="20"/>',
+    calendar:   '<rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>',
+    unitconv:   '<path d="M8 3L4 7l4 4"/><line x1="4" y1="7" x2="20" y2="7"/><path d="M16 21l4-4-4-4"/><line x1="20" y1="17" x2="4" y2="17"/>',
+    // ---- new icons for File & Image Tools ----
+    files:         '<path d="M13 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V9z"/><polyline points="13 2 13 9 20 9"/>',
+    imagecompress: '<rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/>',
+    imgpdf:        '<path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="16" y2="17"/>',
+    pdfmerge:      '<path d="M9 3H5a2 2 0 00-2 2v14a2 2 0 002 2h6"/><path d="M15 3h4a2 2 0 012 2v14a2 2 0 01-2 2h-6"/><line x1="12" y1="8" x2="12" y2="16"/><polyline points="9 11 12 8 15 11"/><polyline points="9 16 12 19 15 16"/>',
+    pdfsplit:      '<circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><line x1="20" y1="4" x2="8.12" y2="15.88"/><line x1="14.47" y1="14.48" x2="20" y2="20"/><line x1="8.12" y1="8.12" x2="12" y2="12"/>',
+    imgconvert:    '<path d="M7 16V4m0 0L3 8m4-4l4 4"/><path d="M17 8v12m0 0l4-4m-4 4l-4-4"/>',
+    // ---- new icons for Student & Career ----
+    career:        '<rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/>',
+    resume:        '<path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="16" y2="17"/><line x1="8" y1="9" x2="10" y2="9"/>',
+    coverletter:   '<path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>',
+    gpacalc:       '<rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="8" y1="10" x2="16" y2="10"/><line x1="8" y1="14" x2="12" y2="14"/>',
+    citation:      '<path d="M3 21c3 0 7-1 7-8V5c0-1.25-.756-2.017-2-2H4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2 1 0 1 0 1 1v1c0 1-1 2-2 2s-1 .008-1 1.031V20c0 1 0 1 1 1z"/><path d="M15 21c3 0 7-1 7-8V5c0-1.25-.757-2.017-2-2h-4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2h.75c0 2.25.25 4-2.75 4v3c0 1 0 1 1 1z"/>',
   };
 
   function icon(name, cls) {
@@ -63,8 +85,65 @@ const ToolSelector = (() => {
       sub: 'Personal writing assist',
       icon: 'edu',
       tools: [
-        { id: 'humanize', title: 'AI to Humanize', sub: 'Make AI text sound natural', icon: 'humanize', placeholder: 'Paste the AI-generated text...' },
-        { id: 'email-write', title: 'Email Writing', sub: 'Professional email generator', icon: 'email', placeholder: 'What is this email about?' },
+        { id: 'humanize',   title: 'AI to Humanize', sub: 'Make AI text sound natural',        icon: 'humanize', placeholder: 'Paste the AI-generated text...' },
+        { id: 'email-write', title: 'Email Writing', sub: 'Professional email generator',       icon: 'email',    placeholder: 'What is this email about?' },
+      ],
+    },
+
+    // ----------------------------------------------------------------
+    // NEW CATEGORY: Quick Utilities — 100% client-side inline tools
+    //   mode:'utility' signals that these bypass the chat flow and
+    //   render a dedicated UI panel in #utilityPanel.
+    // ----------------------------------------------------------------
+    {
+      id: 'utilities',
+      title: 'Quick Utilities',
+      sub: 'Everyday tools, instant results',
+      icon: 'utilities',
+      tools: [
+        { id: 'word-counter',   title: 'Word & Character Counter', sub: 'Words, characters, reading time',    icon: 'wordcount', placeholder: '', mode: 'utility' },
+        { id: 'qr-generator',   title: 'QR Code Generator',        sub: 'Text or link to QR code',           icon: 'qrcode',   placeholder: '', mode: 'utility' },
+        { id: 'password-gen',   title: 'Password Generator',       sub: 'Strong random passwords',           icon: 'password', placeholder: '', mode: 'utility' },
+        { id: 'case-converter', title: 'Case Converter',           sub: 'UPPER, lower, Title Case',          icon: 'casetext', placeholder: '', mode: 'utility' },
+        { id: 'age-calculator', title: 'Age Calculator',           sub: 'Exact age from date of birth',      icon: 'calendar', placeholder: '', mode: 'utility' },
+        { id: 'unit-converter', title: 'Unit Converter',           sub: 'Length, weight, temperature',       icon: 'unitconv', placeholder: '', mode: 'utility' },
+      ],
+    },
+
+    // ----------------------------------------------------------------
+    // NEW CATEGORY: File & Image Tools — Canvas API + jsPDF + pdf-lib
+    // ----------------------------------------------------------------
+    {
+      id: 'files',
+      title: 'File & Image Tools',
+      sub: 'Compress, convert, merge',
+      icon: 'files',
+      tools: [
+        { id: 'image-compressor', title: 'Image Compressor',      sub: 'Shrink JPG, PNG, WebP',          icon: 'imagecompress', placeholder: '', mode: 'utility' },
+        { id: 'image-to-pdf',     title: 'Image to PDF',          sub: 'Combine photos into one PDF',    icon: 'imgpdf',        placeholder: '', mode: 'utility' },
+        { id: 'pdf-merge',        title: 'Merge PDF',             sub: 'Combine multiple PDFs',          icon: 'pdfmerge',      placeholder: '', mode: 'utility' },
+        { id: 'pdf-split',        title: 'Split PDF',             sub: 'Extract pages from a PDF',       icon: 'pdfsplit',      placeholder: '', mode: 'utility' },
+        { id: 'image-converter',  title: 'Image Format Converter', sub: 'PNG, JPG, WebP conversion',     icon: 'imgconvert',    placeholder: '', mode: 'utility' },
+      ],
+    },
+
+    // ----------------------------------------------------------------
+    // NEW CATEGORY: Student & Career — mix of AI-chat + one utility tool
+    //   resume-builder is pinned (highest-value tool in this category).
+    //   gpa-calc is mode:'utility' — rendered by utilityTools.js.
+    //   TODO (backend): resume-builder, cover-letter, citation-gen
+    //     need a real AI endpoint. For now they use the chat stub.
+    // ----------------------------------------------------------------
+    {
+      id: 'career',
+      title: 'Student & Career',
+      sub: 'Resume, letters, and study help',
+      icon: 'career',
+      tools: [
+        { id: 'resume-builder', title: 'Resume Builder',            sub: 'AI-assisted resume content',    icon: 'resume',      placeholder: 'Paste your work history or target role...', pinned: true },
+        { id: 'cover-letter',   title: 'Cover Letter Generator',    sub: 'Tailored cover letters',        icon: 'coverletter', placeholder: 'Paste the job description...' },
+        { id: 'gpa-calc',       title: 'GPA / Percentage Calculator', sub: 'Grade calculations',          icon: 'gpacalc',     placeholder: '', mode: 'utility' },
+        { id: 'citation-gen',   title: 'Citation Generator',        sub: 'APA / MLA format',              icon: 'citation',    placeholder: 'Paste the source details (title, author, year, URL)...' },
       ],
     },
   ];
@@ -156,21 +235,64 @@ const ToolSelector = (() => {
     title.textContent = 'Choose a category';
   }
 
-  // ---------- SELECT TOOL: updates chip, placeholder, prompt cards ----------
+  // ---------- SELECT TOOL: updates chip, placeholder, and routes to correct UI ----------
   function selectTool(toolId, opts) {
     const found = findTool(toolId);
     if (!found) return;
     activeToolId = toolId;
 
+    // Update chip label and icon
     const chipLabel = document.getElementById('toolChipLabel');
-    const chipIcon = document.querySelector('#toolChip .chip-icon');
+    const chipIcon  = document.querySelector('#toolChip .chip-icon');
     if (chipLabel) chipLabel.textContent = found.tool.title;
-    if (chipIcon) chipIcon.outerHTML = icon(found.tool.icon, 'chip-icon');
+    if (chipIcon)  chipIcon.outerHTML = icon(found.tool.icon, 'chip-icon');
 
+    // Update textarea placeholder (fallback to empty string for utility tools)
     const textarea = document.getElementById('inputTextarea');
-    if (textarea) textarea.placeholder = found.tool.placeholder;
+    if (textarea) textarea.placeholder = found.tool.placeholder || '';
 
-    renderPromptCards(found.tool);
+    // ---------- MODE ROUTING ----------
+    const utilityPanel = document.getElementById('utilityPanel');
+    const inputZone    = document.querySelector('.input-zone');
+    const emptyState   = document.getElementById('emptyState');
+    const msgList      = document.getElementById('msgList');
+
+    if (found.tool.mode === 'utility') {
+      // ---- UTILITY / FILE TOOL: show inline panel, hide chat chrome ----
+      if (emptyState)    emptyState.style.display    = 'none';
+      if (msgList)       msgList.style.display       = 'none';
+      if (utilityPanel)  utilityPanel.style.display  = 'flex';
+      if (inputZone)     inputZone.style.display     = 'none';
+
+      // Route to correct renderer
+      if (found.category.id === 'files') {
+        if (window.FileTools)   FileTools.render(found.tool);
+      } else {
+        if (window.UtilityTools) UtilityTools.render(found.tool);
+      }
+
+      // Defer: override any renderEmptyState() called immediately after
+      // this (e.g. from chat.js's loadChat() which runs right after selectTool)
+      setTimeout(() => {
+        const p = document.getElementById('utilityPanel');
+        if (p && p.style.display !== 'none') {
+          const es = document.getElementById('emptyState');
+          if (es) es.style.display = 'none';
+        }
+      }, 0);
+
+    } else {
+      // ---- CHAT / AI TOOL: restore normal chat chrome ----
+      if (utilityPanel) utilityPanel.style.display = 'none';
+      if (inputZone)    inputZone.style.display    = '';
+
+      // Show emptyState only if msgList has no rendered messages
+      if (emptyState && msgList && msgList.innerHTML.trim() === '') {
+        emptyState.style.display = 'flex';
+      }
+
+      renderPromptCards(found.tool);
+    }
 
     if (!(opts && opts.silent) && window.BottomSheet) {
       window.BottomSheet.closeToolSheet();

@@ -1,0 +1,330 @@
+/* ============================================
+   TOOLSHUB — UTILITY & FILE TOOL PANELS
+   Inline tool UI for non-chat tools.
+   Uses ONLY existing design tokens from variables.css.
+   ============================================ */
+
+/* ---------- UTILITY PANEL CONTAINER ---------- */
+#utilityPanel {
+  flex: 1;
+  min-height: 0;
+  flex-direction: column;
+  gap: var(--sp-5);
+  animation: fadeUp var(--dur-slow) var(--ease);
+  /* display is managed by JS inline style (none / flex) */
+}
+
+/* ---------- TOOL WRAP (centers & max-widths content) ---------- */
+.utility-tool-wrap {
+  max-width: 620px;
+  margin: 0 auto;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-4);
+}
+
+/* ---------- TOOL HEADER ---------- */
+.utility-tool-title {
+  font-family: var(--font-display);
+  font-size: var(--fs-xl);
+  color: var(--text-primary);
+  font-weight: 600;
+  line-height: 1.2;
+}
+.utility-tool-sub {
+  font-size: var(--fs-sm);
+  color: var(--text-muted);
+  margin-top: var(--sp-1);
+}
+
+/* ---------- NATIVE INPUTS (styled to match existing design) ---------- */
+.utility-input {
+  height: 44px;
+  padding: 0 var(--sp-4);
+  border-radius: var(--r-md);
+  background: var(--bg-surface-2);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-primary);
+  font-size: var(--fs-base);
+  font-family: var(--font-body);
+  outline: none;
+  transition: border-color var(--dur-fast) var(--ease);
+  width: 100%;
+}
+.utility-input:focus { border-color: var(--border-med); }
+.utility-input::placeholder { color: var(--text-muted); }
+
+.utility-select {
+  height: 44px;
+  padding: 0 var(--sp-4);
+  border-radius: var(--r-md);
+  background: var(--bg-surface-2);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-primary);
+  font-size: var(--fs-sm);
+  font-family: var(--font-body);
+  outline: none;
+  cursor: pointer;
+  width: 100%;
+  transition: border-color var(--dur-fast) var(--ease);
+}
+.utility-select:focus { border-color: var(--border-med); }
+
+.utility-textarea {
+  width: 100%;
+  min-height: 130px;
+  padding: var(--sp-3) var(--sp-4);
+  border-radius: var(--r-lg);
+  background: var(--bg-surface-2);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-primary);
+  font-size: var(--fs-base);
+  font-family: var(--font-body);
+  outline: none;
+  resize: vertical;
+  transition: border-color var(--dur-fast) var(--ease);
+  line-height: 1.6;
+}
+.utility-textarea:focus { border-color: var(--border-med); }
+.utility-textarea::placeholder { color: var(--text-muted); }
+
+/* ---------- INPUT GROUP (flex row of inputs + button) ---------- */
+.utility-input-group {
+  display: flex;
+  gap: var(--sp-3);
+  align-items: flex-start;
+  flex-wrap: wrap;
+}
+.utility-input-group .utility-input { flex: 1; min-width: 0; }
+
+/* ---------- STAT CARDS (word counter, results) ---------- */
+.utility-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--sp-3);
+}
+.utility-stat-card {
+  padding: var(--sp-4);
+  border-radius: var(--r-lg);
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  text-align: center;
+}
+.utility-stat-value {
+  font-size: var(--fs-xl);
+  font-weight: 700;
+  color: var(--text-primary);
+  font-family: var(--font-display);
+  line-height: 1.1;
+}
+.utility-stat-label {
+  font-size: var(--fs-xs);
+  color: var(--text-muted);
+  margin-top: var(--sp-1);
+  letter-spacing: 0.02em;
+}
+
+/* ---------- RESULT BOX (generic output display) ---------- */
+.utility-result {
+  padding: var(--sp-4);
+  border-radius: var(--r-lg);
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  font-size: var(--fs-sm);
+  color: var(--text-secondary);
+  min-height: 60px;
+  white-space: pre-wrap;
+  word-break: break-word;
+  line-height: 1.6;
+}
+
+/* ---------- QR OUTPUT ---------- */
+.qr-output {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: var(--sp-7);
+  border-radius: var(--r-lg);
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  min-height: 140px;
+}
+/* Force QR canvas to be white bg (required for QR readability) */
+.qr-output canvas { border-radius: var(--r-sm); }
+
+/* ---------- PASSWORD DISPLAY ---------- */
+.password-display {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  padding: var(--sp-4);
+  border-radius: var(--r-lg);
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+}
+.password-text {
+  flex: 1;
+  font-family: 'SFMono-Regular', 'Consolas', monospace;
+  font-size: var(--fs-base);
+  color: var(--accent);
+  word-break: break-all;
+  letter-spacing: 0.05em;
+}
+
+/* ---------- SLIDER ---------- */
+.utility-slider-group {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+}
+.utility-slider {
+  flex: 1;
+  accent-color: var(--accent);
+  height: 4px;
+  cursor: pointer;
+}
+.utility-slider-val {
+  font-size: var(--fs-sm);
+  color: var(--text-secondary);
+  min-width: 32px;
+  text-align: right;
+}
+
+/* ---------- CHECKBOX GROUP ---------- */
+.utility-check-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-3);
+}
+.utility-check-label {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  font-size: var(--fs-sm);
+  color: var(--text-secondary);
+  cursor: pointer;
+  user-select: none;
+}
+.utility-check-label input[type="checkbox"] {
+  accent-color: var(--accent);
+  width: 15px;
+  height: 15px;
+  cursor: pointer;
+}
+
+/* ---------- FILE DROP ZONE ---------- */
+.utility-dropzone {
+  border: 2px dashed var(--border-med);
+  border-radius: var(--r-lg);
+  padding: var(--sp-8) var(--sp-5);
+  text-align: center;
+  cursor: pointer;
+  transition: background var(--dur-fast) var(--ease), border-color var(--dur-fast) var(--ease);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--sp-2);
+}
+.utility-dropzone:hover,
+.utility-dropzone.drag-over {
+  background: var(--accent-soft);
+  border-color: var(--accent);
+}
+.utility-dropzone svg {
+  width: 36px;
+  height: 36px;
+  color: var(--accent);
+}
+.utility-dropzone-label {
+  font-size: var(--fs-base);
+  font-weight: 500;
+  color: var(--text-secondary);
+  margin-top: var(--sp-1);
+}
+.utility-dropzone-sub {
+  font-size: var(--fs-xs);
+  color: var(--text-muted);
+}
+
+/* ---------- FILE LIST (uploaded files) ---------- */
+.utility-file-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+}
+.utility-file-item {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  padding: var(--sp-3) var(--sp-4);
+  border-radius: var(--r-md);
+  background: var(--bg-surface-2);
+  border: 1px solid var(--border-subtle);
+  font-size: var(--fs-sm);
+  color: var(--text-secondary);
+}
+.utility-file-item-name {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.utility-file-size {
+  color: var(--text-muted);
+  flex-shrink: 0;
+  font-size: var(--fs-xs);
+}
+
+/* ---------- GPA TABLE ---------- */
+.gpa-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.gpa-table th {
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-muted);
+  padding: var(--sp-2) var(--sp-3) var(--sp-3);
+  text-align: left;
+  border-bottom: 1px solid var(--border-subtle);
+}
+.gpa-table td {
+  padding: var(--sp-2) var(--sp-2);
+  border-bottom: 1px solid var(--border-subtle);
+  vertical-align: middle;
+}
+.gpa-table td .utility-input {
+  height: 38px;
+  font-size: var(--fs-sm);
+  padding: 0 var(--sp-3);
+}
+
+/* ---------- LABEL UTIL ---------- */
+.util-label {
+  display: block;
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-muted);
+  margin-bottom: var(--sp-2);
+}
+
+/* ---------- COPY FLASH ANIMATION ---------- */
+@keyframes copyFlash {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(0.92); }
+}
+.copy-flash { animation: copyFlash 0.3s var(--ease); }
+
+/* ---------- RESPONSIVE ---------- */
+@media (max-width: 560px) {
+  .utility-stats { grid-template-columns: repeat(2, 1fr); }
+  .utility-stat-value { font-size: var(--fs-lg); }
+  .utility-tool-title { font-size: var(--fs-lg); }
+  .utility-input-group { flex-direction: column; }
+  .utility-input-group .utility-input { width: 100%; }
+}
