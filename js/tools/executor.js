@@ -1,4 +1,4 @@
-import { ToolRegistry } from './registry.js';
+import { ExecutionRegistry } from './registry.js';
 import { PermissionLayer } from './permissions.js';
 
 export const ToolExecutor = (() => {
@@ -13,7 +13,7 @@ export const ToolExecutor = (() => {
     const startTime = Date.now();
     
     // 1. Validate tool existence
-    const tool = ToolRegistry.getTool(toolId);
+    const tool = ExecutionRegistry.getTool(toolId);
     if (!tool) {
       return _buildResult(false, null, `Tool '${toolId}' not found in registry.`, toolId, startTime);
     }

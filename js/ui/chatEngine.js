@@ -10,7 +10,6 @@ import { ToolSelector } from '../tools/registry.js';
 import { Sidebar } from './sidebar.js';
 import { Toast } from './toast.js';
 import { AIRouter } from '../ai/router.js';
-import { CloudDB } from '../services/cloudDb.js';
 
 export const Chat = (() => {
   let currentChat = null; // { id, title, toolId, messages, createdAt, updatedAt }
