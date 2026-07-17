@@ -60,10 +60,10 @@
     </div>
 
     <div class="sidebar-footer">
-      <div class="sidebar-avatar">S</div>
-      <div class="sidebar-user">
-        <div class="sidebar-user-name">Satyam</div>
-        <div class="sidebar-user-plan">Free plan</div>
+      <div class="sidebar-avatar" id="sidebarAvatar">G</div>
+      <div class="sidebar-user" style="flex:1;">
+        <div class="sidebar-user-name" id="sidebarUserName" style="margin-bottom:2px;">Guest</div>
+        <button id="sidebarLoginBtn" style="background:transparent; border:none; padding:0; color:var(--accent); font-size:11px; font-weight:600; cursor:pointer;">Login to save history</button>
       </div>
       <button class="btn-icon" id="openSettingsBtn" aria-label="Settings">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 11-2.83-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 112.83 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
@@ -506,7 +506,7 @@
 
 <script type="module" src="js/core/app.js"></script>
 <!-- ============ AUTH OVERLAY ============ -->
-<div id="authOverlay" style="display: flex; position: fixed; top:0; left:0; right:0; bottom:0; background: var(--bg-app); z-index: 9999; align-items: center; justify-content: center;">
+<div id="authOverlay" style="display: none; position: fixed; top:0; left:0; right:0; bottom:0; background: var(--bg-app); z-index: 9999; align-items: center; justify-content: center;">
   <div style="width:100%; max-width:400px; padding: 24px; display:flex; flex-direction:column; gap: 16px;">
     <h2 style="text-align:center; font-family:var(--font-display); font-size: 28px; margin-bottom: 8px;">ToolsHub</h2>
     
@@ -530,7 +530,7 @@
       </div>
       
       <div style="text-align:center; margin-top:8px;">
-        <button id="authSkipBtn" style="background:transparent; color:var(--text-secondary); border:1px solid var(--border-med); padding:8px 16px; border-radius:var(--r-full); font-size:13px; cursor:pointer;">Skip for now (Guest Mode)</button>
+        <button id="authSkipBtn" style="background:transparent; color:var(--text-secondary); border:1px solid var(--border-med); padding:8px 16px; border-radius:var(--r-full); font-size:13px; cursor:pointer;">Not now</button>
       </div>
     </div>
   </div>

@@ -429,26 +429,30 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   document.getElementById('authSkipBtn')?.addEventListener('click', () => {
     document.getElementById('authOverlay').style.display = 'none';
-    localStorage.setItem('skipAuth', 'true');
-    Toast.show('Continuing as Guest. Data will be saved locally for this session.');
+  });
+
+  document.getElementById('sidebarLoginBtn')?.addEventListener('click', () => {
+    document.getElementById('authOverlay').style.display = 'flex';
   });
 
   Auth.onAuthStateChanged(user => {
+    const avatarEl = document.querySelector('.sidebar-avatar');
+    const nameEl = document.querySelector('.sidebar-user-name');
+    const settingsAvatarEl = document.querySelector('.settings-avatar-lg');
+    const settingsEmailEl = document.querySelector('.settings-account-email');
+    const sidebarLoginBtn = document.getElementById('sidebarLoginBtn');
+
     if (user) {
       // User is logged in
       authOverlay.style.display = 'none';
       const name = user.displayName || user.email.split('@')[0];
       const initial = name.charAt(0).toUpperCase();
       
-      const avatarEl = document.querySelector('.sidebar-avatar');
-      const nameEl = document.querySelector('.sidebar-user-name');
-      const settingsAvatarEl = document.querySelector('.settings-avatar-lg');
-      const settingsEmailEl = document.querySelector('.settings-account-email');
-      
       if (avatarEl) avatarEl.textContent = initial;
       if (nameEl) nameEl.textContent = name;
       if (settingsAvatarEl) settingsAvatarEl.textContent = initial;
       if (settingsEmailEl) settingsEmailEl.textContent = user.email;
+      if (sidebarLoginBtn) sidebarLoginBtn.style.display = 'none';
       
       Toast.show(`Welcome, ${name}!`);
 
@@ -461,12 +465,17 @@ document.addEventListener('DOMContentLoaded', async () => {
       });
       
     } else {
-      // User logged out or guest
-      if (localStorage.getItem('skipAuth') !== 'true') {
-        authOverlay.style.display = 'flex';
-      }
+      // User logged out or guest default
+      authOverlay.style.display = 'none'; // Default to guest mode
       authSubmitBtn.disabled = false;
       authSubmitBtn.textContent = isSignupMode ? 'Sign Up' : 'Sign In';
+      
+      if (avatarEl) avatarEl.textContent = 'G';
+      if (nameEl) nameEl.textContent = 'Guest';
+      if (sidebarLoginBtn) sidebarLoginBtn.style.display = 'inline-block';
+      if (settingsAvatarEl) settingsAvatarEl.textContent = 'G';
+      if (settingsEmailEl) settingsEmailEl.textContent = 'Guest User';
+
       Sidebar.setChats([]); // clear sidebar
     }
   });
