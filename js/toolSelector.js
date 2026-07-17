@@ -344,6 +344,7 @@ const ToolSelector = (() => {
     init,
     selectTool,
     getActiveTool,
+    findTool,
     renderCategoryLevel,
     renderToolLevel,
     backToCategoryLevel,

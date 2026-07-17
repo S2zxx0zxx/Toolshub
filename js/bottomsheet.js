@@ -70,6 +70,8 @@ const BottomSheet = (() => {
       row.querySelector('.project-item-name').textContent = p.name;
       row.addEventListener('click', () => {
         Storage.setActiveProject(p.id);
+        if (window.Chat) window.Chat.assignProject(p.id);
+        if (window.Sidebar) window.Sidebar.renderProjects();
         if (trailEl) {
           trailEl.childNodes[0].textContent = p.name + ' ';
         }
@@ -98,10 +100,15 @@ const BottomSheet = (() => {
       const input = document.getElementById('projectNameInput');
       const name = input ? input.value.trim() : '';
       if (!name) return;
-      const proj = { id: 'p_' + Date.now().toString(36), name };
-      Storage.saveProject(proj);
-      Storage.setActiveProject(proj.id);
-      if (trailEl) trailEl.childNodes[0].textContent = proj.name + ' ';
+      const newProj = { id: 'p_' + Date.now().toString(36), name };
+      Storage.saveProject(newProj);
+      Storage.setActiveProject(newProj.id);
+      if (window.Chat) window.Chat.assignProject(newProj.id);
+      if (window.Sidebar) window.Sidebar.renderProjects();
+
+      if (trailEl) {
+        trailEl.childNodes[0].textContent = name + ' ';
+      }
       closeProjectSheet();
     });
 

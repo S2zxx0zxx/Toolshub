@@ -1,0 +1,22 @@
+{
+  "name": "ToolsHub",
+  "short_name": "ToolsHub",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#0d0d0a",
+  "theme_color": "#c8890a",
+  "icons": [
+    {
+      "src": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIiBmaWxsPSIjYzg4OTBhIj48cmVjdCB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgZmlsbD0iIzBkMGQwYSIvPjxjaXJjbGUgY3g9IjI1NiIgY3k9IjI1NiIgcj0iMTUwIi8+PC9zdmc+",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIiBmaWxsPSIjYzg4OTBhIj48cmVjdCB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgZmlsbD0iIzBkMGQwYSIvPjxjaXJjbGUgY3g9IjI1NiIgY3k9IjI1NiIgcj0iMjAwIi8+PC9zdmc+",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

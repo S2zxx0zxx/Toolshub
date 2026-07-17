@@ -8,6 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 
+<link rel="manifest" href="manifest.json">
 <link rel="stylesheet" href="css/variables.css">
 <link rel="stylesheet" href="css/layout.css">
 <link rel="stylesheet" href="css/components.css">
@@ -25,7 +26,10 @@
   <div class="sidebar-overlay" id="sidebarOverlay"></div>
   <aside class="sidebar" id="sidebar">
     <div class="sidebar-header">
-      <span class="sidebar-logo">ToolsHub</span>
+      <div style="display:flex; flex-direction:column; gap:2px;">
+        <span class="sidebar-logo">ToolsHub</span>
+        <span style="font-size:10px; color:var(--accent); font-weight:600; letter-spacing:0.5px; text-transform:uppercase;">A Product By Digirise India</span>
+      </div>
       <button class="btn-icon sidebar-close-btn" id="sidebarCloseBtn" aria-label="Close menu">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
       </button>
@@ -41,6 +45,9 @@
     </div>
 
     <div class="sidebar-scroll scroll-y">
+      <div class="sidebar-group" id="sidebarProjectsList">
+        <!-- populated by sidebar.js: Projects -->
+      </div>
       <div class="sidebar-group" id="chatHistoryGroups">
         <!-- populated by storage.js: Today / Yesterday / Older -->
       </div>
@@ -183,6 +190,10 @@
               <div class="list-row-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg></div>
               <div class="list-row-body"><div class="list-row-title">Color mode</div></div>
               <div class="list-row-trail"><span id="themeLabel">Dark</span><svg class="list-row-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></div>
+            </button>
+            <button class="list-row" id="installAppRow" style="display:none;">
+              <div class="list-row-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg></div>
+              <div class="list-row-body"><div class="list-row-title">Install App</div></div>
             </button>
           </div>
 
@@ -449,6 +460,31 @@
     </div>
     <div class="sheet-body">
       <div id="toolAccessList"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ INSTALL APP SHEET ============ -->
+<div class="sheet-overlay" id="installSheetOverlay">
+  <div class="sheet" style="max-width:400px; margin:auto;">
+    <div class="sheet-handle"></div>
+    <div class="sheet-head">
+      <span style="width:40px;"></span>
+      <span class="sheet-title">Install ToolsHub</span>
+      <button class="btn-icon" id="installSheetCloseBtn" aria-label="Close">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="sheet-body" style="padding:var(--sp-4); text-align:center;">
+      <svg viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" style="width:48px;height:48px;margin-bottom:var(--sp-4);"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+      <div style="font-weight:600; margin-bottom:var(--sp-2);">Add to Home Screen</div>
+      <div style="color:var(--text-secondary); font-size:var(--fs-sm); margin-bottom:var(--sp-6);">
+        This is an early-stage app. Data is stored locally on your device. Installing it adds it to your home screen like a native app for quick access.
+      </div>
+      <div style="display:flex; gap:var(--sp-3);">
+        <button class="btn btn-ghost" id="installCancelBtn" style="flex:1;">Cancel</button>
+        <button class="btn btn-primary" id="installConfirmBtn" style="flex:1;">Install</button>
+      </div>
     </div>
   </div>
 </div>

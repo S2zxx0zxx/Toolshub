@@ -272,20 +272,89 @@ const Settings = (() => {
   return { init, open, close, toggleTheme };
 })();
 
+/* ---------- PWA LOGIC ---------- */
+const PWA = (() => {
+  let deferredPrompt = null;
+
+  function init() {
+    // 1. Register Service Worker
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('./sw.js').then(reg => {
+        reg.addEventListener('updatefound', () => {
+          const newWorker = reg.installing;
+          newWorker.addEventListener('statechange', () => {
+            if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+              // new update available
+              Toast.show('Update available — tap to refresh', { duration: 0 }); // keep showing
+              const toastEl = document.querySelector('.toast');
+              if (toastEl) {
+                toastEl.style.cursor = 'pointer';
+                toastEl.addEventListener('click', () => window.location.reload());
+              }
+            }
+          });
+        });
+      }).catch(err => console.log('SW ref failed', err));
+    }
+
+    // 2. Handle Install Prompt
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      
+      const installRow = document.getElementById('installAppRow');
+      if (installRow) {
+        installRow.style.display = 'flex';
+      }
+    });
+
+    document.getElementById('installAppRow')?.addEventListener('click', () => {
+      document.getElementById('installSheetOverlay').style.display = 'flex';
+      // tiny delay to allow display:flex to apply before adding is-open
+      setTimeout(() => {
+        document.querySelector('#installSheetOverlay .sheet').classList.add('is-open');
+      }, 10);
+    });
+
+    document.getElementById('installSheetCloseBtn')?.addEventListener('click', closeInstallSheet);
+    document.getElementById('installCancelBtn')?.addEventListener('click', closeInstallSheet);
+    document.getElementById('installSheetOverlay')?.addEventListener('click', (e) => {
+      if (e.target.id === 'installSheetOverlay') closeInstallSheet();
+    });
+
+    document.getElementById('installConfirmBtn')?.addEventListener('click', async () => {
+      closeInstallSheet();
+      if (deferredPrompt) {
+        deferredPrompt.prompt();
+        const { outcome } = await deferredPrompt.userChoice;
+        if (outcome === 'accepted') {
+          document.getElementById('installAppRow').style.display = 'none';
+        }
+        deferredPrompt = null;
+      }
+    });
+  }
+
+  function closeInstallSheet() {
+    const sheet = document.querySelector('#installSheetOverlay .sheet');
+    if (sheet) sheet.classList.remove('is-open');
+    setTimeout(() => {
+      document.getElementById('installSheetOverlay').style.display = 'none';
+    }, 300); // match animation duration
+  }
+
+  return { init };
+})();
+
 /* ---------- APP BOOTSTRAP ---------- */
 document.addEventListener('DOMContentLoaded', () => {
+  PWA.init();
   ToolSelector.init();
   Sidebar.init();
   BottomSheet.init();
   Chat.init();
   Settings.init();
 
-  // restore last active chat, or show empty state with no tool selected
-  const lastChatId = Storage.getActiveChatId();
-  const lastChat = lastChatId ? Storage.getChat(lastChatId) : null;
-  if (lastChat) {
-    Chat.loadChat(lastChat.id);
-  } else {
-    Chat.newChat();
-  }
+  // always show empty state with no tool selected on fresh load
+  Chat.newChat();
 });

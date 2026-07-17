@@ -19,6 +19,7 @@ const Chat = (() => {
       messages: [],
       createdAt: Date.now(),
       updatedAt: Date.now(),
+      projectId: Storage.getActiveProject() || null,
     };
     Storage.setActiveChatId(currentChat.id);
     renderEmptyState();
@@ -40,6 +41,14 @@ const Chat = (() => {
     } else {
       renderMessages();
     }
+    Sidebar.renderHistory();
+  }
+
+  function assignProject(projectId) {
+    if (!currentChat) return;
+    currentChat.projectId = projectId;
+    currentChat.updatedAt = Date.now();
+    persist();
     Sidebar.renderHistory();
   }
 
@@ -65,9 +74,17 @@ const Chat = (() => {
           <div class="msg-bubble">${escapeHtml(m.text)}</div>
         </div>`;
     }
+    const found = m.toolId ? ToolSelector.findTool(m.toolId) : null;
+    const title = found ? found.tool.title : 'ToolsHub';
+    const svgIcon = found ? ToolSelector.icon(found.tool.icon) : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>';
+
     return `
       <div class="msg msg-assistant">
-        <div>
+        <div style="flex: 1;">
+          <div style="display:flex; align-items:center; gap:var(--sp-2); margin-bottom:var(--sp-2); color:var(--text-muted); font-size:var(--fs-xs);">
+            <div style="width:16px; height:16px; color:var(--text-secondary);">${svgIcon}</div>
+            <div><strong>${escapeHtml(title)} Agent</strong></div>
+          </div>
           <div class="msg-bubble">${escapeHtml(m.text)}</div>
           <div class="msg-actions">
             <button class="msg-action-btn" data-action="copy" title="Copy">
@@ -139,7 +156,20 @@ const Chat = (() => {
     const el = document.createElement('div');
     el.className = 'msg msg-assistant';
     el.id = 'typingIndicator';
-    el.innerHTML = `<div class="typing-dots"><span></span><span></span><span></span></div>`;
+    
+    const activeTool = ToolSelector.getActiveTool();
+    const title = activeTool ? activeTool.tool.title : 'ToolsHub';
+    const svgIcon = activeTool ? ToolSelector.icon(activeTool.tool.icon) : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>';
+
+    el.innerHTML = `
+      <div style="flex: 1;">
+        <div style="display:flex; align-items:center; gap:var(--sp-2); margin-bottom:var(--sp-2); color:var(--text-muted); font-size:var(--fs-xs);">
+          <div style="width:16px; height:16px; color:var(--text-secondary);">${svgIcon}</div>
+          <div><strong>${escapeHtml(title)} Agent</strong> is typing…</div>
+        </div>
+        <div class="typing-dots"><span></span><span></span><span></span></div>
+      </div>
+    `;
     list.appendChild(el);
     scrollToBottom();
   }
@@ -149,13 +179,28 @@ const Chat = (() => {
 
   // fake typewriter streaming effect (real streaming plugs in here later)
   function streamAssistantReply(fullText) {
-    currentChat.messages.push({ role: 'assistant', text: '', ts: Date.now() });
+    const activeTool = ToolSelector.getActiveTool();
+    const toolId = activeTool ? activeTool.tool.id : null;
+    
+    currentChat.messages.push({ role: 'assistant', text: '', ts: Date.now(), toolId });
     const msgIndex = currentChat.messages.length - 1;
 
     const list = document.getElementById('msgList');
     const el = document.createElement('div');
     el.className = 'msg msg-assistant';
-    el.innerHTML = `<div><div class="msg-bubble"></div></div>`;
+    
+    const title = activeTool ? activeTool.tool.title : 'ToolsHub';
+    const svgIcon = activeTool ? ToolSelector.icon(activeTool.tool.icon) : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>';
+
+    el.innerHTML = `
+      <div style="flex: 1;">
+        <div style="display:flex; align-items:center; gap:var(--sp-2); margin-bottom:var(--sp-2); color:var(--text-muted); font-size:var(--fs-xs);">
+          <div style="width:16px; height:16px; color:var(--text-secondary);">${svgIcon}</div>
+          <div><strong>${escapeHtml(title)} Agent</strong></div>
+        </div>
+        <div class="msg-bubble"></div>
+      </div>
+    `;
     list.appendChild(el);
     const bubble = el.querySelector('.msg-bubble');
 
@@ -259,7 +304,7 @@ const Chat = (() => {
     });
   }
 
-  return { init, newChat, loadChat, sendMessage };
+  return { init, newChat, loadChat, sendMessage, assignProject };
 })();
 
 window.Chat = Chat;

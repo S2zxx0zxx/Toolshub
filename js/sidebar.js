@@ -30,11 +30,45 @@ const Sidebar = (() => {
     return 'Older';
   }
 
+  function renderProjects() {
+    const container = document.getElementById('sidebarProjectsList');
+    if (!container) return;
+
+    const projects = Storage.getProjects();
+    if (projects.length === 0) {
+      container.innerHTML = '';
+      return;
+    }
+
+    const activeId = Storage.getActiveProject();
+    let html = `<div class="sidebar-group-label">Projects</div>`;
+    projects.forEach(p => {
+      html += `<div class="chat-item ${p.id === activeId ? 'is-active' : ''}" data-project-id="${p.id}">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px;margin-right:8px;flex-shrink:0;"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg>
+        ${escapeHtml(p.name)}
+      </div>`;
+    });
+    container.innerHTML = html;
+
+    container.querySelectorAll('.chat-item').forEach(node => {
+      node.addEventListener('click', () => {
+        Storage.setActiveProject(node.dataset.projectId);
+        renderProjects();
+        renderHistory();
+      });
+    });
+  }
+
   function renderHistory() {
     const container = document.getElementById('chatHistoryGroups');
     if (!container) return;
 
-    const chats = Storage.getAllChats().sort((a, b) => b.updatedAt - a.updatedAt);
+    let chats = Storage.getAllChats().sort((a, b) => b.updatedAt - a.updatedAt);
+    const activeProject = Storage.getActiveProject();
+    
+    if (activeProject) {
+      chats = chats.filter(c => c.projectId === activeProject);
+    }
     if (chats.length === 0) {
       container.innerHTML = '';
       return;
@@ -45,6 +79,15 @@ const Sidebar = (() => {
 
     const activeId = Storage.getActiveChatId();
     let html = '';
+    
+    if (activeProject) {
+      html += `
+        <div class="chat-item" id="backToAllChats" style="color:var(--text-secondary); font-weight:500; margin-bottom:var(--sp-2);">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px;margin-right:8px;"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+          Back to all chats
+        </div>`;
+    }
+
     ['Today', 'Yesterday', 'Older'].forEach(label => {
       if (groups[label].length === 0) return;
       html += `<div class="sidebar-group-label">${label}</div>`;
@@ -55,6 +98,14 @@ const Sidebar = (() => {
     container.innerHTML = html;
 
     container.querySelectorAll('.chat-item').forEach(node => {
+      if (node.id === 'backToAllChats') {
+        node.addEventListener('click', () => {
+          Storage.setActiveProject(null);
+          renderProjects();
+          renderHistory();
+        });
+        return;
+      }
       node.addEventListener('click', () => {
         if (window.Chat) window.Chat.loadChat(node.dataset.chatId);
         if (window.matchMedia('(max-width: 860px)').matches) close();
@@ -69,13 +120,14 @@ const Sidebar = (() => {
   }
 
   function init() {
-    document.getElementById('hamburgerBtn')?.addEventListener('click', open);
-    document.getElementById('sidebarCloseBtn')?.addEventListener('click', close);
     document.getElementById('sidebarOverlay')?.addEventListener('click', close);
+    document.getElementById('sidebarCloseBtn')?.addEventListener('click', close);
+    document.getElementById('hamburgerBtn')?.addEventListener('click', open);
+    renderProjects();
     renderHistory();
   }
 
-  return { init, open, close, toggle, renderHistory };
+  return { init, open, close, toggle, renderHistory, renderProjects };
 })();
 
 window.Sidebar = Sidebar;
