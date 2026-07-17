@@ -180,3 +180,55 @@
   from { opacity: 0; }
   to   { opacity: 1; }
 }
+
+/* ---------- PULL TO REFRESH ---------- */
+.ptr-indicator {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  pointer-events: none;
+  opacity: 0;
+  transform: translateY(-20px);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+.ptr-indicator.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+.ptr-indicator.is-refreshing .ptr-spinner {
+  animation: rotate 2s linear infinite;
+}
+.ptr-indicator.is-refreshing .ptr-spinner .path {
+  stroke: var(--accent);
+  stroke-dasharray: 1, 200;
+  stroke-dashoffset: 0;
+  animation: dash 1.5s ease-in-out infinite;
+}
+.ptr-spinner {
+  width: 32px;
+  height: 32px;
+  background: var(--bg-surface-2);
+  border-radius: 50%;
+  padding: 6px;
+  box-shadow: var(--sh-md);
+  border: 1px solid var(--border-subtle);
+}
+.ptr-spinner .path {
+  stroke: var(--text-muted);
+  stroke-linecap: round;
+  transition: stroke 0.3s ease;
+}
+@keyframes rotate {
+  100% { transform: rotate(360deg); }
+}
+@keyframes dash {
+  0% { stroke-dasharray: 1, 200; stroke-dashoffset: 0; }
+  50% { stroke-dasharray: 89, 200; stroke-dashoffset: -35px; }
+  100% { stroke-dasharray: 89, 200; stroke-dashoffset: -124px; }
+}

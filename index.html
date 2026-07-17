@@ -73,6 +73,12 @@
 
   <!-- ============ MAIN COLUMN ============ -->
   <div class="main-col">
+    <!-- PULL TO REFRESH INDICATOR -->
+    <div id="ptr-indicator" class="ptr-indicator">
+      <svg class="ptr-spinner" viewBox="0 0 50 50">
+        <circle class="path" cx="25" cy="25" r="20" fill="none" stroke-width="5"></circle>
+      </svg>
+    </div>
 
     <!-- ===== CHAT SCREEN ===== -->
     <div class="screen screen-chat is-active" id="screenChat">
@@ -313,6 +319,15 @@
                 <div>
                   <label class="field-label" for="groqApiKeyInput">GROQ API KEY</label>
                   <input class="field-input" id="groqApiKeyInput" type="password" placeholder="gsk_..." autocomplete="off">
+                </div>
+              </div>
+            </div>
+            <div class="settings-group">
+              <div class="settings-group-label">Search Provider</div>
+              <div class="field-group" style="padding:var(--sp-4);background:var(--bg-surface);border-radius:var(--r-lg);border:1px solid var(--border-subtle);">
+                <div>
+                  <label class="field-label" for="tavilyApiKeyInput">TAVILY API KEY</label>
+                  <input class="field-input" id="tavilyApiKeyInput" type="password" placeholder="tvly-..." autocomplete="off">
                 </div>
               </div>
             </div>

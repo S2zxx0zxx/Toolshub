@@ -91,17 +91,23 @@ export const Chat = (() => {
         </div>`;
     }
     const found = m.toolId ? ToolSelector.findTool(m.toolId) : null;
-    const title = found ? found.tool.title : 'ToolsHub';
-    const svgIcon = found ? ToolSelector.icon(found.tool.icon) : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>';
+    const title = m.isError ? 'System Error' : (found ? found.tool.title : 'ToolsHub');
+    
+    let svgIcon = found ? ToolSelector.icon(found.tool.icon) : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>';
+    if (m.isError) {
+      svgIcon = '<svg viewBox="0 0 24 24" fill="none" stroke="var(--danger, #ff4d4f)" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>';
+    }
+    
+    const bubbleStyle = m.isError ? 'color: var(--danger, #ff4d4f); background: rgba(255,77,79,0.1); border: 1px solid rgba(255,77,79,0.2);' : '';
 
     return `
       <div class="msg msg-assistant">
         <div style="flex: 1;">
           <div style="display:flex; align-items:center; gap:var(--sp-2); margin-bottom:var(--sp-2); color:var(--text-muted); font-size:var(--fs-xs);">
             <div style="width:16px; height:16px; color:var(--text-secondary);">${svgIcon}</div>
-            <div><strong>${escapeHtml(title)} Agent</strong></div>
+            <div style="${m.isError ? 'color: var(--danger, #ff4d4f);' : ''}"><strong>${escapeHtml(title)} Agent</strong></div>
           </div>
-          <div class="msg-bubble markdown-body">${renderMarkdown(m.text)}</div>
+          <div class="msg-bubble markdown-body" style="${bubbleStyle}">${renderMarkdown(m.text)}</div>
           <div class="msg-actions">
             <button class="msg-action-btn" data-action="copy" title="Copy">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>

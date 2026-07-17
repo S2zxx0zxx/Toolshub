@@ -127,24 +127,33 @@ const Settings = (() => {
   // API KEYS SCREEN
   // =========================================================
   function openApiKeys() {
-    const input = document.getElementById('groqApiKeyInput');
-    if (input) {
-      input.value = localStorage.getItem('GROQ_API_KEY') || '';
+    const groqInput = document.getElementById('groqApiKeyInput');
+    if (groqInput) {
+      groqInput.value = localStorage.getItem('GROQ_API_KEY') || '';
+    }
+    const tavilyInput = document.getElementById('tavilyApiKeyInput');
+    if (tavilyInput) {
+      tavilyInput.value = localStorage.getItem('TAVILY_API_KEY') || '';
     }
     openSubScreen('screenApiKeys');
   }
   function saveApiKeys() {
-    const input = document.getElementById('groqApiKeyInput');
-    if (input) {
-      const val = input.value.trim();
-      if (val) {
-        localStorage.setItem('GROQ_API_KEY', val);
-        Toast.show('API Key saved to your browser.');
-      } else {
-        localStorage.removeItem('GROQ_API_KEY');
-        Toast.show('API Key removed.');
-      }
+    const groqInput = document.getElementById('groqApiKeyInput');
+    const tavilyInput = document.getElementById('tavilyApiKeyInput');
+    
+    if (groqInput) {
+      const val = groqInput.value.trim();
+      if (val) localStorage.setItem('GROQ_API_KEY', val);
+      else localStorage.removeItem('GROQ_API_KEY');
     }
+    
+    if (tavilyInput) {
+      const val = tavilyInput.value.trim();
+      if (val) localStorage.setItem('TAVILY_API_KEY', val);
+      else localStorage.removeItem('TAVILY_API_KEY');
+    }
+    
+    Toast.show('API Keys saved to your browser.');
     closeSubScreen('screenApiKeys');
   }
 
@@ -239,9 +248,60 @@ const Settings = (() => {
   }
 
   // =========================================================
+  // PULL TO REFRESH (PWA)
+  // =========================================================
+  function initPullToRefresh() {
+    let startY = 0;
+    let currentY = 0;
+    let isPulling = false;
+    const pwaContainer = document.querySelector('.main-col');
+    const indicator = document.getElementById('ptr-indicator');
+    if (!pwaContainer || !indicator) return;
+
+    pwaContainer.addEventListener('touchstart', e => {
+      if (pwaContainer.scrollTop <= 0) {
+        startY = e.touches[0].clientY;
+        isPulling = true;
+      }
+    }, { passive: true });
+
+    pwaContainer.addEventListener('touchmove', e => {
+      if (!isPulling) return;
+      currentY = e.touches[0].clientY;
+      const pullDistance = currentY - startY;
+
+      if (pullDistance > 0 && pwaContainer.scrollTop <= 0) {
+        indicator.classList.add('is-visible');
+        const transformY = Math.min(pullDistance * 0.4, 60);
+        indicator.style.transform = `translateY(${transformY}px)`;
+        if (pullDistance > 120) {
+          indicator.classList.add('is-refreshing');
+        } else {
+          indicator.classList.remove('is-refreshing');
+        }
+      }
+    }, { passive: true });
+
+    pwaContainer.addEventListener('touchend', () => {
+      if (!isPulling) return;
+      isPulling = false;
+      const pullDistance = currentY - startY;
+      
+      indicator.style.transform = '';
+      if (pullDistance > 120) {
+        indicator.classList.add('is-refreshing');
+        setTimeout(() => location.reload(true), 600); // Reload after showing spinner briefly
+      } else {
+        indicator.classList.remove('is-visible');
+      }
+    }, { passive: true });
+  }
+
+  // =========================================================
   // INIT — wire all settings listeners
   // =========================================================
   function init() {
+    initPullToRefresh();
     // Settings open/close
     document.getElementById('openSettingsBtn')?.addEventListener('click', open);
     document.getElementById('settingsBackBtn')?.addEventListener('click', close);
