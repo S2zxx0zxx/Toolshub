@@ -83,9 +83,44 @@
 /* ---------- MESSAGES ---------- */
 .msg {
   display: flex;
-  margin-bottom: var(--sp-6);
   animation: fadeUp var(--dur-base) var(--ease);
 }
+
+/* Markdown Styles */
+.markdown-body {
+  font-family: inherit;
+  line-height: 1.6;
+}
+.markdown-body p { margin-top: 0; margin-bottom: 0.75em; }
+.markdown-body p:last-child { margin-bottom: 0; }
+.markdown-body code {
+  background: var(--bg-hover);
+  padding: 0.2em 0.4em;
+  border-radius: var(--r-sm);
+  font-family: monospace;
+  font-size: 0.9em;
+}
+.markdown-body pre {
+  background: var(--bg-card);
+  padding: var(--sp-3);
+  border-radius: var(--r-md);
+  overflow-x: auto;
+  border: 1px solid var(--border-light);
+  margin-bottom: 0.75em;
+}
+.markdown-body pre code {
+  background: transparent;
+  padding: 0;
+  border-radius: 0;
+  color: inherit;
+}
+.markdown-body ul, .markdown-body ol {
+  padding-left: 1.5em;
+  margin-top: 0;
+  margin-bottom: 0.75em;
+}
+.markdown-body strong { font-weight: 600; }
+
 .msg.msg-user { justify-content: flex-end; }
 .msg.msg-assistant { justify-content: flex-start; }
 

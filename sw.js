@@ -1,4 +1,4 @@
-const CACHE_NAME = 'toolshub-cache-v1';
+const CACHE_NAME = 'toolshub-cache-v2';
 const urlsToCache = [
   '/',
   '/index.html',
@@ -27,7 +27,15 @@ const urlsToCache = [
   '/js/ui/chatEngine.js',
   '/js/ui/toast.js',
   '/js/ai/prompt.js',
-  '/js/services/aiApi.js'
+  '/js/ai/context.js',
+  '/js/ai/intent.js',
+  '/js/ai/router.js',
+  '/js/services/aiApi.js',
+  '/js/tools/permissions.js',
+  '/js/tools/executor.js',
+  '/js/services/tools/calculatorService.js',
+  '/js/services/tools/weatherService.js',
+  '/js/services/tools/searchService.js'
 ];
 
 self.addEventListener('install', event => {

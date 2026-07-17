@@ -32,10 +32,19 @@ export const ToolExecutor = (() => {
       }
     }
 
-    // 4. Safe Execution
+    // 4. Safe Execution with Timeout
     try {
-      // Execute the tool logic (which calls the service layer)
-      const data = await tool.execute(parameters);
+      // 15 seconds timeout
+      const timeoutPromise = new Promise((_, reject) => {
+        setTimeout(() => reject(new Error("Tool execution timed out after 15 seconds.")), 15000);
+      });
+      
+      // Execute the tool logic alongside the timeout
+      const data = await Promise.race([
+        tool.execute(parameters),
+        timeoutPromise
+      ]);
+      
       return _buildResult(true, data, null, toolId, startTime, tool.version);
     } catch (err) {
       console.error(`Execution error in tool ${toolId}:`, err);

@@ -102,7 +102,7 @@ export const Chat = (() => {
             <div style="width:16px; height:16px; color:var(--text-secondary);">${svgIcon}</div>
             <div><strong>${escapeHtml(title)} Agent</strong></div>
           </div>
-          <div class="msg-bubble">${escapeHtml(m.text)}</div>
+          <div class="msg-bubble markdown-body">${renderMarkdown(m.text)}</div>
           <div class="msg-actions">
             <button class="msg-action-btn" data-action="copy" title="Copy">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
@@ -134,6 +134,19 @@ export const Chat = (() => {
     const div = document.createElement('div');
     div.textContent = str;
     return div.innerHTML;
+  }
+
+  function renderMarkdown(str) {
+    if (!str) return '';
+    try {
+      if (window.marked && window.DOMPurify) {
+        const rawHtml = window.marked.parse(str);
+        return window.DOMPurify.sanitize(rawHtml);
+      }
+      return escapeHtml(str); // fallback
+    } catch (e) {
+      return escapeHtml(str);
+    }
   }
 
   function scrollToBottom() {
@@ -253,7 +266,8 @@ export const Chat = (() => {
     try {
       for await (const chunk of streamGenerator) {
         fullText += chunk;
-        bubble.textContent = fullText;
+        // Efficiently render markdown while streaming (can be heavy, but DOMPurify is fast)
+        bubble.innerHTML = renderMarkdown(fullText);
         scrollToBottom();
       }
     } catch (err) {
