@@ -15,6 +15,7 @@ export const LocalSettings = (() => {
     PROJECTS:           'toolshub_projects',            // array of { id, name }
     TOOL_ACCESS:        'toolshub_tool_access',         // 'auto' | 'always-ask' | 'off'
     PROFILE:            'toolshub_profile',             // { name, email }
+    WEB_SEARCH:         'toolshub_web_search',          // boolean
   };
 
   function _safeGet(key, fallback) {
@@ -116,6 +117,14 @@ export const LocalSettings = (() => {
     },
     setProfile(profile) {
       _safeSet(KEYS.PROFILE, profile);
+    },
+
+    // ---------- WEB SEARCH ----------
+    getWebSearchEnabled() {
+      return _safeGet(KEYS.WEB_SEARCH, false);
+    },
+    setWebSearchEnabled(value) {
+      _safeSet(KEYS.WEB_SEARCH, !!value);
     },
 
     // ---------- CLEAR ALL (logout) ----------

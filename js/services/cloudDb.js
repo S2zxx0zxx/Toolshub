@@ -142,20 +142,26 @@ export const CloudDB = (() => {
   }
   
   async function trackUsage(tokensCount) {
-    if (!tokensCount || !db || !fbFirestoreModule) return;
-    const usageRef = fbFirestoreModule.doc(db, `users/${_uid()}/usage`, 'current');
-    await fbFirestoreModule.setDoc(usageRef, {
-      requestsToday: fbFirestoreModule.increment(1),
-      tokensUsed: fbFirestoreModule.increment(tokensCount),
-      lastRequest: fbFirestoreModule.serverTimestamp(),
-      updatedAt: fbFirestoreModule.serverTimestamp()
-    }, { merge: true });
+    const uid = _uid();
+    if (!uid || !tokensCount || !db || !fbFirestoreModule) return;
+    try {
+      const usageRef = fbFirestoreModule.doc(db, `users/${uid}/usage`, 'current');
+      await fbFirestoreModule.setDoc(usageRef, {
+        requestsToday: fbFirestoreModule.increment(1),
+        tokensUsed: fbFirestoreModule.increment(tokensCount),
+        lastRequest: fbFirestoreModule.serverTimestamp(),
+        updatedAt: fbFirestoreModule.serverTimestamp()
+      }, { merge: true });
+    } catch (e) {
+      console.warn("Failed to track usage:", e);
+    }
   }
 
   async function logToolExecution(metadata) {
-    if (!metadata || !db || !fbFirestoreModule) return;
+    const uid = _uid();
+    if (!uid || !metadata || !db || !fbFirestoreModule) return;
     try {
-      const toolRef = fbFirestoreModule.doc(fbFirestoreModule.collection(db, `users/${_uid()}/toolHistory`));
+      const toolRef = fbFirestoreModule.doc(fbFirestoreModule.collection(db, `users/${uid}/toolHistory`));
       await fbFirestoreModule.setDoc(toolRef, {
         toolId: metadata.toolId,
         executionTime: metadata.executionTime,

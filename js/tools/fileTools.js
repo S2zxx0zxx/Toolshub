@@ -441,13 +441,31 @@ export const FileTools = (() => {
       const invalidParts = [];
       rangeStr.split(',').forEach(part => {
         const raw = part.trim();
-        const segs = raw.split('-').map(Number);
-        const [a, b] = segs;
-        if (isNaN(a) || (segs.length > 1 && isNaN(b))) {
+        if (!raw) {
+          invalidParts.push('(empty segment)');
+          return;
+        }
+        const segs = raw.split('-');
+        if (segs.length > 2) {
           invalidParts.push(raw);
           return;
         }
-        if (segs.length > 1) {
+        const nums = segs.map(s => {
+          const n = Number(s.trim());
+          return (s.trim() === '' || isNaN(n) || n < 1 || !Number.isInteger(n)) ? NaN : n;
+        });
+        
+        const [a, b] = nums;
+        if (isNaN(a) || (segs.length === 2 && isNaN(b))) {
+          invalidParts.push(raw);
+          return;
+        }
+        
+        if (segs.length === 2) {
+          if (a > b) {
+            invalidParts.push(raw);
+            return;
+          }
           for (let i = a; i <= b; i++) pages.add(i);
         } else {
           pages.add(a);

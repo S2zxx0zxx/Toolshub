@@ -3,6 +3,7 @@ import { IntentEngine } from './intent.js';
 import { ToolExecutor } from '../tools/executor.js';
 import { aiApi } from '../services/aiApi.js';
 import { CloudDB } from '../services/cloudDb.js';
+import { LocalSettings } from '../services/localSettings.js';
 
 export const AIRouter = (() => {
 
@@ -21,10 +22,18 @@ export const AIRouter = (() => {
     let context = ContextManager.buildContext(chatHistory);
 
     // 2. Detect Intent
-    const intentData = await IntentEngine.detectIntent(text, context);
+    let intentData = await IntentEngine.detectIntent(text, context);
+    
+    // 2b. Force web search if toggle is enabled
+    if (LocalSettings.getWebSearchEnabled()) {
+      intentData = {
+        requiresTool: true,
+        tool: 'search',
+        parameters: { query: text }
+      };
+    }
     
     let toolResults = [];
-
     // 3. Tool Routing & Execution
     if (intentData && intentData.requiresTool && intentData.tool) {
       if (onToolStart) onToolStart(intentData.tool);

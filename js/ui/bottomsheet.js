@@ -194,7 +194,9 @@ export const BottomSheet = (() => {
       const toggle = document.getElementById('webSearchToggle');
       if (toggle) {
         toggle.classList.toggle('is-on');
-        this.setAttribute('aria-pressed', toggle.classList.contains('is-on'));
+        const isOn = toggle.classList.contains('is-on');
+        this.setAttribute('aria-pressed', isOn);
+        LocalSettings.setWebSearchEnabled(isOn);
       }
     });
 
@@ -250,6 +252,16 @@ export const BottomSheet = (() => {
       const activeId = LocalSettings.getActiveProject();
       const proj = activeId ? LocalSettings.getProjects().find(p => p.id === activeId) : null;
       if (proj) projTrailEl.childNodes[0].textContent = proj.name + ' ';
+    }
+
+    // Restore web search toggle state
+    const webSearchToggle = document.getElementById('webSearchToggle');
+    if (webSearchToggle) {
+      const isEnabled = LocalSettings.getWebSearchEnabled();
+      if (isEnabled) {
+        webSearchToggle.classList.add('is-on');
+        document.getElementById('webSearchRow')?.setAttribute('aria-pressed', 'true');
+      }
     }
   }
 

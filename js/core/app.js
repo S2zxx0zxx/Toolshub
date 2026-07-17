@@ -13,7 +13,7 @@ import { ToolSelector } from '../tools/registry.js';
 import { Router } from './router.js';
 import { Auth } from '../services/auth.js';
 import { CloudDB } from '../services/cloudDb.js';
-import { initFirebase } from '../services/firebase.js';
+import { initFirebase, auth, db, fbAuthModule, fbFirestoreModule } from '../services/firebase.js';
 
 const Settings = (() => {
 
@@ -90,6 +90,13 @@ const Settings = (() => {
     // Update profile display
     const nameDisplayEl = document.getElementById('profileNameDisplay');
     if (nameDisplayEl) nameDisplayEl.textContent = name;
+    
+    // Update Firebase Auth & Firestore profile if logged in
+    const currentUser = Auth.getCurrentUser();
+    if (currentUser && fbAuthModule && auth && fbFirestoreModule && db) {
+      fbAuthModule.updateProfile(currentUser, { displayName: name }).catch(console.error);
+      fbFirestoreModule.updateDoc(fbFirestoreModule.doc(db, 'users', currentUser.uid), { displayName: name }).catch(console.error);
+    }
 
     Toast.show('Profile saved.');
     closeSubScreen('screenProfile');
@@ -452,12 +459,10 @@ const PWA = (() => {
           newWorker.addEventListener('statechange', () => {
             if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
               // new update available
-              Toast.show('Update available — tap to refresh', { duration: 0 }); // keep showing
-              const toastEl = document.querySelector('.toast');
-              if (toastEl) {
-                toastEl.style.cursor = 'pointer';
-                toastEl.addEventListener('click', () => window.location.reload());
-              }
+              Toast.show('Update available — tap to refresh', { 
+                duration: 0, 
+                onClick: () => window.location.reload()
+              });
             }
           });
         });
@@ -522,11 +527,14 @@ document.addEventListener('DOMContentLoaded', async () => {
   Chat.init();
   Settings.init();
 
-  // always show empty state with no tool selected on fresh load
-  Chat.newChat();
-
-  // Initialize Firebase dynamically to avoid network-blocking module crashes
-  await initFirebase();
+  // Check for deep link or default to new chat
+  if (window.location.hash && window.location.hash.startsWith('#chat=')) {
+    const chatId = window.location.hash.replace('#chat=', '');
+    Chat.loadChat(chatId);
+  } else {
+    // always show empty state with no tool selected on fresh load
+    Chat.newChat();
+  }
 
   // ---------- AUTHENTICATION UI ----------
   let isSignupMode = false;
@@ -598,6 +606,9 @@ document.addEventListener('DOMContentLoaded', async () => {
   document.getElementById('sidebarLoginBtn')?.addEventListener('click', () => {
     document.getElementById('authOverlay').style.display = 'flex';
   });
+
+  // Initialize Firebase dynamically to avoid network-blocking module crashes
+  await initFirebase();
 
   Auth.onAuthStateChanged(user => {
     const avatarEl = document.querySelector('.sidebar-avatar');

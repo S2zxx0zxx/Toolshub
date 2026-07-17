@@ -9,7 +9,8 @@
         "authorizedRedirectUris": [
           "https://toolshub-87859.firebaseapp.com",
           "https://toolshub-87859.web.app",
-          "http://localhost"
+          "http://localhost",
+          "https://s2zxx0zxx.github.io"
         ]
       }
     }

@@ -581,8 +581,15 @@ export const UtilityTools = (() => {
         'C+': 2.3, 'C': 2.0, 'C-': 1.7,
         'D+': 1.3, 'D': 1.0, 'D-': 0.7, 'F': 0,
       };
+      
+      const LETTER_PCT = {
+        'A+': 98, 'A': 95, 'A-': 91,
+        'B+': 88, 'B': 85, 'B-': 81,
+        'C+': 78, 'C': 75, 'C-': 71,
+        'D+': 68, 'D': 65, 'D-': 61, 'F': 50,
+      };
 
-      let totalPts = 0, totalCreds = 0;
+      let totalPts = 0, totalPctPoints = 0, totalCreds = 0;
 
       tbody.querySelectorAll('tr').forEach(row => {
         const cred  = parseFloat(row.querySelector('.gpa-cred')?.value);
@@ -590,25 +597,29 @@ export const UtilityTools = (() => {
         if (!grade || isNaN(cred) || cred <= 0) return;
 
         let pts;
+        let rowPct;
         if (LETTER[grade] !== undefined) {
           pts = LETTER[grade];
+          rowPct = LETTER_PCT[grade];
         } else {
           const pct = parseFloat(grade.replace('%', ''));
           if (isNaN(pct)) return;
+          rowPct = pct;
           if (pct >= 90) pts = 4.0;
           else if (pct >= 80) pts = 3.0;
           else if (pct >= 70) pts = 2.0;
           else if (pct >= 60) pts = 1.0;
           else pts = 0;
         }
-        totalPts   += pts * cred;
-        totalCreds += cred;
+        totalPts       += pts * cred;
+        totalPctPoints += rowPct * cred;
+        totalCreds     += cred;
       });
 
       if (totalCreds === 0) { alert('Please fill in at least one valid row.'); return; }
 
       const gpa  = totalPts / totalCreds;
-      const pct  = (gpa / 4) * 100;
+      const pct  = totalPctPoints / totalCreds;
       const grade = gpa >= 3.7 ? 'A' : gpa >= 3.3 ? 'A−' : gpa >= 3.0 ? 'B+'
         : gpa >= 2.7 ? 'B' : gpa >= 2.3 ? 'B−' : gpa >= 2.0 ? 'C+' : gpa >= 1.7 ? 'C' : 'D';
 
