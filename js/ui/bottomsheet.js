@@ -77,8 +77,8 @@ export const BottomSheet = (() => {
       row.querySelector('.project-item-name').textContent = p.name;
       row.addEventListener('click', () => {
         LocalSettings.setActiveProject(p.id);
-        if (window.Chat) window.Chat.assignProject(p.id);
-        if (window.Sidebar) window.Sidebar.renderProjects();
+        if (Chat) Chat.assignProject(p.id);
+        if (Sidebar) Sidebar.renderProjects();
         if (trailEl) {
           trailEl.childNodes[0].textContent = p.name + ' ';
         }
@@ -110,8 +110,8 @@ export const BottomSheet = (() => {
       const newProj = { id: 'p_' + Date.now().toString(36), name };
       LocalSettings.saveProject(newProj);
       LocalSettings.setActiveProject(newProj.id);
-      if (window.Chat) window.Chat.assignProject(newProj.id);
-      if (window.Sidebar) window.Sidebar.renderProjects();
+      if (Chat) Chat.assignProject(newProj.id);
+      if (Sidebar) Sidebar.renderProjects();
 
       if (trailEl) {
         trailEl.childNodes[0].textContent = name + ' ';

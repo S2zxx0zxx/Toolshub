@@ -8,6 +8,9 @@ import { LocalSettings } from '../services/localSettings.js';
 import { CalculatorService } from '../services/tools/calculatorService.js';
 import { WeatherService } from '../services/tools/weatherService.js';
 import { SearchService } from '../services/tools/searchService.js';
+import { FileTools } from './fileTools.js';
+import { UtilityTools } from './utilityTools.js';
+import { BottomSheet } from '../ui/bottomsheet.js';
 
 export const ToolSelector = (() => {
 
@@ -165,7 +168,7 @@ export const ToolSelector = (() => {
 
   function getPinned() {
     const pinned = [];
-    const enabledIds = window.LocalSettings ? LocalSettings.getEnabledCategories() : null;
+    const enabledIds = LocalSettings ? LocalSettings.getEnabledCategories() : null;
     DATA.forEach(cat => {
       if (enabledIds !== null && !enabledIds.includes(cat.id)) return;
       cat.tools.forEach(t => { if (t.pinned) pinned.push({ ...t, categoryId: cat.id }); });
@@ -194,7 +197,7 @@ export const ToolSelector = (() => {
     if (!el) return;
 
     // null means all enabled (default); otherwise filter to the saved id list
-    const enabledIds = window.LocalSettings ? LocalSettings.getEnabledCategories() : null;
+    const enabledIds = LocalSettings ? LocalSettings.getEnabledCategories() : null;
     const visible = enabledIds === null ? DATA : DATA.filter(c => enabledIds.includes(c.id));
 
     el.innerHTML = visible.map(cat => `
@@ -281,9 +284,9 @@ export const ToolSelector = (() => {
 
       // Route to correct renderer
       if (found.category.id === 'files') {
-        if (window.FileTools)   FileTools.render(found.tool);
+        if (FileTools)   FileTools.render(found.tool);
       } else {
-        if (window.UtilityTools) UtilityTools.render(found.tool);
+        if (UtilityTools) UtilityTools.render(found.tool);
       }
 
       // Defer: override any renderEmptyState() called immediately after
@@ -309,8 +312,8 @@ export const ToolSelector = (() => {
       renderPromptCards(found.tool);
     }
 
-    if (!(opts && opts.silent) && window.BottomSheet) {
-      window.BottomSheet.closeToolSheet();
+    if (!(opts && opts.silent) && BottomSheet) {
+      BottomSheet.closeToolSheet();
     }
   }
 
@@ -356,7 +359,7 @@ export const ToolSelector = (() => {
     renderPromptCards,
     // called by Manage Tools screen to persist + refresh selector
     setEnabledCategories(ids) {
-      if (window.LocalSettings) LocalSettings.setEnabledCategories(ids);
+      if (LocalSettings) LocalSettings.setEnabledCategories(ids);
       renderCategoryLevel();
       renderPins();
     },

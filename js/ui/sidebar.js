@@ -4,6 +4,7 @@
    ============================================ */
 
 import { LocalSettings } from '../services/localSettings.js';
+import { Chat } from './chatEngine.js';
 
 export const Sidebar = (() => {
 
@@ -124,7 +125,7 @@ export const Sidebar = (() => {
       }
       node.addEventListener('click', () => {
         const chatData = chats.find(c => c.id === node.dataset.chatId);
-        if (window.Chat) window.Chat.loadChat(node.dataset.chatId, chatData);
+        if (Chat) Chat.loadChat(node.dataset.chatId, chatData);
         if (window.matchMedia('(max-width: 860px)').matches) close();
       });
     });
