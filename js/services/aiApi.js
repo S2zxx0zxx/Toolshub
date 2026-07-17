@@ -73,8 +73,12 @@ export const aiApi = (() => {
     }
   }
 
+  function getApiKey() {
+    return localStorage.getItem('GROQ_API_KEY') || (window.ENV && window.ENV.GROQ_API_KEY) || null;
+  }
+
   async function* chatStream(messages) {
-    const apiKey = localStorage.getItem('GROQ_API_KEY');
+    const apiKey = getApiKey();
     if (apiKey) {
       yield* fetchGroqStream(messages, apiKey);
     } else {
@@ -82,7 +86,37 @@ export const aiApi = (() => {
     }
   }
 
+  async function chatCompletionJson(messages) {
+    const apiKey = getApiKey();
+    if (!apiKey) return null; // cannot do AI classification without real API
+    
+    const payload = {
+      model: DEFAULT_MODEL,
+      messages: messages,
+      temperature: 0.1,
+      response_format: { type: "json_object" }
+    };
+    
+    try {
+      const response = await fetch(API_ENDPOINT, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${apiKey}`
+        },
+        body: JSON.stringify(payload)
+      });
+      if (!response.ok) return null;
+      const data = await response.json();
+      return JSON.parse(data.choices[0].message.content);
+    } catch (e) {
+      console.error("AI JSON completion failed:", e);
+      return null;
+    }
+  }
+
   return {
-    chatStream
+    chatStream,
+    chatCompletionJson
   };
 })();

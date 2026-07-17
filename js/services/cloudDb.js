@@ -101,6 +101,21 @@ export const CloudDB = (() => {
     }, { merge: true });
   }
 
+  async function logToolExecution(metadata) {
+    if (!metadata) return;
+    try {
+      const toolRef = doc(collection(db, `users/${_uid()}/toolHistory`));
+      await setDoc(toolRef, {
+        toolId: metadata.toolId,
+        executionTime: metadata.executionTime,
+        version: metadata.version || '1.0',
+        timestamp: serverTimestamp()
+      });
+    } catch (e) {
+      console.warn("Failed to log tool execution:", e);
+    }
+  }
+
   async function migrateLocalChats() {
     try {
       const raw = localStorage.getItem('toolshub_chats');
@@ -133,6 +148,7 @@ export const CloudDB = (() => {
     saveMessage,
     deleteConversation,
     trackUsage,
+    logToolExecution,
     migrateLocalChats
   };
 })();

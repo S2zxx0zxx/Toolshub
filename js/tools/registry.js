@@ -5,6 +5,9 @@
    ============================================ */
 
 import { LocalSettings } from '../services/localSettings.js';
+import { CalculatorService } from '../services/tools/calculatorService.js';
+import { WeatherService } from '../services/tools/weatherService.js';
+import { SearchService } from '../services/tools/searchService.js';
 
 export const ToolSelector = (() => {
 
@@ -357,5 +360,73 @@ export const ToolSelector = (() => {
       renderCategoryLevel();
       renderPins();
     },
+  };
+})();
+
+// =========================================================
+// AI EXECUTION REGISTRY (Phase 3 Backend Engine)
+// =========================================================
+export const ExecutionRegistry = (() => {
+  const TOOLS = new Map();
+
+  function registerTool(schema) {
+    TOOLS.set(schema.id, schema);
+  }
+
+  function getTool(id) {
+    return TOOLS.get(id);
+  }
+
+  function getAllTools() {
+    return Array.from(TOOLS.values());
+  }
+
+  // Register built-in tools
+  registerTool({
+    id: 'calculator',
+    name: 'Calculator',
+    description: 'Perform mathematical calculations safely.',
+    category: 'utility',
+    version: '1.0',
+    inputSchema: { required: ['expression'] },
+    permissions: ['basic'],
+    requiresAuth: true,
+    execute: async (params) => {
+      return await CalculatorService.evaluate(params.expression);
+    }
+  });
+
+  registerTool({
+    id: 'weather',
+    name: 'Weather',
+    description: 'Fetch current weather information for a specific city.',
+    category: 'utility',
+    version: '1.0',
+    inputSchema: { required: ['city'] },
+    permissions: ['basic'],
+    requiresAuth: true,
+    execute: async (params) => {
+      return await WeatherService.getWeather(params.city);
+    }
+  });
+
+  registerTool({
+    id: 'search',
+    name: 'Search Web',
+    description: 'Search the internet for real-time information or news.',
+    category: 'utility',
+    version: '1.0',
+    inputSchema: { required: ['query'] },
+    permissions: ['basic'],
+    requiresAuth: true,
+    execute: async (params) => {
+      return await SearchService.searchWeb(params.query);
+    }
+  });
+
+  return {
+    registerTool,
+    getTool,
+    getAllTools
   };
 })();

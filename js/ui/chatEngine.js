@@ -9,8 +9,8 @@ import { CloudDB } from '../services/cloudDb.js';
 import { ToolSelector } from '../tools/registry.js';
 import { Sidebar } from './sidebar.js';
 import { Toast } from './toast.js';
-import { PromptManager } from '../ai/prompt.js';
-import { aiApi } from '../services/aiApi.js';
+import { AIRouter } from '../ai/router.js';
+import { CloudDB } from '../services/cloudDb.js';
 
 export const Chat = (() => {
   let currentChat = null; // { id, title, toolId, messages, createdAt, updatedAt }
@@ -161,20 +161,16 @@ export const Chat = (() => {
     // Save to Firestore
     await CloudDB.saveMessage(currentChat.id, userMsg);
 
-    showTypingIndicator();
-
     try {
-      // Build messages payload, filtering out errors
-      const validMessages = currentChat.messages.filter(m => !m.isError && m.text.trim().length > 0);
-      const messagesPayload = [
-        { role: 'system', content: PromptManager.getSystemPrompt() },
-        ...validMessages.map(m => ({ role: m.role, content: m.text }))
-      ];
-
-      const stream = aiApi.chatStream(messagesPayload);
-      await consumeStream(stream);
+      showTypingIndicator();
+      const chatHistory = currentChat.messages.slice(0, -1);
+      const streamGenerator = AIRouter.processInput(text, chatHistory, (toolId) => {
+        // Update typing indicator when tool starts
+        hideTypingIndicator();
+        showTypingIndicator(toolId);
+      });
+      await consumeStream(streamGenerator);
     } catch (err) {
-      hideTypingIndicator();
       appendErrorMessage(err.message || "AI service temporarily unavailable.");
     }
   }
@@ -187,21 +183,32 @@ export const Chat = (() => {
     await CloudDB.saveMessage(currentChat.id, errMsg);
   }
 
-  function showTypingIndicator() {
+  function showTypingIndicator(toolId = null) {
     const list = document.getElementById('msgList');
     const el = document.createElement('div');
     el.className = 'msg msg-assistant';
     el.id = 'typingIndicator';
     
-    const activeTool = ToolSelector.getActiveTool();
-    const title = activeTool ? activeTool.tool.title : 'ToolsHub';
-    const svgIcon = activeTool ? ToolSelector.icon(activeTool.tool.icon) : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>';
+    // Determine active tool UI state
+    let activeTool = ToolSelector.getActiveTool();
+    if (!activeTool && toolId) {
+      // It's a backend AI execution tool, grab its UI metadata if it exists in UI registry
+      activeTool = ToolSelector.findTool(toolId);
+    }
+
+    let title = activeTool ? activeTool.tool.title : 'ToolsHub';
+    let svgIcon = activeTool ? ToolSelector.icon(activeTool.tool.icon) : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>';
+
+    // If it's a backend tool like calculator/weather
+    if (toolId === 'calculator' || toolId === 'weather' || toolId === 'search') {
+      title = toolId.charAt(0).toUpperCase() + toolId.slice(1);
+    }
 
     el.innerHTML = `
       <div style="flex: 1;">
         <div style="display:flex; align-items:center; gap:var(--sp-2); margin-bottom:var(--sp-2); color:var(--text-muted); font-size:var(--fs-xs);">
           <div style="width:16px; height:16px; color:var(--text-secondary);">${svgIcon}</div>
-          <div><strong>${escapeHtml(title)} Agent</strong> is typing…</div>
+          <div><strong>${escapeHtml(title)} Agent</strong> is ${toolId ? 'using a tool' : 'typing'}…</div>
         </div>
         <div class="typing-dots"><span></span><span></span><span></span></div>
       </div>
