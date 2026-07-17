@@ -78,7 +78,11 @@ export const aiApi = (() => {
   // the current client-only architecture. Do not use a key with billing limits you're
   // not comfortable exposing from the browser.
   function getApiKey() {
-    return localStorage.getItem('GROQ_API_KEY') || null;
+    let key = localStorage.getItem('GROQ_API_KEY');
+    if (!key && typeof window !== 'undefined' && window.ENV && window.ENV.GROQ_API_KEY) {
+      key = window.ENV.GROQ_API_KEY;
+    }
+    return key || null;
   }
 
   async function* chatStream(messages) {
