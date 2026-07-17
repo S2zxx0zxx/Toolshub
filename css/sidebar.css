@@ -1,0 +1,110 @@
+/* ============================================
+   TOOLSHUB — SIDEBAR
+   ============================================ */
+
+.sidebar {
+  background: var(--bg-surface);
+  border-right: 1px solid var(--border-subtle);
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.sidebar-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: var(--sp-5) var(--sp-4) var(--sp-3);
+}
+.sidebar-logo {
+  font-family: var(--font-display);
+  font-size: var(--fs-lg);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--text-primary);
+}
+.sidebar-close-btn { display: none; }
+@media (max-width: 860px) {
+  .sidebar-close-btn { display: inline-flex; }
+}
+
+.sidebar-newchat {
+  margin: var(--sp-2) var(--sp-4) var(--sp-4);
+  display: flex; align-items: center; gap: var(--sp-2);
+  height: 44px;
+  padding: 0 var(--sp-4);
+  border-radius: var(--r-md);
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-weight: 600;
+  font-size: var(--fs-base);
+  transition: background var(--dur-fast) var(--ease), transform var(--dur-fast) var(--ease);
+}
+.sidebar-newchat:hover { background: var(--accent); color: var(--accent-text-on); }
+.sidebar-newchat:active { transform: scale(0.98); }
+.sidebar-newchat svg { width: 18px; height: 18px; }
+
+/* pinned tool shortcuts */
+.sidebar-pins {
+  padding: 0 var(--sp-3);
+  display: flex; flex-direction: column; gap: 2px;
+  margin-bottom: var(--sp-4);
+}
+.sidebar-pin-item {
+  display: flex; align-items: center; gap: var(--sp-3);
+  padding: var(--sp-2) var(--sp-3);
+  border-radius: var(--r-md);
+  font-size: var(--fs-sm);
+  color: var(--text-secondary);
+  transition: background var(--dur-fast) var(--ease), color var(--dur-fast) var(--ease);
+}
+.sidebar-pin-item:hover { background: var(--bg-surface-2); color: var(--text-primary); }
+.sidebar-pin-item svg { width: 16px; height: 16px; color: var(--accent); flex-shrink: 0; }
+
+.sidebar-scroll {
+  flex: 1;
+  padding: 0 var(--sp-3);
+}
+
+.sidebar-group { margin-bottom: var(--sp-5); }
+.sidebar-group-label {
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-muted);
+  padding: var(--sp-2) var(--sp-3);
+}
+
+.chat-item {
+  display: block;
+  padding: var(--sp-2) var(--sp-3);
+  border-radius: var(--r-md);
+  font-size: var(--fs-sm);
+  color: var(--text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: background var(--dur-fast) var(--ease), color var(--dur-fast) var(--ease);
+  cursor: pointer;
+}
+.chat-item:hover { background: var(--bg-surface-2); color: var(--text-primary); }
+.chat-item.is-active { background: var(--bg-surface-2); color: var(--text-primary); font-weight: 500; }
+
+/* footer: profile + settings */
+.sidebar-footer {
+  padding: var(--sp-3);
+  border-top: 1px solid var(--border-subtle);
+  display: flex; align-items: center; gap: var(--sp-3);
+}
+.sidebar-avatar {
+  width: 36px; height: 36px;
+  border-radius: var(--r-full);
+  background: var(--accent);
+  color: var(--accent-text-on);
+  display: inline-flex; align-items: center; justify-content: center;
+  font-weight: 600;
+  font-size: var(--fs-sm);
+  flex-shrink: 0;
+}
+.sidebar-user { flex: 1; min-width: 0; }
+.sidebar-user-name { font-size: var(--fs-sm); font-weight: 500; color: var(--text-primary); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.sidebar-user-plan { font-size: var(--fs-xs); color: var(--text-muted); }

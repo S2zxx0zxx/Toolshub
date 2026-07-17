@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>ToolsHub</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="css/variables.css">
+<link rel="stylesheet" href="css/layout.css">
+<link rel="stylesheet" href="css/components.css">
+<link rel="stylesheet" href="css/sidebar.css">
+<link rel="stylesheet" href="css/chat.css">
+<link rel="stylesheet" href="css/bottomsheet.css">
+</head>
+<body>
+
+<div id="app" data-screen="chat">
+
+  <!-- ============ SIDEBAR ============ -->
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <span class="sidebar-logo">ToolsHub</span>
+      <button class="btn-icon sidebar-close-btn" id="sidebarCloseBtn" aria-label="Close menu">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+
+    <button class="sidebar-newchat" id="newChatBtn">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      New chat
+    </button>
+
+    <div class="sidebar-pins" id="sidebarPins">
+      <!-- populated by toolSelector.js: pinned favorite tools -->
+    </div>
+
+    <div class="sidebar-scroll scroll-y">
+      <div class="sidebar-group" id="chatHistoryGroups">
+        <!-- populated by storage.js: Today / Yesterday / Older -->
+      </div>
+    </div>
+
+    <div class="sidebar-footer">
+      <div class="sidebar-avatar">S</div>
+      <div class="sidebar-user">
+        <div class="sidebar-user-name">Satyam</div>
+        <div class="sidebar-user-plan">Free plan</div>
+      </div>
+      <button class="btn-icon" id="openSettingsBtn" aria-label="Settings">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 11-2.83-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 112.83 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+      </button>
+    </div>
+  </aside>
+
+  <!-- ============ MAIN COLUMN ============ -->
+  <div class="main-col">
+
+    <!-- ===== CHAT SCREEN ===== -->
+    <div class="screen screen-chat is-active" id="screenChat">
+
+      <div class="topbar">
+        <div class="topbar-left">
+          <button class="btn-icon hamburger-btn" id="hamburgerBtn" aria-label="Open menu">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+          </button>
+          <span class="topbar-title" id="chatTitle">New chat</span>
+        </div>
+        <div class="topbar-right">
+          <button class="btn-icon" id="shareBtn" aria-label="Share">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="chat-body scroll-y" id="chatBody">
+        <div class="chat-inner" id="chatInner">
+          <!-- empty state shown by default; chat.js swaps this for message list -->
+          <div class="empty-state" id="emptyState">
+            <svg class="empty-mark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2 L14.5 9.5 L22 12 L14.5 14.5 L12 22 L9.5 14.5 L2 12 L9.5 9.5 Z"/></svg>
+            <div class="empty-greeting" id="greetingText">Afternoon, Satyam</div>
+            <div class="prompt-cards" id="promptCards">
+              <!-- populated by toolSelector.js based on active tool -->
+            </div>
+          </div>
+
+          <div class="msg-list" id="msgList" style="display:none;"></div>
+        </div>
+      </div>
+
+      <div class="input-zone">
+        <div class="input-wrap">
+          <div class="tool-chip-row">
+            <button class="chip" id="toolChip">
+              <svg class="chip-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/></svg>
+              <span id="toolChipLabel">Choose a tool</span>
+              <svg class="chip-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+          </div>
+
+          <div class="input-card">
+            <textarea class="input-textarea" id="inputTextarea" rows="1" placeholder="Choose a tool to get started..."></textarea>
+            <div class="input-actions">
+              <div class="input-actions-left">
+                <button class="btn-icon" id="addBtn" aria-label="Add to chat">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                </button>
+              </div>
+              <div class="input-actions-right">
+                <button class="btn-send" id="sendBtn" aria-label="Send">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/></svg>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ===== SETTINGS SCREEN ===== -->
+    <div class="screen screen-settings" id="screenSettings">
+      <div class="settings-topbar">
+        <button class="btn-icon" id="settingsBackBtn" aria-label="Back">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+        </button>
+        <span class="settings-topbar-title">Settings</span>
+        <span style="width:40px;"></span>
+      </div>
+
+      <div class="settings-body scroll-y">
+        <div class="settings-inner">
+
+          <div class="settings-account-card">
+            <div class="settings-avatar-lg">S</div>
+            <div>
+              <div class="settings-account-email">satyam@digiriseindia.tech</div>
+              <span class="settings-plan-badge">Free</span>
+            </div>
+          </div>
+
+          <div class="settings-upgrade-card">
+            <div class="settings-upgrade-title">Get more with Pro</div>
+            <div class="settings-upgrade-sub">Higher limits, priority tools, and early access to new categories.</div>
+            <button class="btn btn-primary">Upgrade</button>
+          </div>
+
+          <div class="settings-group">
+            <div class="settings-group-label">Account</div>
+            <div class="list-row" role="button">
+              <div class="list-row-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
+              <div class="list-row-body"><div class="list-row-title">Profile</div></div>
+              <div class="list-row-trail"><svg class="list-row-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></div>
+            </div>
+            <div class="list-row" role="button">
+              <div class="list-row-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg></div>
+              <div class="list-row-body"><div class="list-row-title">Billing</div></div>
+              <div class="list-row-trail"><svg class="list-row-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></div>
+            </div>
+          </div>
+
+          <div class="settings-group">
+            <div class="settings-group-label">Tools & Connectors</div>
+            <div class="list-row" role="button" id="manageToolsRow">
+              <div class="list-row-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.77z"/></svg></div>
+              <div class="list-row-body"><div class="list-row-title">Manage Tools</div><div class="list-row-subtitle">3 categories enabled</div></div>
+              <div class="list-row-trail"><svg class="list-row-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></div>
+            </div>
+          </div>
+
+          <div class="settings-group">
+            <div class="settings-group-label">Preferences</div>
+            <div class="list-row" role="button" id="themeToggleRow">
+              <div class="list-row-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg></div>
+              <div class="list-row-body"><div class="list-row-title">Color mode</div></div>
+              <div class="list-row-trail"><span id="themeLabel">Dark</span><svg class="list-row-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></div>
+            </div>
+          </div>
+
+          <div class="settings-group">
+            <div class="list-row settings-logout" role="button" id="logoutBtn">
+              <div class="list-row-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg></div>
+              <div class="list-row-body"><div class="list-row-title">Log out</div></div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ============ "+" ADD-TO-CHAT SHEET ============ -->
+<div class="sheet-overlay" id="addSheetOverlay">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-head">
+      <button class="btn-icon" id="addSheetCloseBtn" aria-label="Close">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+      <span class="sheet-title">Add to chat</span>
+      <span style="width:40px;"></span>
+    </div>
+    <div class="sheet-body">
+      <div class="list-row" role="button" id="uploadFileRow">
+        <div class="list-row-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l9.19-9.19a4 4 0 015.66 5.66l-9.2 9.19a2 2 0 01-2.83-2.83l8.49-8.48"/></svg></div>
+        <div class="list-row-body"><div class="list-row-title">Upload File</div></div>
+        <div class="list-row-trail"><svg class="list-row-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></div>
+      </div>
+      <div class="addchat-divider"></div>
+      <div class="list-row" role="button">
+        <div class="list-row-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></div>
+        <div class="list-row-body"><div class="list-row-title">Web search</div></div>
+        <div class="list-row-trail"><div class="toggle" id="webSearchToggle"></div></div>
+      </div>
+      <div class="list-row" role="button">
+        <div class="list-row-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg></div>
+        <div class="list-row-body"><div class="list-row-title">Add to project</div></div>
+        <div class="list-row-trail">None <svg class="list-row-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></div>
+      </div>
+      <div class="list-row" role="button">
+        <div class="list-row-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.77z"/></svg></div>
+        <div class="list-row-body"><div class="list-row-title">Tool access</div></div>
+        <div class="list-row-trail">Auto <svg class="list-row-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></div>
+      </div>
+      <div class="list-row" role="button">
+        <div class="list-row-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 010 20 15.3 15.3 0 010-20z"/></svg></div>
+        <div class="list-row-body"><div class="list-row-title">Connectors</div></div>
+        <div class="list-row-trail"><svg class="list-row-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></div>
+      </div>
+    </div>
+  </div>
+</div>
+<input type="file" id="hiddenFileInput" style="display:none;">
+
+<!-- ============ TOOL SELECTOR SHEET (2-level) ============ -->
+<div class="sheet-overlay" id="toolSheetOverlay">
+  <div class="sheet" id="toolSheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-head">
+      <button class="btn-icon sheet-back-btn" id="toolSheetBackBtn" aria-label="Back">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+      </button>
+      <span class="sheet-title" id="toolSheetTitle">Choose a category</span>
+      <button class="btn-icon" id="toolSheetCloseBtn" aria-label="Close">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="sheet-body">
+      <div class="tool-levels" id="toolLevels">
+        <div class="tool-level" id="categoryLevel"></div>
+        <div class="tool-level" id="toolLevel"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="js/storage.js"></script>
+<script src="js/toolSelector.js"></script>
+<script src="js/sidebar.js"></script>
+<script src="js/bottomsheet.js"></script>
+<script src="js/chat.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,110 @@
+/* ============================================
+   TOOLSHUB — DESIGN TOKENS
+   Single source of truth for all visual values.
+   Every other CSS file reads from these variables.
+   ============================================ */
+
+:root {
+
+  /* ---------- COLOR: BASE (Dark theme, default) ---------- */
+  --bg-app:        #0e0e10;   /* app background */
+  --bg-surface:    #17171a;   /* sidebar, sheets, cards */
+  --bg-surface-2:  #1e1e22;   /* elevated cards, input fields */
+  --bg-surface-3:  #26262b;   /* hover states on surface-2 */
+  --border-subtle: rgba(255,255,255,0.08);
+  --border-med:    rgba(255,255,255,0.14);
+
+  /* ---------- COLOR: TEXT ---------- */
+  --text-primary:   #f2f1ed;
+  --text-secondary: #a6a5a0;
+  --text-muted:     #737270;
+  --text-inverse:   #14140f;
+
+  /* ---------- COLOR: ACCENT (gold — DigiRise family accent) ---------- */
+  --accent:        #c8890a;
+  --accent-hover:  #e0a02a;
+  --accent-soft:   rgba(200,137,10,0.14);
+  --accent-text-on: #14140f; /* text color when sitting on accent bg */
+
+  /* ---------- COLOR: SEMANTIC ---------- */
+  --success: #4caf6d;
+  --warning: #d9a441;
+  --danger:  #e05d5d;
+  --info:    #4a9ce0;
+
+  /* ---------- RADIUS SCALE ---------- */
+  --r-sm:   10px;   /* small chips, badges */
+  --r-md:   14px;   /* buttons, inputs */
+  --r-lg:   20px;   /* cards, message bubbles */
+  --r-xl:   24px;   /* sheets, modals */
+  --r-full: 999px;  /* pills, avatars */
+
+  /* ---------- SPACING SCALE ---------- */
+  --sp-1: 4px;
+  --sp-2: 8px;
+  --sp-3: 12px;
+  --sp-4: 16px;
+  --sp-5: 20px;
+  --sp-6: 24px;
+  --sp-7: 32px;
+  --sp-8: 40px;
+  --sp-9: 56px;
+
+  /* ---------- SHADOW SCALE ---------- */
+  --sh-xs: 0 1px 2px rgba(0,0,0,0.24);
+  --sh-sm: 0 2px 8px rgba(0,0,0,0.28);
+  --sh-md: 0 4px 16px rgba(0,0,0,0.32);
+  --sh-lg: 0 8px 32px rgba(0,0,0,0.40);
+  --sh-xl: 0 16px 48px rgba(0,0,0,0.48);
+
+  /* ---------- MOTION ---------- */
+  --ease:      cubic-bezier(.22, 1, .36, 1);   /* smooth deceleration, used everywhere */
+  --ease-in:   cubic-bezier(.4, 0, 1, 1);
+  --dur-fast:  120ms;
+  --dur-base:  220ms;
+  --dur-slow:  380ms;
+
+  /* ---------- TYPOGRAPHY ---------- */
+  --font-display: 'Fraunces', Georgia, serif;        /* logo, headings, greeting */
+  --font-body:    'Inter', -apple-system, system-ui, sans-serif; /* everything else */
+
+  --fs-xs:   12px;
+  --fs-sm:   13px;
+  --fs-base: 15px;
+  --fs-md:   17px;
+  --fs-lg:   20px;
+  --fs-xl:   26px;
+  --fs-2xl:  34px;
+
+  /* ---------- LAYOUT ---------- */
+  --sidebar-w:   280px;
+  --input-bar-h: 96px;
+  --topbar-h:    56px;
+  --z-sidebar:   40;
+  --z-overlay:   50;
+  --z-sheet:     60;
+  --z-toast:     70;
+}
+
+/* ---------- LIGHT THEME OVERRIDE ---------- */
+[data-theme="light"] {
+  --bg-app:        #faf9f6;
+  --bg-surface:    #ffffff;
+  --bg-surface-2:  #f2f1ed;
+  --bg-surface-3:  #e8e6e0;
+  --border-subtle: rgba(0,0,0,0.08);
+  --border-med:    rgba(0,0,0,0.14);
+
+  --text-primary:   #1a1a18;
+  --text-secondary: #5c5b57;
+  --text-muted:     #8a8985;
+  --text-inverse:   #f2f1ed;
+
+  --accent-soft: rgba(200,137,10,0.10);
+
+  --sh-xs: 0 1px 2px rgba(0,0,0,0.06);
+  --sh-sm: 0 2px 8px rgba(0,0,0,0.08);
+  --sh-md: 0 4px 16px rgba(0,0,0,0.10);
+  --sh-lg: 0 8px 32px rgba(0,0,0,0.12);
+  --sh-xl: 0 16px 48px rgba(0,0,0,0.16);
+}
