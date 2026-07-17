@@ -74,7 +74,7 @@ export const aiApi = (() => {
   }
 
   function getApiKey() {
-    return localStorage.getItem('GROQ_API_KEY') || (window.ENV && window.ENV.GROQ_API_KEY) || null;
+    return localStorage.getItem('GROQ_API_KEY') || null;
   }
 
   async function* chatStream(messages) {

@@ -11,7 +11,7 @@
 
 <link rel="manifest" href="manifest.json">
 <!-- Environment Variables (Ignored in Git) -->
-<script src="js/env.js"></script>
+
 <!-- Markdown and Sanitization for AI Responses -->
 <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.6/purify.min.js"></script>
@@ -197,6 +197,11 @@
               <div class="list-row-body"><div class="list-row-title">Color mode</div></div>
               <div class="list-row-trail"><span id="themeLabel">Dark</span><svg class="list-row-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></div>
             </button>
+            <button class="list-row" id="apiKeysRow">
+              <div class="list-row-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg></div>
+              <div class="list-row-body"><div class="list-row-title">API Keys</div></div>
+              <div class="list-row-trail"><svg class="list-row-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></div>
+            </button>
             <button class="list-row" id="installAppRow" style="display:none;">
               <div class="list-row-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg></div>
               <div class="list-row-body"><div class="list-row-title">Install App</div></div>
@@ -284,6 +289,33 @@
             </div>
 
             <button class="btn btn-primary" id="billingUpgradeBtn" style="width:100%;">Upgrade to Pro</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== API KEYS SUB-SCREEN ===== -->
+      <div class="screen-sub" id="screenApiKeys">
+        <div class="settings-topbar">
+          <button class="btn-icon" id="apiKeysBackBtn" aria-label="Back">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+          </button>
+          <span class="settings-topbar-title">API Keys</span>
+          <button class="btn btn-ghost" id="apiKeysSaveBtn" style="height:36px;padding:0 var(--sp-4);font-size:var(--fs-sm);">Save</button>
+        </div>
+        <div class="settings-body scroll-y">
+          <div class="settings-inner">
+            <div style="margin-bottom: 24px; padding: 16px; background: rgba(0, 163, 255, 0.1); border: 1px solid rgba(0, 163, 255, 0.2); border-radius: 8px; font-size: 14px; color: var(--text-secondary); line-height: 1.5;">
+              <strong>Developer Mode:</strong> To use the AI capabilities without a backend proxy, provide your own Groq API Key. This key is saved locally in your browser and never sent to our servers.
+            </div>
+            <div class="settings-group">
+              <div class="settings-group-label">Groq AI Provider</div>
+              <div class="field-group" style="padding:var(--sp-4);background:var(--bg-surface);border-radius:var(--r-lg);border:1px solid var(--border-subtle);">
+                <div>
+                  <label class="field-label" for="groqApiKeyInput">GROQ API KEY</label>
+                  <input class="field-input" id="groqApiKeyInput" type="password" placeholder="gsk_..." autocomplete="off">
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>

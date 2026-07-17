@@ -124,6 +124,31 @@ const Settings = (() => {
   }
 
   // =========================================================
+  // API KEYS SCREEN
+  // =========================================================
+  function openApiKeys() {
+    const input = document.getElementById('groqApiKeyInput');
+    if (input) {
+      input.value = localStorage.getItem('GROQ_API_KEY') || '';
+    }
+    openSubScreen('screenApiKeys');
+  }
+  function saveApiKeys() {
+    const input = document.getElementById('groqApiKeyInput');
+    if (input) {
+      const val = input.value.trim();
+      if (val) {
+        localStorage.setItem('GROQ_API_KEY', val);
+        Toast.show('API Key saved to your browser.');
+      } else {
+        localStorage.removeItem('GROQ_API_KEY');
+        Toast.show('API Key removed.');
+      }
+    }
+    closeSubScreen('screenApiKeys');
+  }
+
+  // =========================================================
   // MANAGE TOOLS SCREEN
   // =========================================================
   function updateManageToolsSubtitle() {
@@ -240,6 +265,11 @@ const Settings = (() => {
     // ---- Billing row (Pattern B) ----
     document.getElementById('billingRow')?.addEventListener('click', openBilling);
     document.getElementById('billingBackBtn')?.addEventListener('click', () => closeSubScreen('screenBilling'));
+
+    // ---- API Keys row (Pattern B) ----
+    document.getElementById('apiKeysRow')?.addEventListener('click', openApiKeys);
+    document.getElementById('apiKeysBackBtn')?.addEventListener('click', () => closeSubScreen('screenApiKeys'));
+    document.getElementById('apiKeysSaveBtn')?.addEventListener('click', saveApiKeys);
 
     // ---- Upgrade button (both in upgrade-card and billing screen — Pattern B/A) ----
     document.getElementById('upgradeBtn')?.addEventListener('click', openUpgradeSheet);
