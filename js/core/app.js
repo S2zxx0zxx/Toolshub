@@ -404,6 +404,12 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
+  document.getElementById('authSkipBtn')?.addEventListener('click', () => {
+    document.getElementById('authOverlay').style.display = 'none';
+    localStorage.setItem('skipAuth', 'true');
+    Toast.show('Continuing as Guest. Data will be saved locally for this session.');
+  });
+
   Auth.onAuthStateChanged(user => {
     if (user) {
       // User is logged in
@@ -432,8 +438,10 @@ document.addEventListener('DOMContentLoaded', () => {
       });
       
     } else {
-      // User logged out
-      authOverlay.style.display = 'flex';
+      // User logged out or guest
+      if (localStorage.getItem('skipAuth') !== 'true') {
+        authOverlay.style.display = 'flex';
+      }
       authSubmitBtn.disabled = false;
       authSubmitBtn.textContent = isSignupMode ? 'Sign Up' : 'Sign In';
       Sidebar.setChats([]); // clear sidebar
