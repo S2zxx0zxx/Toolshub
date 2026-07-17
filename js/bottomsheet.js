@@ -175,8 +175,12 @@ const BottomSheet = (() => {
     });
 
     // web search toggle
-    document.getElementById('webSearchToggle')?.addEventListener('click', function () {
-      this.classList.toggle('is-on');
+    document.getElementById('webSearchRow')?.addEventListener('click', function () {
+      const toggle = document.getElementById('webSearchToggle');
+      if (toggle) {
+        toggle.classList.toggle('is-on');
+        this.setAttribute('aria-pressed', toggle.classList.contains('is-on'));
+      }
     });
 
     // ---- Add to project row (Pattern B) ----
