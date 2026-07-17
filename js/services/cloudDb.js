@@ -1,5 +1,6 @@
 import { db, fbFirestoreModule } from './firebase.js';
 import { Auth } from './auth.js';
+import { LocalSettings } from './localSettings.js';
 
 export const CloudDB = (() => {
   let conversationsUnsubscribe = null;
@@ -11,7 +12,10 @@ export const CloudDB = (() => {
 
   function subscribeConversations(callback) {
     const uid = _uid();
-    if (!uid || !db || !fbFirestoreModule) { callback([]); return; }
+    if (!uid || !db || !fbFirestoreModule) { 
+      callback(LocalSettings.getAllChats()); 
+      return; 
+    }
     
     if (conversationsUnsubscribe) conversationsUnsubscribe();
     
@@ -36,7 +40,10 @@ export const CloudDB = (() => {
 
   async function loadChatMessages(chatId) {
     const uid = _uid();
-    if (!uid || !db || !fbFirestoreModule) return [];
+    if (!uid || !db || !fbFirestoreModule) {
+      const localChat = LocalSettings.getChat(chatId);
+      return localChat ? (localChat.messages || []) : [];
+    }
     
     try {
       const q = fbFirestoreModule.query(
@@ -65,7 +72,10 @@ export const CloudDB = (() => {
 
   async function saveConversation(chat) {
     const uid = _uid();
-    if (!uid || !db || !fbFirestoreModule) return;
+    if (!uid || !db || !fbFirestoreModule) {
+      LocalSettings.saveChat(chat);
+      return;
+    }
     
     try {
       const { id, title, toolId, projectId } = chat;
@@ -84,11 +94,24 @@ export const CloudDB = (() => {
 
   async function saveMessage(chatId, message) {
     const uid = _uid();
-    if (!uid || !db || !fbFirestoreModule) return;
+    
+    if (!message.id) {
+      message.id = 'msg_' + Date.now() + '_' + Math.random().toString(36).substr(2,5);
+    }
+    
+    if (!uid || !db || !fbFirestoreModule) {
+      const localChat = LocalSettings.getChat(chatId);
+      if (localChat) {
+        if (!localChat.messages) localChat.messages = [];
+        localChat.messages.push(message);
+        localChat.updatedAt = Date.now();
+        LocalSettings.saveChat(localChat);
+      }
+      return;
+    }
     
     try {
-      const msgId = message.id || ('msg_' + Date.now() + '_' + Math.random().toString(36).substr(2,5));
-      message.id = msgId;
+      const msgId = message.id;
       
       await fbFirestoreModule.setDoc(fbFirestoreModule.doc(db, `users/${uid}/conversations/${chatId}/messages`, msgId), {
         role: message.role,
@@ -110,8 +133,12 @@ export const CloudDB = (() => {
   }
 
   async function deleteConversation(chatId) {
-    if (!db || !fbFirestoreModule) return;
-    await fbFirestoreModule.deleteDoc(fbFirestoreModule.doc(db, `users/${_uid()}/conversations`, chatId));
+    const uid = _uid();
+    if (!uid || !db || !fbFirestoreModule) {
+      LocalSettings.deleteChat(chatId);
+      return;
+    }
+    await fbFirestoreModule.deleteDoc(fbFirestoreModule.doc(db, `users/${uid}/conversations`, chatId));
   }
   
   async function trackUsage(tokensCount) {

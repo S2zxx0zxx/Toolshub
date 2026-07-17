@@ -291,12 +291,7 @@ const Settings = (() => {
     document.getElementById('manageToolsBackBtn')?.addEventListener('click', () => closeSubScreen('screenManageTools'));
 
     // ---- Log out row (Pattern A — real clear + reload) ----
-    document.getElementById('logoutBtn')?.addEventListener('click', openLogoutSheet);
-    document.getElementById('logoutCancelBtn')?.addEventListener('click', closeLogoutSheet);
-    document.getElementById('logoutConfirmBtn')?.addEventListener('click', confirmLogout);
-    document.getElementById('logoutSheetOverlay')?.addEventListener('click', e => {
-      if (e.target.id === 'logoutSheetOverlay') closeLogoutSheet();
-    });
+    document.getElementById('logoutBtn')?.addEventListener('click', confirmLogout);
 
     // Initial manage-tools subtitle sync
     updateManageToolsSubtitle();
@@ -483,6 +478,10 @@ document.addEventListener('DOMContentLoaded', async () => {
       if (settingsAvatarEl) settingsAvatarEl.textContent = initial;
       if (settingsEmailEl) settingsEmailEl.textContent = user.email;
       if (sidebarLoginBtn) sidebarLoginBtn.style.display = 'none';
+      const logoutRow = document.getElementById('logoutRow');
+      if (logoutRow) logoutRow.style.display = 'flex';
+      const logoutBtn = document.getElementById('logoutBtn');
+      if (logoutBtn) logoutBtn.parentElement.style.display = 'block';
       
       Toast.show(`Welcome, ${name}!`);
 
@@ -506,7 +505,15 @@ document.addEventListener('DOMContentLoaded', async () => {
       if (settingsAvatarEl) settingsAvatarEl.textContent = 'G';
       if (settingsEmailEl) settingsEmailEl.textContent = 'Guest User';
 
-      Sidebar.setChats([]); // clear sidebar
+      const logoutRow = document.getElementById('logoutRow');
+      if (logoutRow) logoutRow.style.display = 'none';
+      const logoutBtn = document.getElementById('logoutBtn');
+      if (logoutBtn) logoutBtn.parentElement.style.display = 'none';
+
+      // Load Guest chats
+      CloudDB.subscribeConversations((chats) => {
+        Sidebar.setChats(chats);
+      });
     }
   });
 });
