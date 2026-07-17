@@ -1,0 +1,17 @@
+{
+  "auth": {
+    "providers": {
+      "anonymous": true,
+      "emailPassword": true,
+      "googleSignIn": {
+        "oAuthBrandDisplayName": "ToolsHub",
+        "supportEmail": "satyambaba8777@gmail.com",
+        "authorizedRedirectUris": [
+          "https://toolshub-87859.firebaseapp.com",
+          "https://toolshub-87859.web.app",
+          "http://localhost"
+        ]
+      }
+    }
+  }
+}

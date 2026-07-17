@@ -5,12 +5,13 @@ import { getStorage } from 'https://www.gstatic.com/firebasejs/10.9.0/firebase-s
 
 // Replace with actual config
 const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_AUTH_DOMAIN",
-  projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_STORAGE_BUCKET",
-  messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-  appId: "YOUR_APP_ID"
+  apiKey: "AIzaSyD295HUs8qit9LopB0pVNlkPMo0QpQssGc",
+  authDomain: "toolshub-87859.firebaseapp.com",
+  projectId: "toolshub-87859",
+  storageBucket: "toolshub-87859.firebasestorage.app",
+  messagingSenderId: "77238460546",
+  appId: "1:77238460546:web:a6a0c35d56d75342a1549b",
+  measurementId: "G-7LG85XY2C5"
 };
 
 let app, auth, db, storage;

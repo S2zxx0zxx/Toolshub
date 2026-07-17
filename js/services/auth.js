@@ -3,7 +3,9 @@ import {
   signInWithEmailAndPassword, 
   signOut, 
   onAuthStateChanged as firebaseOnAuthStateChanged,
-  updateProfile
+  updateProfile,
+  signInWithPopup,
+  GoogleAuthProvider
 } from 'https://www.gstatic.com/firebasejs/10.9.0/firebase-auth.js';
 import { doc, setDoc, serverTimestamp, getDoc } from 'https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js';
 import { auth as firebaseAuth, db } from './firebase.js';
@@ -60,6 +62,38 @@ export const Auth = (() => {
     }
   }
 
+  async function signInWithGoogle() {
+    if (!firebaseAuth) throw new Error("Firebase Auth is disabled or misconfigured.");
+    try {
+      const provider = new GoogleAuthProvider();
+      const userCredential = await signInWithPopup(firebaseAuth, provider);
+      const user = userCredential.user;
+      
+      // Upsert user profile
+      if (db) {
+        const userRef = doc(db, 'users', user.uid);
+        const snap = await getDoc(userRef);
+        if (!snap.exists()) {
+          await setDoc(userRef, {
+            uid: user.uid,
+            email: user.email,
+            displayName: user.displayName || user.email.split('@')[0],
+            photoURL: user.photoURL || null,
+            createdAt: serverTimestamp(),
+            updatedAt: serverTimestamp(),
+            role: "user",
+            plan: "free",
+            credits: 0
+          });
+        }
+      }
+      return user;
+    } catch (error) {
+      console.error("Google Sign In error:", error);
+      throw error;
+    }
+  }
+
   function getCurrentUser() {
     return firebaseAuth ? firebaseAuth.currentUser : null;
   }
@@ -90,6 +124,7 @@ export const Auth = (() => {
     signup,
     login,
     logout,
+    signInWithGoogle,
     getCurrentUser,
     onAuthStateChanged,
     getUserProfile
