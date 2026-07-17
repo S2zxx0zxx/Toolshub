@@ -506,14 +506,14 @@
 
 <script type="module" src="js/core/app.js"></script>
 <!-- ============ AUTH OVERLAY ============ -->
-<div id="authOverlay" style="display: flex; position: fixed; top:0; left:0; right:0; bottom:0; background: var(--bg-primary); z-index: 9999; align-items: center; justify-content: center;">
+<div id="authOverlay" style="display: flex; position: fixed; top:0; left:0; right:0; bottom:0; background: var(--bg-app); z-index: 9999; align-items: center; justify-content: center;">
   <div style="width:100%; max-width:400px; padding: 24px; display:flex; flex-direction:column; gap: 16px;">
     <h2 style="text-align:center; font-family:var(--font-display); font-size: 28px; margin-bottom: 8px;">ToolsHub</h2>
     
     <div style="display:flex; flex-direction:column; gap:12px;">
-      <input type="text" id="authName" placeholder="Display Name" style="display:none; min-height:44px; border-radius:8px; border:1px solid var(--border-color); padding: 8px 12px; font-size:15px; background:var(--bg-secondary); color:var(--text-primary); outline:none;">
-      <input type="email" id="authEmail" placeholder="Email" style="min-height:44px; border-radius:8px; border:1px solid var(--border-color); padding: 8px 12px; font-size:15px; background:var(--bg-secondary); color:var(--text-primary); outline:none;">
-      <input type="password" id="authPassword" placeholder="Password" style="min-height:44px; border-radius:8px; border:1px solid var(--border-color); padding: 8px 12px; font-size:15px; background:var(--bg-secondary); color:var(--text-primary); outline:none;">
+      <input type="text" id="authName" placeholder="Display Name" style="display:none; min-height:44px; border-radius:var(--r-md); border:1px solid var(--border-med); padding: 8px 12px; font-size:15px; background:var(--bg-surface-2); color:var(--text-primary); outline:none;">
+      <input type="email" id="authEmail" placeholder="Email" style="min-height:44px; border-radius:var(--r-md); border:1px solid var(--border-med); padding: 8px 12px; font-size:15px; background:var(--bg-surface-2); color:var(--text-primary); outline:none;">
+      <input type="password" id="authPassword" placeholder="Password" style="min-height:44px; border-radius:var(--r-md); border:1px solid var(--border-med); padding: 8px 12px; font-size:15px; background:var(--bg-surface-2); color:var(--text-primary); outline:none;">
       
       <button id="authSubmitBtn" style="background:var(--accent); color:#fff; border:none; padding:12px; border-radius:8px; font-weight:600; font-size:15px; cursor:pointer; margin-top:8px;">Sign In</button>
       
