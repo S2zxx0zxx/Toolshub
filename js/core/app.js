@@ -4,25 +4,24 @@
    upgrade sheet, logout confirm, manage tools,
    profile, billing — app bootstrap.
    ============================================ */
+import { Storage } from '../services/storage.js';
+import { Toast } from '../ui/toast.js';
+import { Sidebar } from '../ui/sidebar.js';
+import { BottomSheet } from '../ui/bottomsheet.js';
+import { Chat } from '../ui/chatEngine.js';
+import { ToolSelector } from '../tools/registry.js';
+import { Router } from './router.js';
 
 const Settings = (() => {
 
   // ---------- SETTINGS SCREEN OPEN/CLOSE ----------
   function open() {
-    document.getElementById('app').setAttribute('data-screen', 'settings');
-    if (window.matchMedia('(max-width: 860px)').matches) Sidebar.close();
+    Router.navigate('settings');
     updateManageToolsSubtitle();
   }
   function close() {
-    document.getElementById('app').setAttribute('data-screen', 'chat');
-    // also close any open sub-screen
-    closeAllSubScreens();
-  }
-
-  function closeAllSubScreens() {
-    ['screenProfile', 'screenBilling', 'screenManageTools'].forEach(id => {
-      document.getElementById(id)?.classList.remove('is-open');
-    });
+    Router.navigate('chat');
+    Router.closeAllSubScreens();
   }
 
   // ---------- THEME ----------
@@ -39,10 +38,10 @@ const Settings = (() => {
 
   // ---------- SUB-SCREEN HELPERS ----------
   function openSubScreen(id) {
-    document.getElementById(id)?.classList.add('is-open');
+    Router.openSubScreen(id);
   }
   function closeSubScreen(id) {
-    document.getElementById(id)?.classList.remove('is-open');
+    Router.closeSubScreen(id);
   }
 
   // =========================================================

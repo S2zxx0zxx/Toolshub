@@ -5,7 +5,7 @@
    One instance at a time — auto-dismisses in 2.8s.
    ============================================ */
 
-const Toast = (() => {
+export const Toast = (() => {
   let _container = null;
   let _timer = null;
 
@@ -34,5 +34,3 @@ const Toast = (() => {
 
   return { show };
 })();
-
-window.Toast = Toast;

@@ -4,7 +4,12 @@
    send flow, chat lifecycle (new/load/save)
    ============================================ */
 
-const Chat = (() => {
+import { Storage } from '../services/storage.js';
+import { ToolSelector } from '../tools/registry.js';
+import { Sidebar } from './sidebar.js';
+import { Toast } from './toast.js';
+
+export const Chat = (() => {
   let currentChat = null; // { id, title, toolId, messages, createdAt, updatedAt }
 
   function genId() {
@@ -306,5 +311,3 @@ const Chat = (() => {
 
   return { init, newChat, loadChat, sendMessage, assignProject };
 })();
-
-window.Chat = Chat;

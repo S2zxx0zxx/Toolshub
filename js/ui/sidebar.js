@@ -3,7 +3,9 @@
    Drawer open/close (mobile) + chat history list
    ============================================ */
 
-const Sidebar = (() => {
+import { Storage } from '../services/storage.js';
+
+export const Sidebar = (() => {
 
   function open() {
     document.getElementById('app').setAttribute('data-sidebar', 'open');
@@ -129,5 +131,3 @@ const Sidebar = (() => {
 
   return { init, open, close, toggle, renderHistory, renderProjects };
 })();
-
-window.Sidebar = Sidebar;

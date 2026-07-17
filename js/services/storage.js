@@ -4,7 +4,10 @@
    Every read/write in the app goes through here.
    ============================================ */
 
-const Storage = (() => {
+import { State } from '../core/state.js';
+import { Events } from '../core/events.js';
+
+export const Storage = (() => {
   const KEYS = {
     CHATS:              'toolshub_chats',
     THEME:              'toolshub_theme',
@@ -126,5 +129,3 @@ const Storage = (() => {
     },
   };
 })();
-
-window.Storage = Storage;

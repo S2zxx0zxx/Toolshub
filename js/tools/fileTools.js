@@ -4,7 +4,7 @@
    jsPDF (CDN), and pdf-lib (CDN).
    ============================================ */
 
-const FileTools = (() => {
+export const FileTools = (() => {
 
   /* ---- shared helpers ---- */
   function panel() { return document.getElementById('utilityPanel'); }
@@ -547,5 +547,3 @@ const FileTools = (() => {
   return { render };
 
 })();
-
-window.FileTools = FileTools;

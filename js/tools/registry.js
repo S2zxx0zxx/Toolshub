@@ -4,7 +4,9 @@
    + pinned sidebar shortcuts + prompt cards
    ============================================ */
 
-const ToolSelector = (() => {
+import { Storage } from '../services/storage.js';
+
+export const ToolSelector = (() => {
 
   // ---------- ICON LIBRARY (inline SVG paths, stroke-based) ----------
   const ICONS = {
@@ -357,5 +359,3 @@ const ToolSelector = (() => {
     },
   };
 })();
-
-window.ToolSelector = ToolSelector;

@@ -6,7 +6,7 @@
    GPA Calculator (also used by the career category).
    ============================================ */
 
-const UtilityTools = (() => {
+export const UtilityTools = (() => {
 
   /* ---- shared helpers ---- */
   function panel() { return document.getElementById('utilityPanel'); }

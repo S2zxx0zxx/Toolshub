@@ -4,7 +4,14 @@
    Also wires: Add-to-project, Tool-access, Connectors rows.
    ============================================ */
 
-const BottomSheet = (() => {
+import { Storage } from '../services/storage.js';
+import { ToolSelector } from '../tools/registry.js';
+import { UtilityTools } from '../tools/utilityTools.js';
+import { FileTools } from '../tools/fileTools.js';
+import { Chat } from './chatEngine.js';
+import { Sidebar } from './sidebar.js';
+
+export const BottomSheet = (() => {
 
   function openOverlay(overlayEl) {
     overlayEl.classList.add('is-open');
@@ -247,5 +254,3 @@ const BottomSheet = (() => {
 
   return { init, openAddSheet, closeAddSheet, openToolSheet, closeToolSheet };
 })();
-
-window.BottomSheet = BottomSheet;
