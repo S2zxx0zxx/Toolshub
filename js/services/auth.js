@@ -76,27 +76,30 @@ export const Auth = (() => {
     if (!firebaseAuth || !fbAuthModule) throw new Error("Firebase Auth is disabled or misconfigured.");
     try {
       const provider = new fbAuthModule.GoogleAuthProvider();
-      // Use redirect (not popup) — popup is unreliable on mobile Chrome and gets blocked.
-      // The page will navigate away to Google and back; onAuthStateChanged handles the result.
-      await fbAuthModule.signInWithRedirect(firebaseAuth, provider);
-      // Note: execution does NOT continue here — the page navigates away.
+      // Use popup since redirect can be blocked by modern browser third-party storage partitioning on localhost/github pages
+      const result = await fbAuthModule.signInWithPopup(firebaseAuth, provider);
+      if (result?.user) {
+        await upsertUserProfile(result.user);
+        return result.user;
+      }
     } catch (error) {
       console.error("Google Sign In error:", error);
       throw error;
     }
   }
 
-  // Call this once on app init to collect the result of a completed redirect sign-in.
+  // No longer needed for popup, but keeping it safe if anything falls back
   async function handleRedirectResult() {
     if (!firebaseAuth || !fbAuthModule) return null;
     try {
-      const result = await fbAuthModule.getRedirectResult(firebaseAuth);
-      if (result?.user) {
-        await upsertUserProfile(result.user);
-        return result.user;
+      if (fbAuthModule.getRedirectResult) {
+        const result = await fbAuthModule.getRedirectResult(firebaseAuth);
+        if (result?.user) {
+          await upsertUserProfile(result.user);
+          return result.user;
+        }
       }
     } catch (error) {
-      // Silently ignore — common on first load when no redirect happened
       console.warn("getRedirectResult:", error.code || error.message);
     }
     return null;
