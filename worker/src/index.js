@@ -63,8 +63,13 @@ export default {
       return new Response('Bad Request: Missing or invalid "messages" array.', { status: 400, headers: corsHeaders });
     }
 
+    let targetModel = model;
+    if (targetModel === 'llama-3.3-70b-versatile' || !targetModel) {
+      targetModel = 'llama-3.1-70b-versatile';
+    }
+
     const payload = {
-      model: model || 'llama-3.1-70b-versatile',
+      model: targetModel,
       messages,
       temperature: typeof temperature === 'number' ? temperature : 0.7,
       stream: !!stream
