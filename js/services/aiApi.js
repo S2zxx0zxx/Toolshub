@@ -1,6 +1,6 @@
 export const aiApi = (() => {
   // Always route to live Cloudflare Worker
-  const API_ENDPOINT = 'https://toolshub-worker.theliquidlounge-co.workers.dev?v=2';
+  const API_ENDPOINT = 'https://toolshub-worker.theliquidlounge-co.workers.dev/api/chat';
 
   // Valid Groq model IDs — must match Groq API exactly
   const CHAT_MODEL = 'llama-3.1-70b-versatile';         // Best for general chat (Groq Compound)
