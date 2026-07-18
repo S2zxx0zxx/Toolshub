@@ -1,9 +1,8 @@
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*', // Adjust to specific origins in production if needed
-  'Access-Control-Allow-Methods': 'GET,HEAD,POST,OPTIONS',
-  'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-  'Access-Control-Max-Age': '86400',
-};
+const allowedOrigins = [
+  'https://2zxx0zxx.github.io',
+  'http://localhost:5000',
+  'http://127.0.0.1:5000'
+];
 
 // Simple rate limiter implementation using Map is NOT fully reliable across Cloudflare edge nodes,
 // but works as a basic deterrent within a single isolate.
@@ -31,6 +30,16 @@ function checkRateLimit(ip) {
 
 export default {
   async fetch(request, env, ctx) {
+    const origin = request.headers.get('Origin');
+    const corsHeaders = {
+      'Access-Control-Allow-Methods': 'GET,HEAD,POST,OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+      'Access-Control-Max-Age': '86400',
+    };
+    if (origin && allowedOrigins.includes(origin)) {
+      corsHeaders['Access-Control-Allow-Origin'] = origin;
+    }
+
     // 1. Handle CORS Preflight (OPTIONS)
     if (request.method === 'OPTIONS') {
       return new Response('OK', {
@@ -56,6 +65,31 @@ export default {
       body = await request.json();
     } catch (e) {
       return new Response('Bad Request: Invalid JSON', { status: 400, headers: corsHeaders });
+    }
+
+    // 4.1 Search Proxy Branch
+    if (body.type === 'search') {
+      const tavilyKey = env.TAVILY_API_KEY;
+      if (!tavilyKey) {
+        return new Response(JSON.stringify({ error: 'Search is not configured.' }), { status: 503, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+      }
+      try {
+        const tavilyResponse = await fetch('https://api.tavily.com/search', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            api_key: tavilyKey,
+            query: body.query,
+            search_depth: 'basic',
+            include_answer: true,
+            max_results: 5
+          })
+        });
+        const tavilyData = await tavilyResponse.text();
+        return new Response(tavilyData, { status: tavilyResponse.status, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+      } catch (e) {
+        return new Response(JSON.stringify({ error: 'Search service unavailable.' }), { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+      }
     }
 
     const { messages, model, temperature, stream, response_format } = body;

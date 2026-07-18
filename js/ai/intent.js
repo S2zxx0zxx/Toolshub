@@ -107,7 +107,10 @@ Format:
     ];
 
     try {
-      const response = await aiApi.chatCompletionJson(aiContext);
+      const response = await Promise.race([
+        aiApi.chatCompletionJson(aiContext),
+        new Promise((_, reject) => setTimeout(() => reject(new Error('Intent classification timeout')), 4000))
+      ]);
       if (response && response.intent) {
         return response;
       }

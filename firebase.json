@@ -21,12 +21,7 @@
   },
   "hosting": {
     "public": ".",
-    "rewrites": [
-      {
-        "source": "/api/chat",
-        "function": "chatCompletion"
-      }
-    ],
+
     "ignore": [
       "firebase.json",
       "**/.*",

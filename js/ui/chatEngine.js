@@ -381,7 +381,7 @@ export const Chat = (() => {
 
     if (fullText.trim() === '' && !isMock) {
       currentChat.messages[msgIndex].isError = true;
-      fullText = '[Error] The AI returned an empty response. Please try again.';
+      fullText = '[Error] The AI service is a bit busy right now — please try again in a few seconds.';
       bubble.textContent = fullText;
     }
 

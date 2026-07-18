@@ -418,7 +418,7 @@ const Settings = (() => {
     document.getElementById('billingBackBtn')?.addEventListener('click', () => closeSubScreen('screenBilling'));
 
     // ---- API Keys row (Pattern B) ----
-    document.getElementById('apiKeysRow')?.addEventListener('click', openApiKeys);
+    document.getElementById('apiKeysRow')?.addEventListener('click', () => Toast.show('Coming soon'));
     document.getElementById('apiKeysBackBtn')?.addEventListener('click', () => closeSubScreen('screenApiKeys'));
     document.getElementById('apiKeysSaveBtn')?.addEventListener('click', saveApiKeys);
 
