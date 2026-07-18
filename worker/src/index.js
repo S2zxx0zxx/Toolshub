@@ -64,7 +64,7 @@ export default {
     }
 
     const payload = {
-      model: model || 'llama-3.3-70b-versatile',
+      model: model || 'llama-3.1-70b-versatile',
       messages,
       temperature: typeof temperature === 'number' ? temperature : 0.7,
       stream: !!stream
