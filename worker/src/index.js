@@ -64,11 +64,12 @@ export default {
     }
 
     let targetModel = model;
-    if (targetModel === 'llama-3.3-70b-versatile' || targetModel === 'llama-3.1-70b-versatile' || !targetModel) {
-      targetModel = 'llama3-70b-8192';
+    // Note: llama3-70b-8192 and llama3-8b-8192 are decommissioned by Groq.
+    if (targetModel === 'llama3-70b-8192' || targetModel === 'llama-3.1-70b-versatile' || targetModel === 'llama-3.3-70b-versatile' || !targetModel) {
+      targetModel = 'llama-3.3-70b-versatile';
     }
-    if (targetModel === 'llama-3.1-8b-instant') {
-      targetModel = 'llama3-8b-8192';
+    if (targetModel === 'llama3-8b-8192' || targetModel === 'llama-3.1-8b-instant') {
+      targetModel = 'llama-3.1-8b-instant';
     }
 
     const payload = {

@@ -3,8 +3,8 @@ export const aiApi = (() => {
   const API_ENDPOINT = 'https://toolshub-api-worker.theliquidlounge-co.workers.dev';
 
   // Valid Groq model IDs — must match Groq API exactly
-  const CHAT_MODEL = 'llama3-70b-8192';         // Best for general chat
-  const INTENT_MODEL = 'llama3-8b-8192';          // Fast categorization
+  const CHAT_MODEL = 'llama-3.3-70b-versatile';         // Best for general chat
+  const INTENT_MODEL = 'llama-3.1-8b-instant';          // Fast categorization
 
   // Check if Developer Mode key is set
   function getLocalKey() {
