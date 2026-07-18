@@ -33,8 +33,8 @@ export default {
   async fetch(request, env, ctx) {
     // 1. Handle CORS Preflight (OPTIONS)
     if (request.method === 'OPTIONS') {
-      return new Response(null, {
-        status: 204,
+      return new Response('OK', {
+        status: 200,
         headers: corsHeaders
       });
     }
