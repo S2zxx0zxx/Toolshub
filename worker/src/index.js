@@ -64,8 +64,11 @@ export default {
     }
 
     let targetModel = model;
-    if (targetModel === 'llama-3.3-70b-versatile' || !targetModel) {
-      targetModel = 'llama-3.1-70b-versatile';
+    if (targetModel === 'llama-3.3-70b-versatile' || targetModel === 'llama-3.1-70b-versatile' || !targetModel) {
+      targetModel = 'llama3-70b-8192';
+    }
+    if (targetModel === 'llama-3.1-8b-instant') {
+      targetModel = 'llama3-8b-8192';
     }
 
     const payload = {
