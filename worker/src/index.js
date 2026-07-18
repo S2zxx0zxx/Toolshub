@@ -93,6 +93,11 @@ export default {
 
       // Construct a new Response to ensure CORS headers are injected
       const responseHeaders = new Headers(groqResponse.headers);
+      // IMPORTANT: Remove encoding headers because Cloudflare's fetch() decompresses the body automatically.
+      // If we leave them, the browser expects gzipped data but gets raw text, causing a blank response!
+      responseHeaders.delete('content-encoding');
+      responseHeaders.delete('content-length');
+      
       for (const [key, value] of Object.entries(corsHeaders)) {
         responseHeaders.set(key, value);
       }
