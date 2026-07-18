@@ -22,6 +22,18 @@ export const ContextManager = (() => {
       context.push({ role: 'system', content: userMeta });
     }
 
+    // 2b. Time Context — lets the assistant naturally reflect time-of-day
+    const now = new Date();
+    const hour = now.getHours();
+    let timeOfDay = 'night';
+    if (hour >= 5 && hour < 12) timeOfDay = 'morning';
+    else if (hour >= 12 && hour < 17) timeOfDay = 'afternoon';
+    else if (hour >= 17 && hour < 21) timeOfDay = 'evening';
+    context.push({
+      role: 'system',
+      content: `Time Context:\nCurrent time: ${now.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })}\nTime of day: ${timeOfDay}`
+    });
+
     // 3. Conversation History (Pruned)
     // Filter out error messages from context to avoid AI confusion, limit to MAX
     let history = messages.filter(m => !m.isError);
