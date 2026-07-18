@@ -133,10 +133,6 @@ const Settings = (() => {
   // API KEYS SCREEN
   // =========================================================
   function openApiKeys() {
-    const groqInput = document.getElementById('groqApiKeyInput');
-    if (groqInput) {
-      groqInput.value = localStorage.getItem('GROQ_API_KEY') || '';
-    }
     const tavilyInput = document.getElementById('tavilyApiKeyInput');
     if (tavilyInput) {
       tavilyInput.value = localStorage.getItem('TAVILY_API_KEY') || '';
@@ -144,32 +140,13 @@ const Settings = (() => {
     openSubScreen('screenApiKeys');
   }
   function saveApiKeys() {
-    const groqInput = document.getElementById('groqApiKeyInput');
     const tavilyInput = document.getElementById('tavilyApiKeyInput');
-    
-    if (groqInput) {
-      const val = groqInput.value.trim();
-      if (val) localStorage.setItem('GROQ_API_KEY', val);
-      else localStorage.removeItem('GROQ_API_KEY');
-    }
-    
     if (tavilyInput) {
       const val = tavilyInput.value.trim();
       if (val) localStorage.setItem('TAVILY_API_KEY', val);
       else localStorage.removeItem('TAVILY_API_KEY');
     }
-    
-    // Validate the Groq key and show AI status
-    const groqKey = localStorage.getItem('GROQ_API_KEY') || (window.ENV && window.ENV.GROQ_API_KEY);
-    if (groqKey) {
-      if (!groqKey.startsWith('gsk_') || groqKey.length < 20) {
-        Toast.show('⚠️ Key format looks wrong — Groq keys start with gsk_');
-      } else {
-        Toast.show('✅ Groq API key saved. AI mode: Connected.');
-      }
-    } else {
-      Toast.show('API keys cleared. AI mode: Demo (mock responses).');
-    }
+    Toast.show('✅ Settings saved. Search key updated.');
     updateAiStatusIndicator();
     closeSubScreen('screenApiKeys');
   }

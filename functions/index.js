@@ -35,7 +35,7 @@ exports.chatCompletion = functions.https.onRequest((req, res) => {
     }
 
     const payload = {
-      model: model || 'groq/compound',
+      model: model || 'compound-beta',
       messages,
       temperature: temperature || 0.7,
       stream: !!stream

@@ -1,4 +1,4 @@
-const CACHE_NAME = 'toolshub-cache-v9';
+const CACHE_NAME = 'toolshub-cache-v10';
 const urlsToCache = [
   './',
   './index.html',
@@ -10,6 +10,7 @@ const urlsToCache = [
   './css/components/bottomsheet.css',
   './css/components/tools.css',
   './css/layout/screens-extra.css',
+  './css/components/inline-extracted.css',
   './js/core/app.js',
   './js/core/events.js',
   './js/core/router.js',
@@ -37,59 +38,62 @@ const urlsToCache = [
 ];
 
 self.addEventListener('install', event => {
+  // Force this new SW to take over immediately — no waiting
   self.skipWaiting();
   event.waitUntil(
     caches.open(CACHE_NAME).then(async cache => {
-      // Use allSettled so one failing URL doesn't abort the whole cache process
       const requests = urlsToCache.map(url => {
         return fetch(new URL(url, self.registration.scope).href).then(response => {
           if (!response.ok) throw new Error(`Status ${response.status}`);
           return cache.put(url, response);
-        }).catch(err => console.warn(`Failed to cache ${url}:`, err));
+        }).catch(err => console.warn(`[SW] Failed to cache ${url}:`, err));
       });
       await Promise.allSettled(requests);
-    })
-  );
-});
-
-self.addEventListener('fetch', event => {
-  if (event.request.method !== 'GET') return;
-  event.respondWith(
-    // Prefer network, but timeout after 3.5s so we don't fall back to cache just because it's slow
-    new Promise((resolve, reject) => {
-      const timeoutId = setTimeout(() => {
-        reject(new Error('Network timeout'));
-      }, 3500);
-      
-      fetch(event.request).then(response => {
-        clearTimeout(timeoutId);
-        // Cache the fresh response
-        const resClone = response.clone();
-        caches.open(CACHE_NAME).then(cache => cache.put(event.request, resClone));
-        resolve(response);
-      }).catch(err => {
-        clearTimeout(timeoutId);
-        reject(err);
-      });
-    }).catch(() => {
-      // If network fails or times out, fallback to cache
-      return caches.match(event.request);
+      console.log('[SW] Cache v10 installed.');
     })
   );
 });
 
 self.addEventListener('activate', event => {
-  event.waitUntil(clients.claim());
+  // Take control of all open pages immediately
   const cacheWhitelist = [CACHE_NAME];
   event.waitUntil(
-    caches.keys().then(cacheNames => {
-      return Promise.all(
-        cacheNames.map(cacheName => {
-          if (!cacheWhitelist.includes(cacheName)) {
-            return caches.delete(cacheName);
-          }
-        })
-      );
+    Promise.all([
+      clients.claim(),
+      caches.keys().then(cacheNames => {
+        return Promise.all(
+          cacheNames.map(cacheName => {
+            if (!cacheWhitelist.includes(cacheName)) {
+              console.log('[SW] Deleting old cache:', cacheName);
+              return caches.delete(cacheName);
+            }
+          })
+        );
+      })
+    ])
+  );
+});
+
+self.addEventListener('fetch', event => {
+  // Never intercept non-GET requests (POST for API calls)
+  if (event.request.method !== 'GET') return;
+
+  // Never cache cross-origin API calls (Firebase, Groq, etc.)
+  const url = new URL(event.request.url);
+  if (url.origin !== self.location.origin) return;
+
+  event.respondWith(
+    // Network-first strategy: try fresh from network, fallback to cache on failure
+    fetch(event.request).then(response => {
+      // Cache the fresh response for offline use
+      if (response.ok) {
+        const resClone = response.clone();
+        caches.open(CACHE_NAME).then(cache => cache.put(event.request, resClone));
+      }
+      return response;
+    }).catch(() => {
+      // Network failed (offline): serve from cache
+      return caches.match(event.request);
     })
   );
 });

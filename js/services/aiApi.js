@@ -3,11 +3,14 @@ export const aiApi = (() => {
   const API_ENDPOINT = isLocal 
     ? 'http://127.0.0.1:5001/toolshub-87859/us-central1/chatCompletion' 
     : 'https://us-central1-toolshub-87859.cloudfunctions.net/chatCompletion';
-  const DEFAULT_MODEL = 'groq/compound';
+
+  // Valid Groq model IDs — must match Groq API exactly
+  const CHAT_MODEL = 'compound-beta';         // Best for general chat (Groq Compound)
+  const INTENT_MODEL = 'llama-3.1-8b-instant'; // Fast, cheap for intent classification
 
   async function* fetchGroqStream(messages) {
     const payload = {
-      model: DEFAULT_MODEL,
+      model: CHAT_MODEL,
       messages: messages,
       temperature: 0.7,
       stream: true
@@ -65,7 +68,7 @@ export const aiApi = (() => {
 
   async function chatCompletionJson(messages) {
     const payload = {
-      model: DEFAULT_MODEL,
+      model: INTENT_MODEL, // Use fast model for intent classification
       messages: messages,
       temperature: 0.1,
       response_format: { type: "json_object" }
