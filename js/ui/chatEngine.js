@@ -31,6 +31,7 @@ export const Chat = (() => {
     LocalSettings.setActiveChatId(currentChat.id);
     renderEmptyState();
     document.getElementById('chatTitle').textContent = 'New chat';
+    window.dispatchEvent(new CustomEvent('refresh-greeting'));
   }
 
   async function loadChat(chatId, chatMetadata = null) {
@@ -376,6 +377,12 @@ export const Chat = (() => {
       fullText += `\n\n[Error: ${err.message}]`;
       bubble.textContent = fullText;
       currentChat.messages[msgIndex].isError = true;
+    }
+
+    if (fullText.trim() === '' && !isMock) {
+      currentChat.messages[msgIndex].isError = true;
+      fullText = '[Error] The AI returned an empty response. Please try again.';
+      bubble.textContent = fullText;
     }
 
     // Finalize UI

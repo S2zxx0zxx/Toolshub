@@ -27,7 +27,7 @@
 }
 
 .extracted-inline-8 {
-    text-align:center;padding:4px 0 2px;font-size:11px;opacity:0.75;cursor:default;
+    background: var(--bg-surface-2, #000); border-radius: 999px; padding: 4px 12px; display: inline-flex; align-items: center; justify-content: center; gap: 6px; margin: 4px auto; color: #fff !important; text-align: center; font-size: 11px; cursor: default;
 }
 
 .extracted-inline-9 {

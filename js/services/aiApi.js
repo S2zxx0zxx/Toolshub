@@ -6,7 +6,7 @@ export const aiApi = (() => {
     : 'https://toolshub-worker.theliquidlounge-co.workers.dev';
 
   // Valid Groq model IDs — must match Groq API exactly
-  const CHAT_MODEL = 'compound-beta';         // Best for general chat (Groq Compound)
+  const CHAT_MODEL = 'llama-3.3-70b-versatile';         // Best for general chat (Groq Compound)
   const INTENT_MODEL = 'llama-3.1-8b-instant'; // Fast, cheap for intent classification
 
   // Check if Developer Mode key is set

@@ -615,7 +615,33 @@ document.addEventListener('DOMContentLoaded', async () => {
   // Initialize Firebase dynamically to avoid network-blocking module crashes
   await initFirebase();
 
+  function updateGreeting(user) {
+    const greetingEl = document.getElementById('greetingText');
+    if (!greetingEl) return;
+    
+    const hour = new Date().getHours();
+    let timeGreeting = 'Evening';
+    if (hour >= 5 && hour < 12) timeGreeting = 'Morning';
+    else if (hour >= 12 && hour < 17) timeGreeting = 'Afternoon';
+    else if (hour >= 17 && hour < 21) timeGreeting = 'Evening';
+    else timeGreeting = 'Night';
+
+    let name = '';
+    if (user) {
+      name = user.displayName || user.email.split('@')[0];
+    } else {
+      const genericNames = ["Explorer", "Warrior", "Wanderer", "Creator", "Builder"];
+      name = genericNames[Math.floor(Math.random() * genericNames.length)];
+    }
+    greetingEl.textContent = `${timeGreeting}, ${name}`;
+  }
+
+  window.addEventListener('refresh-greeting', () => {
+    updateGreeting(Auth.getCurrentUser());
+  });
+
   Auth.onAuthStateChanged(user => {
+    updateGreeting(user);
     const avatarEl = document.querySelector('.sidebar-avatar');
     const nameEl = document.querySelector('.sidebar-user-name');
     const settingsAvatarEl = document.querySelector('.settings-avatar-lg');
