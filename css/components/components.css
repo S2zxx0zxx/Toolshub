@@ -269,3 +269,29 @@
   width: 20px;
   height: 20px;
 }
+
+/* AI Status Indicator Glow */
+.ai-status-glow {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: #10b981; /* Green connected color */
+  box-shadow: 0 0 8px #10b981, 0 0 12px #10b981;
+  animation: pulse-glow 2s infinite alternate;
+  margin-right: 6px;
+  vertical-align: middle;
+}
+
+@keyframes pulse-glow {
+  0% {
+    transform: scale(0.9);
+    box-shadow: 0 0 4px #10b981, 0 0 8px #10b981;
+    opacity: 0.8;
+  }
+  100% {
+    transform: scale(1.1);
+    box-shadow: 0 0 12px #10b981, 0 0 20px #10b981;
+    opacity: 1;
+  }
+}

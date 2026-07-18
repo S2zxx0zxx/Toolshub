@@ -177,10 +177,9 @@ const Settings = (() => {
   function updateAiStatusIndicator() {
     const indicator = document.getElementById('aiStatusIndicator');
     if (!indicator) return;
-    const hasKey = !!localStorage.getItem('GROQ_API_KEY') || !!(window.ENV && window.ENV.GROQ_API_KEY);
-    indicator.textContent = hasKey ? '🟢 AI: Connected' : '🔴 AI: Demo mode';
-    indicator.title = hasKey ? 'Groq API key is set — real AI responses active.' : 'No Groq key set — showing simulated responses. Go to Settings → API Keys.';
-    indicator.style.color = hasKey ? 'var(--accent, #7c5cfc)' : 'var(--text-muted)';
+    indicator.innerHTML = '<span class="ai-status-glow"></span> AI: Connected';
+    indicator.title = 'AI Backend Connected — real AI responses active.';
+    indicator.style.color = 'var(--accent, #7c5cfc)';
   }
 
   // =========================================================
