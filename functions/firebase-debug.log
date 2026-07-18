@@ -1,0 +1,10 @@
+[debug] [2026-07-18T07:56:22.227Z] ----------------------------------------------------------------------
+[debug] [2026-07-18T07:56:22.232Z] Command:       C:\Program Files\nodejs\node.exe C:\Users\SATYAM KUMAR\AppData\Roaming\npm\node_modules\firebase-tools\lib\bin\firebase.js logout
+[debug] [2026-07-18T07:56:22.233Z] CLI Version:   14.19.1
+[debug] [2026-07-18T07:56:22.233Z] Platform:      win32
+[debug] [2026-07-18T07:56:22.233Z] Node Version:  v24.10.0
+[debug] [2026-07-18T07:56:22.233Z] Time:          Sat Jul 18 2026 13:26:22 GMT+0530 (India Standard Time)
+[debug] [2026-07-18T07:56:22.233Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2026-07-18T07:56:22.559Z] Object "" in "firebase.json" has unknown property: {"additionalProperty":"auth"}
+[debug] [2026-07-18T07:56:22.613Z] >>> [apiv2][query] GET https://accounts.google.com/o/oauth2/revoke token=1%2F%2F0gzW3ou-QwOK7CgYIARAAGBASNwF-L9IrfrgFcenc9kC-DzILcgmFmQlddQvaJuf683n0xSUzBnsVrpOfTw6Xq7KoFw9-9sBK1WQ
