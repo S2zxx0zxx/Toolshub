@@ -1,9 +1,8 @@
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*', // Wide open to fix production outage
-  'Access-Control-Allow-Methods': 'GET,HEAD,POST,OPTIONS',
-  'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-  'Access-Control-Max-Age': '86400',
-};
+const allowedOrigins = [
+  'https://2zxx0zxx.github.io',
+  'http://localhost:5000',
+  'http://127.0.0.1:5000'
+];
 
 // Simple rate limiter implementation using Map is NOT fully reliable across Cloudflare edge nodes,
 // but works as a basic deterrent within a single isolate.
@@ -31,7 +30,15 @@ function checkRateLimit(ip) {
 
 export default {
   async fetch(request, env, ctx) {
-    // Using global wildcard corsHeaders to resolve production outage
+    const origin = request.headers.get('Origin');
+    const corsHeaders = {
+      'Access-Control-Allow-Methods': 'GET,HEAD,POST,OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+      'Access-Control-Max-Age': '86400',
+    };
+    if (origin && allowedOrigins.includes(origin)) {
+      corsHeaders['Access-Control-Allow-Origin'] = origin;
+    }
 
     // 1. Handle CORS Preflight (OPTIONS)
     if (request.method === 'OPTIONS') {
