@@ -273,13 +273,13 @@
 /* AI Status Indicator Glow */
 .ai-status-glow {
   display: inline-block;
-  width: 10px;
-  height: 10px;
+  width: 6px;
+  height: 6px;
   border-radius: 50%;
   background-color: #10b981; /* Green connected color */
-  box-shadow: 0 0 8px #10b981, 0 0 12px #10b981;
+  box-shadow: 0 0 4px #10b981, 0 0 6px #10b981;
   animation: pulse-glow 2s infinite alternate;
-  margin-right: 6px;
+  margin-right: 4px;
   vertical-align: middle;
 }
 
