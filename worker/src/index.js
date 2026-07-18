@@ -103,6 +103,7 @@ export default {
       // If we leave them, the browser expects gzipped data but gets raw text, causing a blank response!
       responseHeaders.delete('content-encoding');
       responseHeaders.delete('content-length');
+      responseHeaders.delete('transfer-encoding');
       
       for (const [key, value] of Object.entries(corsHeaders)) {
         responseHeaders.set(key, value);
