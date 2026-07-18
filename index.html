@@ -316,11 +316,22 @@
           <button id="apiKeysSaveBtn" class="btn btn-ghost extracted-inline-24">Save</button>
         </div>
         <div class="settings-body scroll-y">
-          <div class="settings-inner">
             <div class="extracted-inline-25" style="background: var(--bg-surface-2); border-radius: var(--r-md); padding: var(--sp-4); margin-bottom: var(--sp-4); border-left: 3px solid #10b981;">
               <span class="ai-status-glow"></span>
-              <strong>AI Backend: Connected</strong><br>
-              <span style="color: var(--text-muted); font-size: var(--fs-sm);">Your Groq API keys are securely managed by the backend server. No API key is needed in your browser — your chats are private and secure.</span>
+              <strong>AI Backend: Configured</strong><br>
+              <span style="color: var(--text-muted); font-size: var(--fs-sm);">By default, chat requests go through the secure backend proxy.</span>
+            </div>
+            
+            <div class="settings-group">
+              <div class="settings-group-label">Developer Mode (Direct API)</div>
+              <div class="field-group extracted-inline-27">
+                <div class="extracted-inline-28">
+                  <label for="groqApiKeyInput" class="field-label">GROQ API KEY</label>
+                  <input id="groqApiKeyInput" type="password" placeholder="gsk_..." autocomplete="off" class="field-input extracted-inline-29">
+                  <button type="button" id="groqKeyToggle" title="Show/hide key" onclick="const i=document.getElementById('groqApiKeyInput');i.type=i.type==='password'?'text':'password';" class="extracted-inline-30">👁</button>
+                </div>
+                <span style="color: var(--text-muted); font-size: var(--fs-xs); display: block; margin-top: 4px;">If provided, chats will bypass the backend and call Groq directly (useful for local testing without emulators).</span>
+              </div>
             </div>
             <div class="settings-group">
               <div class="settings-group-label">Search Provider (Optional)</div>

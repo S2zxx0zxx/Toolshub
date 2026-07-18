@@ -8,6 +8,32 @@ export const aiApi = (() => {
   const CHAT_MODEL = 'compound-beta';         // Best for general chat (Groq Compound)
   const INTENT_MODEL = 'llama-3.1-8b-instant'; // Fast, cheap for intent classification
 
+  // Check if Developer Mode key is set
+  function getLocalKey() {
+    return localStorage.getItem('GROQ_API_KEY');
+  }
+
+  async function pingBackend() {
+    if (getLocalKey()) {
+      window.dispatchEvent(new CustomEvent('backend-status', { detail: 'connected' }));
+      return true;
+    }
+    try {
+      // Just a lightweight check
+      const res = await fetch(API_ENDPOINT, { method: 'OPTIONS' });
+      if (res.ok || res.status === 405 || res.status === 400) {
+        window.dispatchEvent(new CustomEvent('backend-status', { detail: 'connected' }));
+        return true;
+      }
+    } catch(e) {
+      window.dispatchEvent(new CustomEvent('backend-status', { detail: 'disconnected' }));
+      return false;
+    }
+  }
+
+  // Initialize ping on load
+  setTimeout(pingBackend, 1000);
+
   async function* fetchGroqStream(messages) {
     const payload = {
       model: CHAT_MODEL,
@@ -17,12 +43,25 @@ export const aiApi = (() => {
     };
     
     let response;
+    const localKey = getLocalKey();
+    
     try {
-      response = await fetch(API_ENDPOINT, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-      });
+      if (localKey) {
+        response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+          method: 'POST',
+          headers: { 
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localKey}`
+          },
+          body: JSON.stringify(payload)
+        });
+      } else {
+        response = await fetch(API_ENDPOINT, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+      }
     } catch (e) {
       window.dispatchEvent(new CustomEvent('backend-status', { detail: 'disconnected' }));
       throw new Error("Network failure. Backend API temporarily unavailable.");
@@ -79,12 +118,26 @@ export const aiApi = (() => {
       response_format: { type: "json_object" }
     };
     
+    let response;
+    const localKey = getLocalKey();
+    
     try {
-      const response = await fetch(API_ENDPOINT, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-      });
+      if (localKey) {
+        response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+          method: 'POST',
+          headers: { 
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localKey}`
+          },
+          body: JSON.stringify(payload)
+        });
+      } else {
+        response = await fetch(API_ENDPOINT, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+      }
       
       if (!response.ok) {
         window.dispatchEvent(new CustomEvent('backend-status', { detail: 'disconnected' }));
@@ -103,6 +156,7 @@ export const aiApi = (() => {
 
   return {
     chatStream,
-    chatCompletionJson
+    chatCompletionJson,
+    pingBackend
   };
 })();

@@ -14,6 +14,7 @@ import { Router } from './router.js';
 import { Auth } from '../services/auth.js';
 import { CloudDB } from '../services/cloudDb.js';
 import { initFirebase, auth, db, fbAuthModule, fbFirestoreModule } from '../services/firebase.js';
+import { aiApi } from '../services/aiApi.js';
 
 const Settings = (() => {
 
@@ -133,6 +134,10 @@ const Settings = (() => {
   // API KEYS SCREEN
   // =========================================================
   function openApiKeys() {
+    const groqInput = document.getElementById('groqApiKeyInput');
+    if (groqInput) {
+      groqInput.value = localStorage.getItem('GROQ_API_KEY') || '';
+    }
     const tavilyInput = document.getElementById('tavilyApiKeyInput');
     if (tavilyInput) {
       tavilyInput.value = localStorage.getItem('TAVILY_API_KEY') || '';
@@ -140,14 +145,25 @@ const Settings = (() => {
     openSubScreen('screenApiKeys');
   }
   function saveApiKeys() {
+    const groqInput = document.getElementById('groqApiKeyInput');
+    if (groqInput) {
+      const val = groqInput.value.trim();
+      if (val) localStorage.setItem('GROQ_API_KEY', val);
+      else localStorage.removeItem('GROQ_API_KEY');
+    }
+    
     const tavilyInput = document.getElementById('tavilyApiKeyInput');
     if (tavilyInput) {
       const val = tavilyInput.value.trim();
       if (val) localStorage.setItem('TAVILY_API_KEY', val);
       else localStorage.removeItem('TAVILY_API_KEY');
     }
-    Toast.show('✅ Settings saved. Search key updated.');
-    updateAiStatusIndicator();
+    Toast.show('✅ Settings saved.');
+    
+    // Check connection status immediately
+    if (aiApi && aiApi.pingBackend) {
+      aiApi.pingBackend();
+    }
     closeSubScreen('screenApiKeys');
   }
 
