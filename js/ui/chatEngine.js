@@ -300,17 +300,19 @@ export const Chat = (() => {
     el.id = 'typingIndicator';
     
     // Determine active tool UI state
-    let activeTool = ToolSelector.getActiveTool();
-    if (!activeTool && toolId) {
-      // It's a backend AI execution tool, grab its UI metadata if it exists in UI registry
-      activeTool = ToolSelector.findTool(toolId);
+    let executingToolData = null;
+    if (toolId) {
+      executingToolData = ToolSelector.findTool(toolId);
     }
+    
+    // Fall back to globally selected tool if no specific toolId is executing
+    let activeTool = executingToolData || ToolSelector.getActiveTool();
 
     let title = activeTool ? activeTool.tool.title : 'ToolsHub';
     let svgIcon = activeTool ? ToolSelector.icon(activeTool.tool.icon) : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>';
 
-    // If it's a backend tool like calculator/weather
-    if (toolId === 'calculator' || toolId === 'weather' || toolId === 'search') {
+    // If it's a backend tool not found in UI registry
+    if (toolId && !executingToolData) {
       title = toolId.charAt(0).toUpperCase() + toolId.slice(1);
     }
 
@@ -327,7 +329,7 @@ export const Chat = (() => {
     scrollToBottom();
   }
   function hideTypingIndicator() {
-    document.getElementById('typingIndicator')?.remove();
+    document.querySelectorAll('#typingIndicator').forEach(el => el.remove());
   }
 
   async function consumeStream(streamGenerator) {

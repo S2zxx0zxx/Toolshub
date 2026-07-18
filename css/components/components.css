@@ -92,10 +92,10 @@
   background: var(--text-secondary);
   transition: transform var(--dur-base) var(--ease), background var(--dur-base) var(--ease);
 }
-.toggle.is-on { background: var(--accent-soft); }
+.toggle.is-on { background: var(--accent); }
 .toggle.is-on::after {
   transform: translateX(18px);
-  background: var(--accent);
+  background: var(--text-inverse);
 }
 
 /* ---------- LIST ROW (settings, sheet options) ---------- */

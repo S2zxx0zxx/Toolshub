@@ -121,7 +121,8 @@ export const LocalSettings = (() => {
 
     // ---------- WEB SEARCH ----------
     getWebSearchEnabled() {
-      return _safeGet(KEYS.WEB_SEARCH, false);
+      const val = _safeGet(KEYS.WEB_SEARCH, false);
+      return val === true;
     },
     setWebSearchEnabled(value) {
       _safeSet(KEYS.WEB_SEARCH, !!value);
