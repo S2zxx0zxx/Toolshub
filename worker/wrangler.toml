@@ -1,0 +1,5 @@
+name = "toolshub-worker"
+main = "src/index.js"
+compatibility_date = "2024-03-20"
+
+# Secret variable GROQ_API_KEY will be provided via `npx wrangler secret put GROQ_API_KEY`
