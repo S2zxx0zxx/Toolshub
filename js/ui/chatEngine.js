@@ -218,8 +218,15 @@ export const Chat = (() => {
     if (!str) return '';
     try {
       if (window.marked && window.DOMPurify) {
+        // Ensure links open in a new tab safely
+        window.DOMPurify.addHook('afterSanitizeAttributes', function(node) {
+          if ('target' in node) {
+            node.setAttribute('target', '_blank');
+            node.setAttribute('rel', 'noopener noreferrer');
+          }
+        });
         const rawHtml = window.marked.parse(str);
-        return window.DOMPurify.sanitize(rawHtml);
+        return window.DOMPurify.sanitize(rawHtml, { ADD_ATTR: ['target'] });
       }
       return escapeHtml(str); // fallback
     } catch (e) {

@@ -1,5 +1,13 @@
 const functions = require('firebase-functions');
-const cors = require('cors')({ origin: true });
+const allowedOrigins = [
+  'http://localhost:5000',
+  'http://127.0.0.1:5500',
+  'http://localhost:5500',
+  'https://toolshub-87859.web.app',
+  'https://toolshub-87859.firebaseapp.com',
+  'https://s2zxx0zxx.github.io'
+];
+const cors = require('cors')({ origin: allowedOrigins });
 
 // Fallback pool of Groq API keys from environment variables
 const GROQ_API_KEYS = (process.env.GROQ_API_KEYS || "").split(",").map(k => k.trim()).filter(k => k);
@@ -66,21 +74,19 @@ exports.chatCompletion = functions.https.onRequest((req, res) => {
           res.setHeader('Cache-Control', 'no-cache');
           res.setHeader('Connection', 'keep-alive');
           
-          if (groqResponse.body && groqResponse.body.getReader) {
-             const reader = groqResponse.body.getReader();
-             const decoder = new TextDecoder('utf-8');
-             
-             while(true) {
-               const { done, value } = await reader.read();
-               if (done) {
-                 res.end();
-                 break;
+          if (groqResponse.body) {
+             try {
+               // Node 18 native fetch bodies are async iterables
+               for await (const chunk of groqResponse.body) {
+                 res.write(chunk);
                }
-               res.write(decoder.decode(value, { stream: true }));
+               res.end();
+             } catch (streamErr) {
+               console.error("Stream reading error:", streamErr);
+               res.end();
              }
              return;
           } else {
-             // Fallback
              const text = await groqResponse.text();
              return res.send(text);
           }
