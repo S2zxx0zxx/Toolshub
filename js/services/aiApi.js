@@ -24,13 +24,18 @@ export const aiApi = (() => {
         body: JSON.stringify(payload)
       });
     } catch (e) {
+      window.dispatchEvent(new CustomEvent('backend-status', { detail: 'disconnected' }));
       throw new Error("Network failure. Backend API temporarily unavailable.");
     }
 
     if (!response.ok) {
+      window.dispatchEvent(new CustomEvent('backend-status', { detail: 'disconnected' }));
       const errorText = await response.text();
       throw new Error(`Backend Error (${response.status}): ${errorText}`);
     }
+    
+    // Connected successfully
+    window.dispatchEvent(new CustomEvent('backend-status', { detail: 'connected' }));
 
     const reader = response.body.getReader();
     const decoder = new TextDecoder('utf-8');
@@ -81,10 +86,16 @@ export const aiApi = (() => {
         body: JSON.stringify(payload)
       });
       
-      if (!response.ok) return null;
+      if (!response.ok) {
+        window.dispatchEvent(new CustomEvent('backend-status', { detail: 'disconnected' }));
+        return null;
+      }
+      
+      window.dispatchEvent(new CustomEvent('backend-status', { detail: 'connected' }));
       const data = await response.json();
       return JSON.parse(data.choices[0].message.content);
     } catch (e) {
+      window.dispatchEvent(new CustomEvent('backend-status', { detail: 'disconnected' }));
       console.error("AI JSON completion failed:", e);
       return null;
     }

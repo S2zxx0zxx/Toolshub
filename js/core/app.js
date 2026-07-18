@@ -151,13 +151,25 @@ const Settings = (() => {
     closeSubScreen('screenApiKeys');
   }
 
-  function updateAiStatusIndicator() {
+  function updateAiStatusIndicator(status = 'connected') {
     const indicator = document.getElementById('aiStatusIndicator');
     if (!indicator) return;
-    indicator.innerHTML = '<span class="ai-status-glow"></span> AI: Connected';
-    indicator.title = 'AI Backend Connected — real AI responses active.';
-    indicator.style.color = 'var(--accent, #7c5cfc)';
+    
+    if (status === 'disconnected') {
+      indicator.innerHTML = '<span class="ai-status-glow" style="background: var(--danger, #ff4d4f); box-shadow: 0 0 8px var(--danger, #ff4d4f);"></span> AI: Disconnected';
+      indicator.title = 'Backend API is currently unreachable.';
+      indicator.style.color = 'var(--text-muted)';
+    } else {
+      indicator.innerHTML = '<span class="ai-status-glow"></span> AI: Connected';
+      indicator.title = 'AI Backend Connected — real AI responses active.';
+      indicator.style.color = 'var(--accent, #7c5cfc)';
+    }
   }
+
+  // Listen for real-time backend status changes from aiApi
+  window.addEventListener('backend-status', (e) => {
+    updateAiStatusIndicator(e.detail);
+  });
 
   // =========================================================
   // MANAGE TOOLS SCREEN
