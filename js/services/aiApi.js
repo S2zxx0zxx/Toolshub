@@ -1,21 +1,8 @@
 export const aiApi = (() => {
-  const API_ENDPOINT = 'https://api.groq.com/openai/v1/chat/completions';
-  const DEFAULT_MODEL = 'llama-3.3-70b-versatile';
+  const API_ENDPOINT = '/api/chat';
+  const DEFAULT_MODEL = 'groq/compound';
 
-  async function* mockStreamResponse(messages) {
-    const text = "This is a simulated AI response from the mock API layer. To enable real AI responses, set your Groq API key in the browser console using `localStorage.setItem('GROQ_API_KEY', 'your_key')`.";
-    const chunks = text.split(' ');
-    
-    // Simulate initial network latency
-    await new Promise(r => setTimeout(r, 600));
-
-    for (const chunk of chunks) {
-      await new Promise(r => setTimeout(r, 40)); // typing delay
-      yield chunk + ' ';
-    }
-  }
-
-  async function* fetchGroqStream(messages, apiKey) {
+  async function* fetchGroqStream(messages) {
     const payload = {
       model: DEFAULT_MODEL,
       messages: messages,
@@ -27,20 +14,16 @@ export const aiApi = (() => {
     try {
       response = await fetch(API_ENDPOINT, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${apiKey}`
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
       });
     } catch (e) {
-      throw new Error("Network failure. AI service temporarily unavailable.");
+      throw new Error("Network failure. Backend API temporarily unavailable.");
     }
 
     if (!response.ok) {
-      if (response.status === 401) throw new Error("Invalid API Key.");
-      if (response.status === 429) throw new Error("Rate limit exceeded. Please try again later.");
-      throw new Error("AI service temporarily unavailable.");
+      const errorText = await response.text();
+      throw new Error(`Backend Error (${response.status}): ${errorText}`);
     }
 
     const reader = response.body.getReader();
@@ -61,7 +44,7 @@ export const aiApi = (() => {
         if (trimmed.startsWith('data: ')) {
           try {
             const data = JSON.parse(trimmed.slice(6));
-            const delta = data.choices[0]?.delta?.content;
+            const delta = data.choices && data.choices[0]?.delta?.content;
             if (delta) {
               yield delta;
             }
@@ -73,36 +56,11 @@ export const aiApi = (() => {
     }
   }
 
-  // SECURITY NOTE: Keys stored in localStorage and used directly in Authorization headers
-  // are visible to anyone with DevTools/Network access. This is a known limitation of
-  // the current client-only architecture. Do not use a key with billing limits you're
-  // not comfortable exposing from the browser.
-  function getApiKey() {
-    let key = localStorage.getItem('GROQ_API_KEY');
-    if (!key && typeof window !== 'undefined' && window.ENV && window.ENV.GROQ_API_KEY) {
-      key = window.ENV.GROQ_API_KEY;
-    }
-    return key || null;
-  }
-
   async function* chatStream(messages) {
-    const apiKey = getApiKey();
-    if (apiKey) {
-      yield* fetchGroqStream(messages, apiKey);
-    } else {
-      // No API key — yield mock chunks tagged with a sentinel so UI can badge them
-      for await (const chunk of mockStreamResponse(messages)) {
-        yield chunk;
-      }
-      // Signal mock mode to consumer via a special object after all chunks
-      yield { __isMock: true };
-    }
+    yield* fetchGroqStream(messages);
   }
 
   async function chatCompletionJson(messages) {
-    const apiKey = getApiKey();
-    if (!apiKey) return null; // cannot do AI classification without real API
-    
     const payload = {
       model: DEFAULT_MODEL,
       messages: messages,
@@ -113,12 +71,10 @@ export const aiApi = (() => {
     try {
       const response = await fetch(API_ENDPOINT, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${apiKey}`
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
       });
+      
       if (!response.ok) return null;
       const data = await response.json();
       return JSON.parse(data.choices[0].message.content);
