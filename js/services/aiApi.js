@@ -1,9 +1,6 @@
 export const aiApi = (() => {
-  const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-  // Route to local wrangler dev server or live Cloudflare Worker
-  const API_ENDPOINT = isLocal 
-    ? 'http://127.0.0.1:8787' 
-    : 'https://toolshub-worker.theliquidlounge-co.workers.dev';
+  // Always route to live Cloudflare Worker
+  const API_ENDPOINT = 'https://toolshub-worker.theliquidlounge-co.workers.dev';
 
   // Valid Groq model IDs — must match Groq API exactly
   const CHAT_MODEL = 'llama-3.3-70b-versatile';         // Best for general chat (Groq Compound)
