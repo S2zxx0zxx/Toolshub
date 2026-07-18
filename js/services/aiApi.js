@@ -1,9 +1,9 @@
 export const aiApi = (() => {
   const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-  // Replace YOUR_CLOUDFLARE_SUBDOMAIN with your actual Cloudflare workers.dev subdomain after deployment
+  // Route to local wrangler dev server or live Cloudflare Worker
   const API_ENDPOINT = isLocal 
-    ? 'http://127.0.0.1:8787' // Cloudflare Wrangler local dev server port
-    : 'https://toolshub-worker.YOUR_CLOUDFLARE_SUBDOMAIN.workers.dev';
+    ? 'http://127.0.0.1:8787' 
+    : 'https://toolshub-worker.theliquidlounge-co.workers.dev';
 
   // Valid Groq model IDs — must match Groq API exactly
   const CHAT_MODEL = 'compound-beta';         // Best for general chat (Groq Compound)

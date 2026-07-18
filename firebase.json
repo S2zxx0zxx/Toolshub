@@ -1,7 +1,5 @@
 {
-  "functions": {
-    "source": "functions"
-  },
+
   "auth": {
     "providers": {
       "anonymous": true,
@@ -37,9 +35,7 @@
     ]
   },
   "emulators": {
-    "functions": {
-      "port": 5001
-    },
+
     "firestore": {
       "port": 8080
     },
