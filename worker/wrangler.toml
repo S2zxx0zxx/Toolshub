@@ -1,4 +1,4 @@
-name = "toolshub-worker"
+name = "toolshub-api-worker"
 main = "src/index.js"
 compatibility_date = "2024-03-20"
 
