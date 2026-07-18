@@ -1,5 +1,8 @@
 export const aiApi = (() => {
-  const API_ENDPOINT = '/api/chat';
+  const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+  const API_ENDPOINT = isLocal 
+    ? 'http://127.0.0.1:5001/toolshub-87859/us-central1/chatCompletion' 
+    : 'https://us-central1-toolshub-87859.cloudfunctions.net/chatCompletion';
   const DEFAULT_MODEL = 'groq/compound';
 
   async function* fetchGroqStream(messages) {
