@@ -51,8 +51,27 @@ const Settings = (() => {
   // =========================================================
   // PROFILE SCREEN
   // =========================================================
+  function getEffectiveProfile() {
+    const localProfile = LocalSettings.getProfile();
+    const user = Auth.getCurrentUser();
+    
+    if (user) {
+      const authName = user.displayName || (user.email ? user.email.split('@')[0] : 'User');
+      const authEmail = user.email || '';
+      
+      let effectiveName = authName;
+      if (localProfile.name !== 'Your Name' && localProfile.name !== authName) {
+        effectiveName = localProfile.name;
+      }
+      
+      return { name: effectiveName, email: authEmail };
+    }
+    
+    return localProfile;
+  }
+
   function openProfile() {
-    const profile = LocalSettings.getProfile();
+    const profile = getEffectiveProfile();
     // Populate fields
     const nameInput  = document.getElementById('profileNameInput');
     const emailInput = document.getElementById('profileEmailInput');
@@ -299,7 +318,7 @@ const Settings = (() => {
     let currentY = 0;
     let isPulling = false;
     let ptrCoolingDown = false; // debounce: ignore rapid repeat gestures
-    const TRIGGER_THRESHOLD = 160; // px — raised from 120 to require deliberate gesture
+    const TRIGGER_THRESHOLD = 200; // px — raised from 160 to require deliberate gesture
     const pwaContainer = document.querySelector('.main-col');
     const indicator = document.getElementById('ptr-indicator');
     if (!pwaContainer || !indicator) return;
@@ -316,6 +335,10 @@ const Settings = (() => {
     pwaContainer.addEventListener('touchstart', e => {
       // Only begin tracking if we're at scroll top AND not cooling down from a previous gesture
       if (pwaContainer.scrollTop <= 5 && !ptrCoolingDown) {
+        // If content is short (no scrollbar), require strict 0 to avoid false triggers from normal upward swipes
+        const isShortContent = pwaContainer.scrollHeight <= pwaContainer.clientHeight;
+        if (isShortContent && pwaContainer.scrollTop > 0) return;
+
         startY = e.touches[0].clientY;
         startX = e.touches[0].clientX;
         isPulling = true;
@@ -357,7 +380,7 @@ const Settings = (() => {
       if (pullDistance > TRIGGER_THRESHOLD) {
         // Require explicit confirmation before reloading — never auto-erase in-progress chat
         indicator.classList.add('is-refreshing');
-        Toast.show('Pull again to refresh app', 3000);
+        Toast.show('Pull down once more to refresh', 3000);
         // 2-second cooldown — user must do a second deliberate pull to confirm
         ptrCoolingDown = true;
         setTimeout(() => {

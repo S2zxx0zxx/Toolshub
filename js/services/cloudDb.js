@@ -10,7 +10,7 @@ export const CloudDB = (() => {
     return user ? user.uid : null;
   }
 
-  function subscribeConversations(callback) {
+  function subscribeConversations(callback, retryCount = 1) {
     const uid = _uid();
     if (!uid || !db || !fbFirestoreModule) { 
       callback(LocalSettings.getAllChats()); 
@@ -31,14 +31,28 @@ export const CloudDB = (() => {
           chats.push({ id: doc.id, ...doc.data() });
         });
         callback(chats);
+      }, (e) => {
+        if (e.code === 'unavailable' && retryCount > 0) {
+          console.warn("Firestore unavailable, retrying subscribeConversations...");
+          setTimeout(() => subscribeConversations(callback, 0), 800);
+        } else {
+          console.error("CloudDB subscribeConversations failed:", e);
+          if (typeof Toast !== 'undefined') Toast.show('Error loading chat history.');
+          callback([]);
+        }
       });
     } catch (e) {
-      console.warn("CloudDB disabled:", e);
-      callback([]);
+      if (e.code === 'unavailable' && retryCount > 0) {
+        console.warn("Firestore unavailable synchronously, retrying subscribe...");
+        setTimeout(() => subscribeConversations(callback, 0), 800);
+      } else {
+        console.warn("CloudDB disabled:", e);
+        callback([]);
+      }
     }
   }
 
-  async function loadChatMessages(chatId) {
+  async function loadChatMessages(chatId, retryCount = 1) {
     const uid = _uid();
     if (!uid || !db || !fbFirestoreModule) {
       const localChat = LocalSettings.getChat(chatId);
@@ -65,7 +79,13 @@ export const CloudDB = (() => {
       });
       return messages;
     } catch (e) {
-      console.warn("CloudDB loadChatMessages failed:", e);
+      if (e.code === 'unavailable' && retryCount > 0) {
+        console.warn("Firestore unavailable, retrying loadChatMessages...");
+        await new Promise(r => setTimeout(r, 800));
+        return loadChatMessages(chatId, 0);
+      }
+      console.error("CloudDB loadChatMessages failed:", e);
+      if (typeof Toast !== 'undefined') Toast.show('Error loading messages.');
       return [];
     }
   }
@@ -212,11 +232,18 @@ export const CloudDB = (() => {
       throw new Error('Please sign in first to join the waitlist.');
     }
     const docRef = fbFirestoreModule.doc(db, `proWaitlist/${user.uid}`);
-    await fbFirestoreModule.setDoc(docRef, {
+    
+    const writePromise = fbFirestoreModule.setDoc(docRef, {
       uid: user.uid,
       email: user.email || null,
       timestamp: fbFirestoreModule.serverTimestamp()
     }, { merge: true });
+
+    const timeoutPromise = new Promise((_, reject) => 
+      setTimeout(() => reject(new Error('This is taking longer than expected. Please check your connection and try again.')), 8000)
+    );
+
+    await Promise.race([writePromise, timeoutPromise]);
   }
 
   return {
