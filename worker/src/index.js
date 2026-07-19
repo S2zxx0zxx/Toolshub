@@ -126,6 +126,66 @@ export default {
       }
     }
 
+    // 4.2 RAG Ingest Branch
+    if (body.type === 'rag_ingest') {
+      try {
+        if (!body.text) {
+          return new Response(JSON.stringify({ error: 'Text is required for ingestion.' }), { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+        }
+        
+        // Generate embedding
+        const aiResponse = await env.AI.run('@cf/baai/bge-base-en-v1.5', {
+          text: [body.text]
+        });
+        const vector = aiResponse.data[0];
+
+        // Insert into Vectorize (generating a random ID or using provided)
+        const recordId = body.metadata?.id || crypto.randomUUID();
+        const record = {
+          id: recordId,
+          values: vector,
+          metadata: { text: body.text, ...body.metadata }
+        };
+
+        const insertResponse = await env.VECTORIZE.insert([record]);
+        return new Response(JSON.stringify({ success: true, insertResponse, id: recordId }), { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+      } catch (e) {
+        return new Response(JSON.stringify({ error: 'RAG ingestion failed.', details: e.message }), { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+      }
+    }
+
+    // 4.3 RAG Query Branch
+    if (body.type === 'rag_query') {
+      try {
+        if (!body.query) {
+          return new Response(JSON.stringify({ error: 'Query is required.' }), { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+        }
+
+        // Embed the query
+        const aiResponse = await env.AI.run('@cf/baai/bge-base-en-v1.5', {
+          text: [body.query]
+        });
+        const queryVector = aiResponse.data[0];
+
+        // Query Vectorize
+        const searchResults = await env.VECTORIZE.query(queryVector, {
+          topK: 5,
+          returnMetadata: 'all'
+        });
+
+        // Map matches to a clean format
+        const matches = searchResults.matches.map(m => ({
+          score: m.score,
+          text: m.metadata?.text,
+          ...m.metadata
+        }));
+
+        return new Response(JSON.stringify({ results: matches }), { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+      } catch (e) {
+        return new Response(JSON.stringify({ error: 'RAG query failed.', details: e.message }), { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+      }
+    }
+
     const { messages, model, temperature, stream, response_format } = body;
     if (!messages || !Array.isArray(messages)) {
       return new Response('Bad Request: Missing or invalid "messages" array.', { status: 400, headers: corsHeaders });

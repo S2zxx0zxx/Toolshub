@@ -4,6 +4,8 @@ import { ToolExecutor } from '../tools/executor.js';
 import { aiApi } from '../services/aiApi.js';
 import { CloudDB } from '../services/cloudDb.js';
 import { LocalSettings } from '../services/localSettings.js';
+import { ragService } from '../services/ragService.js';
+import { PromptManager } from './prompt.js';
 
 export const AIRouter = (() => {
 
@@ -18,6 +20,20 @@ export const AIRouter = (() => {
    */
   async function* processInput(text, chatHistory, onToolStart) {
     
+    // Check if query is business/agency specific and populate RAG context
+    PromptManager.setRagContext(null);
+    const ragPattern = /(services|pricing|client|agency|cost|portfolio)/i;
+    if (ragPattern.test(text)) {
+      try {
+        const ragResult = await ragService.queryRAG(text);
+        if (ragResult && ragResult.results && ragResult.results.length > 0) {
+          PromptManager.setRagContext(ragResult.results.map(r => r.text).join('\n---\n'));
+        }
+      } catch (e) {
+        console.warn("RAG fallback error (gracefully bypassed):", e);
+      }
+    }
+
     // 1. Build Base Context
     let context = ContextManager.buildContext(chatHistory);
 
