@@ -1,1 +1,25 @@
-{}
+{
+  "general-digirise-india": "a7007f2dd9401fda0ba378766273d1cda0d42ab8c087cc5cf87038f6004cc6e6",
+  "general-toolshub": "759a61c69c043a34e6ce81944d040ae0f1b81bde01df922fcc7bbaa535565605",
+  "general-process": "3d8e31a920b414c61c0bc3e725c1229574ba67f5c2df133d5779bd3c1cf93a2e",
+  "services-smm": "98d87bb7571e58d97bbd4ba5ad72a5a6ed97011909328e145a6792ff2c2cea06",
+  "services-reels": "6744dfca397e8c73249f02924a2ab85b0cdec4fd05c1468e99889bfcebe00bc5",
+  "services-paid-ads": "9606925b5ba641e30ea8fbd1a1e12ce54b6e1cbc96e2d200640d43e8135d4bba",
+  "services-website": "b545c47a0285ab29b29f28f53959073f5292c5228c3a7e4192e4d1229450a848",
+  "pricing-build-starter": "8baf879b5e218f411b1ef8c1227c042647cf72af62b10b08049d82339d1643ba",
+  "pricing-build-growth": "19a1475753767e09dbfd7a5d3f90df134c8d5fbe9653407f18fa3df1b4967f84",
+  "pricing-build-authority": "6a860a7c251a304c7f324c3721ce74f1497e1989931cc3f973434c5be7bc8e9d",
+  "pricing-build-scale": "28bbd3810bb1a7c280e7381dc55bc996f0c3218e670c9da6ffa023b38731c463",
+  "pricing-smm-starter": "f1dc6ba4ccabbe659509aa77cdf478e6224914cd7125d75e82705458b50dc7c6",
+  "pricing-smm-growth": "c48a50f79eabcefa83ae3bc46382b81733bf25e399ff2f8a32bb94b604a4f702",
+  "pricing-smm-premium": "48d33e20a405a491c93bdc1d6ffd466b40d30951f92d3180137dcbe86afc5cbd",
+  "pricing-exclusions": "4daf3560790e60890fa42c6cc75c683bf92b0cf27066f60a3323fe3af46cdcfd",
+  "faq-payment-terms": "04a09c6786cda076fdf0eb06d72da0b59a73e1fb23736ff1835c5f43af59eaa8",
+  "faq-revisions": "d9588ee96c209bda2d167bfdfd03827c93967a73e89b36b1d0312bb19976156c",
+  "faq-cancellation": "f3688ebd504cff642453f987320e0f0b6baf02766601549eb92b6e089988b88c",
+  "faq-roi-guarantee": "52ef2826f2a6ab1db41cff50e83967c666a9b2dbc90671b34d25348174be7ef8",
+  "faq-timeline": "6d0a7d875798063295b266086b96f0b4bd53e40bcb86b5510661217b8f97447a",
+  "faq-team": "a57904d8d67c81a6acf6d16d399676490eca1964bd2c328de06fcd0da2fc8706",
+  "faq-confidentiality": "3c338453293cc714b6c90a05a5de76a4c23dd448a67bd8a4bb9803028cf1608e",
+  "faq-client-checklist": "f899f024548dba1e2fa5c73b233ce36a5b2be4271f89d79810331a4cd1f9b485"
+}
