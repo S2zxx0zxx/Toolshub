@@ -27,6 +27,17 @@
       "**/.*",
       "**/node_modules/**",
       "security_rules_test_firestore/**"
+    ],
+    "headers": [
+      {
+        "source": "/sw.js",
+        "headers": [
+          {
+            "key": "Cache-Control",
+            "value": "no-cache, no-store, must-revalidate"
+          }
+        ]
+      }
     ]
   },
   "emulators": {
