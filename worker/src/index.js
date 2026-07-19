@@ -36,7 +36,7 @@ async function callGitHubModels(modelId, payload, env) {
     ...payload, 
     model: modelId 
   };
-  const ghResponse = await fetch('https://models.github.ai/inference/chat/completions', {
+  const ghResponse = await fetch('https://models.inference.ai.azure.com/chat/completions', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
