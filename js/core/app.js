@@ -266,8 +266,18 @@ const Settings = (() => {
   // =========================================================
   // LOGOUT CONFIRM SHEET
   // =========================================================
-  async function confirmLogout() {
-    if (!confirm("Are you sure you want to log out?")) return;
+  function confirmLogout() {
+    document.getElementById('logoutConfirmOverlay').classList.add('is-open');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeLogoutConfirm() {
+    document.getElementById('logoutConfirmOverlay').classList.remove('is-open');
+    document.body.style.overflow = '';
+  }
+
+  async function executeLogout() {
+    closeLogoutConfirm();
     try {
       await Auth.logout();
       LocalSettings.clearAll();
@@ -498,7 +508,12 @@ const Settings = (() => {
     document.getElementById('manageToolsBackBtn')?.addEventListener('click', () => closeSubScreen('screenManageTools'));
 
     // ---- Log out row (Pattern A — real clear + reload) ----
-    document.getElementById('logoutBtn')?.addEventListener('click', confirmLogout);
+    document.getElementById('logoutConfirmCloseBtn')?.addEventListener('click', closeLogoutConfirm);
+    document.getElementById('logoutConfirmCancelBtn')?.addEventListener('click', closeLogoutConfirm);
+    document.getElementById('logoutConfirmConfirmBtn')?.addEventListener('click', executeLogout);
+    document.getElementById('logoutConfirmOverlay')?.addEventListener('click', e => {
+      if (e.target.id === 'logoutConfirmOverlay') closeLogoutConfirm();
+    });
 
     // Initial manage-tools subtitle sync
     updateManageToolsSubtitle();
@@ -734,8 +749,6 @@ document.addEventListener('DOMContentLoaded', async () => {
       if (sidebarLoginBtn) sidebarLoginBtn.style.display = 'none';
       const logoutRow = document.getElementById('logoutRow');
       if (logoutRow) logoutRow.style.display = 'flex';
-      const logoutBtn = document.getElementById('logoutBtn');
-      if (logoutBtn) logoutBtn.parentElement.style.display = 'block';
       
       Toast.show(`Welcome, ${name}!`);
 
@@ -761,8 +774,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 
       const logoutRow = document.getElementById('logoutRow');
       if (logoutRow) logoutRow.style.display = 'none';
-      const logoutBtn = document.getElementById('logoutBtn');
-      if (logoutBtn) logoutBtn.parentElement.style.display = 'none';
 
       // Load Guest chats
       CloudDB.subscribeConversations((chats) => {

@@ -312,6 +312,7 @@ export const Chat = (() => {
   }
 
   async function appendErrorMessage(errorText) {
+    hideTypingIndicator();
     const errMsg = { id: 'msg_' + Date.now(), role: 'assistant', text: `[Error] ${errorText}`, ts: Date.now(), isError: true };
     currentChat.messages.push(errMsg);
     currentChat.updatedAt = Date.now();
@@ -391,6 +392,7 @@ export const Chat = (() => {
     
     try {
       for await (const chunk of streamGenerator) {
+        hideTypingIndicator(); // Ensure any tool-triggered indicator is removed once real stream starts
         // __isMock sentinel from aiApi — don't render, just flag
         if (chunk && typeof chunk === 'object' && chunk.__isMock) {
           isMock = true;

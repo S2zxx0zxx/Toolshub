@@ -72,7 +72,8 @@ export const aiApi = (() => {
         }));
       }
       
-      throw new Error(`Backend Error (${response.status}): ${errorText}`);
+      console.error(`Backend Error (${response.status}): ${errorText}`);
+      throw new Error("This feature is still warming up — please try again in a moment, or try a different tool.");
     }
     
     // Connected successfully

@@ -106,9 +106,10 @@
   width: 100%; text-align: left;
   padding: var(--sp-4);
   border-radius: var(--r-lg);
-  transition: background var(--dur-fast) var(--ease);
+  transition: background var(--dur-fast) var(--ease), transform var(--dur-fast) var(--ease);
 }
 .list-row:hover { background: var(--bg-surface-2); }
+.list-row:active { background: var(--bg-surface-2); transform: scale(0.98); }
 .list-row-icon {
   width: 36px; height: 36px;
   border-radius: var(--r-full);
