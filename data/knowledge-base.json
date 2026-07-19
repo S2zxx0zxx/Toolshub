@@ -1,0 +1,22 @@
+[
+  {
+    "id": "service-web-dev",
+    "category": "services",
+    "text": "ToolsHub Agency offers premium full-stack web development services. We specialize in building fast, scalable Single Page Applications (SPAs) using Vanilla JavaScript, Edge computing via Cloudflare Workers, and serverless databases like Firebase Firestore. Our methodology focuses on removing unnecessary frontend frameworks to deliver raw performance. We handle everything from UI/UX design, frontend development, backend API creation, to deployment and security hardening. Whether you need an e-commerce platform, a corporate landing page, or a complex AI-integrated dashboard, our team ensures zero-latency performance and complete SEO optimization. We strictly follow decoupled architectural patterns, ensuring that your backend logic and API keys are never exposed to the client side. Our typical tech stack includes ES6 Modules, Cloudflare Workers, Firebase, and Groq LLM integrations for intelligent features."
+  },
+  {
+    "id": "pricing-tier-1",
+    "category": "pricing",
+    "text": "Our Starter Tier pricing begins at $5,000 for a standard 5-page web application. This includes custom design, frontend development without heavy frameworks, basic SEO setup, and Edge backend proxy configuration. For complex, AI-integrated applications requiring vector databases (RAG), Cloudflare Workers AI, and real-time LLM streaming, our Enterprise Tier starts at $15,000. Maintenance and hosting costs are separate, typically running around $200/month which covers Cloudflare and Firebase usage up to 100,000 visitors. Custom quotes are provided after the initial consultation."
+  },
+  {
+    "id": "faq-refund-policy",
+    "category": "faq",
+    "text": "Do you offer refunds? We offer a 100% money-back guarantee within the first 14 days of project commencement if you are not satisfied with the initial design mockups. Once development officially begins and code is written, refunds are evaluated on a pro-rata basis depending on the milestones completed."
+  },
+  {
+    "id": "general-company-history",
+    "category": "general",
+    "text": "ToolsHub Agency was founded in 2024 with a core mission: to eliminate the bloat of modern web development. We believe that frameworks like React and Vue are often overused for projects that could be built faster and lighter with Vanilla JavaScript and Edge computing. Our founders, a group of ex-FAANG engineers, realized that pushing business logic to the Edge (like Cloudflare Workers) while keeping the frontend strictly as a view layer resulted in 10x faster load times. Over the years, we have served over 50 clients globally, building everything from internal CRM tools to public-facing AI chat interfaces. We are heavily invested in Retrieval-Augmented Generation (RAG) pipelines, believing that custom knowledge bases are the future of business AI. Our team is fully remote, distributed across North America, Europe, and Asia, allowing us to provide round-the-clock support. We pride ourselves on transparent communication, writing clean decoupled code, and never compromising on security, particularly when it comes to API key management and CORS boundaries. We continuously adapt to the latest Edge runtimes and LLM models, currently favoring Llama 3.3 for reasoning and BGE base for embeddings."
+  }
+]

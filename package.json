@@ -1,0 +1,11 @@
+{
+  "name": "toolshub",
+  "version": "1.0.0",
+  "description": "ToolsHub core scripts and utilities",
+  "scripts": {
+    "ingest": "node scripts/ingest.js",
+    "ingest:dry": "node scripts/ingest.js --dry-run"
+  },
+  "author": "",
+  "license": "ISC"
+}
