@@ -3,3 +3,10 @@ node_modules/
 js/config.js
 js/env.js
 firebase-debug.log
+
+# wrangler files
+.wrangler
+.dev.vars*
+!.dev.vars.example
+.env*
+!.env.example
