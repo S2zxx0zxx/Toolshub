@@ -432,9 +432,30 @@ const Settings = (() => {
     document.getElementById('upgradeSheetOverlay')?.addEventListener('click', e => {
       if (e.target.id === 'upgradeSheetOverlay') closeUpgradeSheet();
     });
-    document.getElementById('upgradeNotifyBtn')?.addEventListener('click', () => {
-      Toast.show("You're on the list!");
-      closeUpgradeSheet();
+    document.getElementById('upgradeNotifyBtn')?.addEventListener('click', async () => {
+      try {
+        const btn = document.getElementById('upgradeNotifyBtn');
+        const originalText = btn.textContent;
+        btn.textContent = 'Saving...';
+        btn.disabled = true;
+        
+        await CloudDB.joinProWaitlist();
+        Toast.show("You're on the list!");
+        closeUpgradeSheet();
+        
+        btn.textContent = originalText;
+        btn.disabled = false;
+      } catch (err) {
+        const btn = document.getElementById('upgradeNotifyBtn');
+        btn.textContent = 'Notify me when Pro launches';
+        btn.disabled = false;
+        if (err.message === 'Please sign in first to join the waitlist.') {
+          Toast.show(err.message);
+        } else {
+          Toast.show("Something went wrong — please try again");
+          console.error(err);
+        }
+      }
     });
 
     // ---- Manage Tools row (Pattern B — real functional depth) ----
@@ -475,6 +496,9 @@ const PWA = (() => {
     }
 
     // 2. Handle Install Prompt
+    const isIosSafari = /iP(ad|hone|od).+Version\/[\d\.]+.*Safari/i.test(navigator.userAgent);
+    const isStandalone = window.matchMedia('(display-mode: standalone)').matches || navigator.standalone;
+
     window.addEventListener('beforeinstallprompt', (e) => {
       e.preventDefault();
       deferredPrompt = e;
@@ -485,13 +509,27 @@ const PWA = (() => {
       }
     });
 
+    if (isIosSafari && !isStandalone) {
+      const installRow = document.getElementById('installAppRow');
+      if (installRow) {
+        installRow.style.display = 'flex';
+      }
+    }
+
     document.getElementById('installAppRow')?.addEventListener('click', () => {
-    document.getElementById('installSheetOverlay').style.display = 'flex';
-    // tiny delay to allow display:flex to apply before adding is-open
-    setTimeout(() => {
-      document.querySelector('#installSheetOverlay .sheet')?.classList.add('is-open');
-    }, 10);
-  });
+      if (isIosSafari && !isStandalone) {
+        // Native share icon SVG fallback
+        const shareIcon = `<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline; vertical-align:middle; margin:0 4px;"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>`;
+        Toast.show(`Tap the Share icon ${shareIcon}, then "Add to Home Screen"`, 5000);
+        return;
+      }
+      
+      document.getElementById('installSheetOverlay').style.display = 'flex';
+      // tiny delay to allow display:flex to apply before adding is-open
+      setTimeout(() => {
+        document.querySelector('#installSheetOverlay .sheet')?.classList.add('is-open');
+      }, 10);
+    });
 
     document.getElementById('installSheetCloseBtn')?.addEventListener('click', closeInstallSheet);
     document.getElementById('installCancelBtn')?.addEventListener('click', closeInstallSheet);

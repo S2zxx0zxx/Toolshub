@@ -206,6 +206,19 @@ export const CloudDB = (() => {
     return conversationsUnsubscribe !== null;
   }
 
+  async function joinProWaitlist() {
+    const user = Auth.getCurrentUser();
+    if (!user) {
+      throw new Error('Please sign in first to join the waitlist.');
+    }
+    const docRef = fbFirestoreModule.doc(db, `proWaitlist/${user.uid}`);
+    await fbFirestoreModule.setDoc(docRef, {
+      uid: user.uid,
+      email: user.email || null,
+      timestamp: fbFirestoreModule.serverTimestamp()
+    }, { merge: true });
+  }
+
   return {
     subscribeConversations,
     loadChatMessages,
@@ -215,6 +228,7 @@ export const CloudDB = (() => {
     trackUsage,
     logToolExecution,
     migrateLocalChats,
-    isSubscribed
+    isSubscribed,
+    joinProWaitlist
   };
 })();

@@ -245,10 +245,28 @@ export const Chat = (() => {
     }
   }
 
+  // ---------- FILE UPLOAD STATE ----------
+  let attachedFileContent = null;
+  let attachedFileName = null;
+
+  function clearAttachedFile() {
+    attachedFileContent = null;
+    attachedFileName = null;
+    const chip = document.getElementById('attachedFileChip');
+    const input = document.getElementById('hiddenFileInput');
+    if (chip) chip.style.display = 'none';
+    if (input) input.value = '';
+  }
+
   // ---------- SEND FLOW ----------
   async function sendMessage(text) {
-    if (!text.trim()) return;
+    if (!text.trim() && !attachedFileContent) return;
     if (!currentChat) newChat();
+
+    let finalPayloadText = text;
+    if (attachedFileContent) {
+      finalPayloadText = `[Attached file: ${attachedFileName}]\n${attachedFileContent}\n\n${text}`;
+    }
 
     // auto-title from first message
     if (currentChat.messages.length === 0) {
@@ -273,8 +291,10 @@ export const Chat = (() => {
 
     try {
       showTypingIndicator();
+      clearAttachedFile(); // Clear file state after sending
+      
       const chatHistory = currentChat.messages.slice(0, -1);
-      const streamGenerator = AIRouter.processInput(text, chatHistory, (toolId) => {
+      const streamGenerator = AIRouter.processInput(finalPayloadText, chatHistory, (toolId) => {
         // Update typing indicator when tool starts
         hideTypingIndicator();
         showTypingIndicator(toolId);
@@ -320,7 +340,7 @@ export const Chat = (() => {
       <div style="flex: 1;">
         <div style="display:flex; align-items:center; gap:var(--sp-2); margin-bottom:var(--sp-2); color:var(--text-muted); font-size:var(--fs-xs);">
           <div style="width:16px; height:16px; color:var(--text-secondary);">${svgIcon}</div>
-          <div><strong>${escapeHtml(title)} Agent</strong> is ${toolId ? 'using a tool' : 'typing'}…</div>
+          <div>${toolId === 'search' ? '<strong>🔍 Searching the web…</strong>' : `<strong>${escapeHtml(title)} Agent</strong> is ${toolId ? 'using a tool' : 'typing'}…`}</div>
         </div>
         <div class="typing-dots"><span></span><span></span><span></span></div>
       </div>
@@ -428,6 +448,51 @@ export const Chat = (() => {
       }
     });
     sendBtn.addEventListener('click', doSend);
+    
+    // File upload wiring
+    const fileInput = document.getElementById('hiddenFileInput');
+    const fileChip = document.getElementById('attachedFileChip');
+    const fileLabel = document.getElementById('attachedFileLabel');
+    const removeFileBtn = document.getElementById('removeAttachedFileBtn');
+    
+    if (fileInput) {
+      fileInput.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        
+        const validExts = ['.txt', '.md', '.csv', '.json'];
+        const isValidExt = validExts.some(ext => file.name.toLowerCase().endsWith(ext));
+        
+        if (!isValidExt) {
+          Toast.show('Only text files (.txt, .md, .csv, .json) are supported right now');
+          fileInput.value = '';
+          return;
+        }
+        
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+          let content = ev.target.result;
+          if (content.length > 50000) {
+            content = content.substring(0, 50000) + '\n\n[TRUNCATED: File exceeded 50,000 characters limit.]';
+            Toast.show('File was too large and has been truncated.');
+          }
+          attachedFileContent = content;
+          attachedFileName = file.name;
+          if (fileChip && fileLabel) {
+            fileLabel.textContent = file.name;
+            fileChip.style.display = 'flex';
+          }
+          // Close bottom sheet if open
+          const addSheet = document.getElementById('addSheetOverlay');
+          if (addSheet) addSheet.style.display = 'none';
+        };
+        reader.readAsText(file);
+      });
+    }
+    
+    if (removeFileBtn) {
+      removeFileBtn.addEventListener('click', () => clearAttachedFile());
+    }
 
     function doSend() {
       const text = textarea.value;
