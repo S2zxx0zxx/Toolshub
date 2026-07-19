@@ -256,6 +256,12 @@ export const Chat = (() => {
     const input = document.getElementById('hiddenFileInput');
     if (chip) chip.style.display = 'none';
     if (input) input.value = '';
+    
+    const textarea = document.getElementById('inputTextarea');
+    const sendBtn = document.getElementById('sendBtn');
+    if (textarea && sendBtn) {
+      sendBtn.classList.toggle('is-ready', textarea.value.trim().length > 0);
+    }
   }
 
   // ---------- SEND FLOW ----------
@@ -433,7 +439,8 @@ export const Chat = (() => {
 
     function updateSendState() {
       const hasText = textarea.value.trim().length > 0;
-      sendBtn.classList.toggle('is-ready', hasText);
+      const hasFile = !!attachedFileContent;
+      sendBtn.classList.toggle('is-ready', hasText || hasFile);
     }
     function autoExpand() {
       textarea.style.height = 'auto';
@@ -482,9 +489,14 @@ export const Chat = (() => {
             fileLabel.textContent = file.name;
             fileChip.style.display = 'flex';
           }
-          // Close bottom sheet if open
+          // Close bottom sheet if open properly
           const addSheet = document.getElementById('addSheetOverlay');
-          if (addSheet) addSheet.style.display = 'none';
+          if (addSheet) {
+            addSheet.classList.remove('is-open');
+            document.body.style.overflow = '';
+            addSheet.style.display = ''; // Clear inline block if it was ever set
+          }
+          updateSendState(); // Make Send button active
         };
         reader.readAsText(file);
       });
@@ -496,7 +508,7 @@ export const Chat = (() => {
 
     function doSend() {
       const text = textarea.value;
-      if (!text.trim()) return;
+      if (!text.trim() && !attachedFileContent) return;
       sendMessage(text);
       textarea.value = '';
       textarea.style.height = 'auto';
