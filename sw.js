@@ -1,4 +1,4 @@
-const CACHE_NAME = 'toolshub-cache-v12';
+const CACHE_NAME = 'toolshub-cache-v13';
 const urlsToCache = [
   './',
   './index.html',
@@ -30,6 +30,7 @@ const urlsToCache = [
   './js/ai/intent.js',
   './js/ai/router.js',
   './js/services/aiApi.js',
+  './js/services/ragService.js',
   './js/tools/permissions.js',
   './js/tools/executor.js',
   './js/services/tools/calculatorService.js',
@@ -49,7 +50,7 @@ self.addEventListener('install', event => {
         }).catch(err => console.warn(`[SW] Failed to cache ${url}:`, err));
       });
       await Promise.allSettled(requests);
-      console.log('[SW] Cache v12 installed.');
+      console.log(`[SW] Cache ${CACHE_NAME} installed.`);
     })
   );
 });
