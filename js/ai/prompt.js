@@ -107,7 +107,11 @@ IDENTITY & PRODUCT KNOWLEDGE — only surface this when the user actually asks; 
     
     // Inject RAG context if available
     if (currentRagContext) {
-      prompt += `\n\n[AGENCY KNOWLEDGE BASE]\nThe following information is retrieved from the internal knowledge base. Use it to answer the user's query if relevant:\n${currentRagContext}\n`;
+      prompt += `\n\n[AGENCY KNOWLEDGE BASE CONTEXT]\n`;
+      prompt += `The following information is retrieved from the internal knowledge base of DigiRise India (the parent company of ToolsHub). This should genuinely shape HOW you respond:\n\n`;
+      prompt += `${currentRagContext}\n\n`;
+      prompt += `- Present this information naturally using your defined Hinglish personality, do not robotically copy-paste it.\n`;
+      prompt += `- Jab RAG se pricing ya numeric business data milta hai, exact numbers use karo — round mat karo ya approximate mat karo, ye financial commitment hai.\n`;
     }
     
     return prompt;

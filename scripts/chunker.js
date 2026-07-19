@@ -57,11 +57,17 @@ function chunkText(entry) {
     finalChunks.push(currentChunkText);
   }
 
-  return finalChunks.map((text, idx) => ({
-    id: `${entry.id}-chunk-${idx + 1}`,
-    category: entry.category,
-    text: text.trim()
-  }));
+  return finalChunks.map((text, idx) => {
+    const chunkObj = {
+      id: `${entry.id}-chunk-${idx + 1}`,
+      category: entry.category,
+      text: text.trim()
+    };
+    if (entry.keywords) {
+      chunkObj.keywords = entry.keywords;
+    }
+    return chunkObj;
+  });
 }
 
 module.exports = { chunkText, countWords };

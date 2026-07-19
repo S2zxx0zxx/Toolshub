@@ -1,22 +1,140 @@
 [
   {
-    "id": "service-web-dev",
-    "category": "services",
-    "text": "ToolsHub Agency offers premium full-stack web development services. We specialize in building fast, scalable Single Page Applications (SPAs) using Vanilla JavaScript, Edge computing via Cloudflare Workers, and serverless databases like Firebase Firestore. Our methodology focuses on removing unnecessary frontend frameworks to deliver raw performance. We handle everything from UI/UX design, frontend development, backend API creation, to deployment and security hardening. Whether you need an e-commerce platform, a corporate landing page, or a complex AI-integrated dashboard, our team ensures zero-latency performance and complete SEO optimization. We strictly follow decoupled architectural patterns, ensuring that your backend logic and API keys are never exposed to the client side. Our typical tech stack includes ES6 Modules, Cloudflare Workers, Firebase, and Groq LLM integrations for intelligent features."
-  },
-  {
-    "id": "pricing-tier-1",
-    "category": "pricing",
-    "text": "Our Starter Tier pricing begins at $5,000 for a standard 5-page web application. This includes custom design, frontend development without heavy frameworks, basic SEO setup, and Edge backend proxy configuration. For complex, AI-integrated applications requiring vector databases (RAG), Cloudflare Workers AI, and real-time LLM streaming, our Enterprise Tier starts at $15,000. Maintenance and hosting costs are separate, typically running around $200/month which covers Cloudflare and Firebase usage up to 100,000 visitors. Custom quotes are provided after the initial consultation."
-  },
-  {
-    "id": "faq-refund-policy",
-    "category": "faq",
-    "text": "Do you offer refunds? We offer a 100% money-back guarantee within the first 14 days of project commencement if you are not satisfied with the initial design mockups. Once development officially begins and code is written, refunds are evaluated on a pro-rata basis depending on the milestones completed."
-  },
-  {
-    "id": "general-company-history",
+    "id": "general-digirise-india",
     "category": "general",
-    "text": "ToolsHub Agency was founded in 2024 with a core mission: to eliminate the bloat of modern web development. We believe that frameworks like React and Vue are often overused for projects that could be built faster and lighter with Vanilla JavaScript and Edge computing. Our founders, a group of ex-FAANG engineers, realized that pushing business logic to the Edge (like Cloudflare Workers) while keeping the frontend strictly as a view layer resulted in 10x faster load times. Over the years, we have served over 50 clients globally, building everything from internal CRM tools to public-facing AI chat interfaces. We are heavily invested in Retrieval-Augmented Generation (RAG) pipelines, believing that custom knowledge bases are the future of business AI. Our team is fully remote, distributed across North America, Europe, and Asia, allowing us to provide round-the-clock support. We pride ourselves on transparent communication, writing clean decoupled code, and never compromising on security, particularly when it comes to API key management and CORS boundaries. We continuously adapt to the latest Edge runtimes and LLM models, currently favoring Llama 3.3 for reasoning and BGE base for embeddings."
+    "text": "DigiRise India ek results-driven digital marketing agency hai jo Kolkata mein based hai, aur inka presence UAE aur UK mein bhi hai. Ye chhote aur medium businesses ki online presence build karte hain — social media management se lekar websites tak, aur reels se lekar paid ads tak sab kuch handle karte hain. Inhone ab tak 50+ brands ko serve kiya hai, jahan average lead growth 3x rahi hai, aur inka ROI measurement window 60-day ka hota hai.",
+    "keywords": ["digirise", "about", "location", "who are you", "kya karte ho", "agency info"]
+  },
+  {
+    "id": "general-toolshub",
+    "category": "general",
+    "text": "Toolshub, DigiRise India ka apna internal AI-powered product/tool hai. DigiRise India iski parent company hai.",
+    "keywords": ["toolshub", "founder", "parent company", "owner", "kisne banaya"]
+  },
+  {
+    "id": "general-process",
+    "category": "general",
+    "text": "DigiRise India mein kaam karne ka process 7 steps mein hota hai: 1. Discovery Call (free hoti hai). 2. Proposal bhejna (24-48 hrs lagte hain). 3. Agreement sign karna (likhit mein). 4. 50% Advance Payment (compulsory hai kaam shuru karne se pehle). 5. Onboarding. 6. Kaam Shuru (is phase mein weekly updates milte hain). 7. Review and Final Delivery.",
+    "keywords": ["process", "kaise kaam karte ho", "steps", "procedure", "how it works"]
+  },
+  {
+    "id": "services-smm",
+    "category": "services",
+    "text": "Social Media Management (SMM) service mein hum content calendar banate hain, static aur carousel posts design karte hain, Hinglish/English captions likhte hain, hashtag research karte hain, aur best-time posting handle karte hain. Story content optional hota hai. Har mahine ke end mein ek report di jaati hai. Deliverable: Har hafte 3-7 posts. Timeline: Client ki onboarding ke 5 business days baad kaam shuru hota hai. Note: Pehle mahine client ko apne brand guidelines, logo aur colors dene hote hain.",
+    "keywords": ["smm", "social media", "instagram", "facebook", "post", "content creation"]
+  },
+  {
+    "id": "services-reels",
+    "category": "services",
+    "text": "Reels & Video Editing service mein raw footage ki professional editing, trending audio integration, subtitles add karna, color grading, hook writing, thumbnail design, aur final upload/posting shamil hai. Deliverable: Mahine mein 2-8 reels (720p/1080p quality). Timeline: Raw footage milne ke 48-72 hours ke andar delivery hoti hai. Note: Client ko raw footage khud dena padta hai, aur final quality input pe depend karti hai.",
+    "keywords": ["reels", "video editing", "youtube shorts", "video", "editor"]
+  },
+  {
+    "id": "services-paid-ads",
+    "category": "services",
+    "text": "Paid Ads Management (Meta/Google Ads) service mein ad account setup, campaign strategy, creatives design, ad copy writing, exact targeting, A/B testing, weekly optimization, aur monthly report (CTR/CPC/ROAS/leads ka data) shamil hai. Timeline: Brief milne ke 3-5 business days mein ads live ho jaate hain. Note: Ad spend (jo ads chalane ka paisa hai) alag se hota hai, wo client seedha Google/Meta ko pay karta hai — DigiRise sirf management fee charge karta hai.",
+    "keywords": ["ads", "facebook ads", "google ads", "meta ads", "performance marketing", "lead generation"]
+  },
+  {
+    "id": "services-website",
+    "category": "services",
+    "text": "Website Development service mein hum custom design karte hain jo fully mobile responsive hota hai. Website 5-10 pages ki hoti hai, jisme contact form, WhatsApp button, basic SEO, aur Analytics/Pixel integration included hota hai. Launch hone ke baad 1 mahine ka free support bhi milta hai. Timeline: 15-30 working days lagte hain. Note: Domain aur hosting ki cost package mein nahi hoti, wo client ko kharidni hoti hai.",
+    "keywords": ["website", "web development", "landing page", "site", "web design"]
+  },
+  {
+    "id": "pricing-build-starter",
+    "category": "pricing",
+    "text": "Starter Tier (Zero to End Brand Building) ki cost Rs. 7,999 one-time + 18% GST hai. Isme basic landing page website, logo design, mahine mein 8 social media posts, 1 Reel, WhatsApp button, monthly report, aur 30-day support included hota hai.",
+    "keywords": ["starter tier", "cost", "kharcha", "kitna paisa", "rate", "charges", "fee", "pricing", "packages", "basic package"]
+  },
+  {
+    "id": "pricing-build-growth",
+    "category": "pricing",
+    "text": "Growth Tier (Zero to End Brand Building) ki cost Rs. 18,999 one-time + 18% GST hai. Ye hamara BEST VALUE package hai. Isme 5-page website, full brand kit, mahine mein 20 posts, 4 Reels, basic Meta Ads setup, weekly report, aur 45-day support included hota hai.",
+    "keywords": ["growth tier", "cost", "kharcha", "kitna paisa", "rate", "charges", "fee", "pricing", "packages", "best value"]
+  },
+  {
+    "id": "pricing-build-authority",
+    "category": "pricing",
+    "text": "Authority Tier (Zero to End Brand Building) ki cost Rs. 34,999 one-time + 18% GST hai. Ye hamara MOST CHOSEN package hai jisme ROI Guarantee milti hai. Isme 10-page website with SEO, full brand kit, mahine mein 30 posts, 8 Reels, Meta+Google Ads management, WhatsApp CRM, Analytics setup, aur 60-day support included hota hai.",
+    "keywords": ["authority tier", "cost", "kharcha", "kitna paisa", "rate", "charges", "fee", "pricing", "packages", "popular package"]
+  },
+  {
+    "id": "pricing-build-scale",
+    "category": "pricing",
+    "text": "Scale Tier (Zero to End Brand Building) ki cost Rs. 74,999 one-time + 18% GST hai. Ye ek ENTERPRISE package hai jisme ROI Guarantee milti hai. Isme e-commerce store website (Shopify/WooCommerce), Amazon+Flipkart management, unlimited posts, 12 Reels per month, all paid ads management, full automation, ek dedicated account manager, daily reports, aur 90-day support included hota hai.",
+    "keywords": ["scale tier", "cost", "kharcha", "kitna paisa", "rate", "charges", "fee", "pricing", "packages", "enterprise"]
+  },
+  {
+    "id": "pricing-smm-starter",
+    "category": "pricing",
+    "text": "SMM Starter package (sirf Social Media Management ke liye) ki cost Rs. 18,000 per month + 18% GST hai. Isme min 3-month ka contract hota hai (3-month total Rs. 54,000). Isme har mahine 12 posts, 2 Reels, hashtag research, captions, monthly report, aur 30-day support shamil hota hai.",
+    "keywords": ["smm starter", "smm cost", "kharcha", "kitna paisa", "rate", "charges", "fee", "pricing", "monthly package"]
+  },
+  {
+    "id": "pricing-smm-growth",
+    "category": "pricing",
+    "text": "SMM Growth package (sirf Social Media Management ke liye) ki cost Rs. 32,000 per month + 18% GST hai. Isme min 3-month ka contract hota hai (3-month total Rs. 96,000). Ye MOST POPULAR hai. Isme har mahine 20-24 posts, 4-6 Reels, DM management, SEO captions+stories, weekly report, aur 45-day support shamil hota hai.",
+    "keywords": ["smm growth", "smm cost", "kharcha", "kitna paisa", "rate", "charges", "fee", "pricing", "monthly package"]
+  },
+  {
+    "id": "pricing-smm-premium",
+    "category": "pricing",
+    "text": "SMM Premium package (sirf Social Media Management ke liye) ki cost Rs. 45,000 per month + 18% GST hai. Isme min 3-month ka contract hota hai (3-month total Rs. 1,35,000). Isme daily posts+stories, 8 Reels per month, full community management, ad creative design, daily reports, aur priority support shamil hota hai. Comparison ke liye: SMM Premium ka 3-month cost (Rs. 1,35,000) Authority Full one-time package (Rs. 34,999) se kafi zyada hai, jabki Authority me zyada features milte hain.",
+    "keywords": ["smm premium", "smm cost", "kharcha", "kitna paisa", "rate", "charges", "fee", "pricing", "monthly package"]
+  },
+  {
+    "id": "pricing-exclusions",
+    "category": "pricing",
+    "text": "Package price mein ye cheezein included NAHI hain: 1. Domain & Hosting (client ko kharidna padta hai). 2. Ad Spend (ads chalane ka paisa client seedha Google/Meta ko pay karta hai). 3. Professional Photoshoot (client ko raw content dena hoga). 4. 18% GST (ye invoice pe alag se add hoti hai). 5. Razorpay ya WhatsApp API ke charges (agar zaroorat ho). Brand Assets bhi onboarding ke 3 working days mein client ko dene honge.",
+    "keywords": ["kya include nahi hai", "hidden charges", "extra charges", "not included", "exclusions"]
+  },
+  {
+    "id": "faq-payment-terms",
+    "category": "faq",
+    "text": "Payment terms mein 50% advance dena compulsory hai, baaki 50% delivery ke baad. Hum UPI, Bank Transfer, aur Razorpay accept karte hain. Cash payment sirf Rs. 10,000 tak accept ki jaati hai. Invoice date se 3 business days ke andar payment due hoti hai, delay hone par kaam pause kar diya jaata hai.",
+    "keywords": ["payment", "advance", "payment options", "kaise pay karein"]
+  },
+  {
+    "id": "faq-revisions",
+    "category": "faq",
+    "text": "Revisions policy: Har project mein 2 free revisions milti hain. Agar 3rd revision chahiye, toh uske liye Rs. 500 se 2,000 tak extra charge lagta hai. Minor changes free hote hain, lekin naya concept ya poora redesign maangne par use ek naya kaam maana jaata hai aur alag charge hota hai.",
+    "keywords": ["revision", "changes", "correction", "edit"]
+  },
+  {
+    "id": "faq-cancellation",
+    "category": "faq",
+    "text": "Cancellation policy: Agar client side se project cancel hota hai, toh 30-din ka notice dena required hai aur proportional charge lagta hai (advance amount non-refundable hota hai). Lekin agar DigiRise side se cancel hota hai, toh unfinished kaam ka full refund diya jaata hai.",
+    "keywords": ["cancel", "refund", "wapas", "cancellation policy"]
+  },
+  {
+    "id": "faq-roi-guarantee",
+    "category": "faq",
+    "text": "ROI Guarantee sirf Authority aur Scale packages mein applicable hai. Agar 60 din mein desired results nahi milte, toh hum zero additional cost pe kaam jaari rakhte hain. Dhyaan rahe ki specific follower count ya exact sales figures ki guarantee nahi milti — guarantee sirf hamare process, consistency, aur quality ki hoti hai.",
+    "keywords": ["guarantee", "roi", "results", "sales guarantee", "followers guarantee"]
+  },
+  {
+    "id": "faq-timeline",
+    "category": "faq",
+    "text": "Results timeline is tarah hoti hai: Social media ki organic growth mein 2-3 mahine lagte hain. Paid Ads ka proper data aur optimization aane mein 2-4 weeks lagte hain. Website SEO mein results dikhne mein 3-6 mahine ka waqt lagta hai.",
+    "keywords": ["kitna time", "kab tak", "timeline", "duration", "results kab aayenge"]
+  },
+  {
+    "id": "faq-team",
+    "category": "faq",
+    "text": "Team ke baare mein: Aapke project par ek dedicated team kaam karti hai jisme ek designer, ek editor, aur ek strategist shamil hote hain. Ye kaam koi solo founder akele handle nahi karta, isliye professional quality milti hai.",
+    "keywords": ["team", "kaun kaam karega", "solo", "freelancer"]
+  },
+  {
+    "id": "faq-confidentiality",
+    "category": "faq",
+    "text": "Confidentiality policy: Client ka koi bhi data, strategy, ya login credentials kisi bhi third party ke saath kabhi share nahi kiye jaate hain. Aapka data 100% safe aur confidential rehta hai.",
+    "keywords": ["privacy", "safe", "credentials", "confidential", "share"]
+  },
+  {
+    "id": "faq-client-checklist",
+    "category": "faq",
+    "text": "Kaam shuru karne ke liye Client checklist: Client ko apne logo files, brand colors, product photos, social media accounts ka access, domain/hosting ka login (agar website ka project hai), apni target audience ki details, aur ad budget (agar ads service li hai) hume provide karni hoti hai.",
+    "keywords": ["kya chahiye", "checklist", "requirements", "start kaise karein"]
   }
 ]

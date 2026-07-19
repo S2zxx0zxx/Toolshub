@@ -107,7 +107,11 @@ async function runIngest() {
         body: JSON.stringify({
           type: 'rag_ingest',
           text: chunk.text,
-          metadata: { id: chunk.id, category: chunk.category }
+          metadata: {
+            id: chunk.id,
+            category: chunk.category,
+            ...(chunk.keywords && { keywords: chunk.keywords })
+          }
         })
       });
 
