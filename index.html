@@ -148,19 +148,21 @@
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
               </button>
             </div>
-            <button id="toolChip" class="chip">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="chip-icon"><circle cx="12" cy="12" r="10"/></svg>
-              <span id="toolChipLabel">Choose a tool</span>
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" class="chip-chevron"><polyline points="6 9 12 15 18 9"/></svg>
-            </button>
-            <button id="modelChip" class="chip">
-              <span id="modelChipLabel">Llama 3.3 70B</span>
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" class="chip-chevron"><polyline points="6 9 12 15 18 9"/></svg>
-            </button>
           </div>
 
           <div class="input-card">
             <textarea id="inputTextarea" rows="1" placeholder="Choose a tool to get started..." aria-label="Chat input" class="input-textarea"></textarea>
+            <div class="input-chip-row">
+              <button id="toolChip" class="chip chip-sm">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="chip-icon"><circle cx="12" cy="12" r="10"/></svg>
+                <span id="toolChipLabel">Choose a tool</span>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" class="chip-chevron"><polyline points="6 9 12 15 18 9"/></svg>
+              </button>
+              <button id="modelChip" class="chip chip-sm">
+                <span id="modelChipLabel">Llama 3.3 70B</span>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" class="chip-chevron"><polyline points="6 9 12 15 18 9"/></svg>
+              </button>
+            </div>
             <div class="input-actions">
               <div class="input-actions-left">
                 <button id="addBtn" aria-label="Add to chat" class="btn-icon">
