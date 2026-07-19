@@ -1,3 +1,5 @@
+import { LocalSettings } from './localSettings.js';
+
 export const aiApi = (() => {
   // Always route to live Cloudflare Worker
   const API_ENDPOINT = 'https://toolshub-api-worker.theliquidlounge-co.workers.dev';
@@ -34,7 +36,7 @@ export const aiApi = (() => {
 
   async function* fetchGroqStream(messages) {
     const payload = {
-      model: CHAT_MODEL,
+      model: LocalSettings.getSelectedChatModel() || CHAT_MODEL,
       messages: messages,
       temperature: 0.7,
       stream: true
@@ -68,6 +70,10 @@ export const aiApi = (() => {
     if (!response.ok) {
       window.dispatchEvent(new CustomEvent('backend-status', { detail: 'disconnected' }));
       const errorText = await response.text();
+      const lowerError = errorText.toLowerCase();
+      if (response.status === 429 || lowerError.includes('rate_limit') || lowerError.includes('quota') || lowerError.includes('tokens')) {
+        window.dispatchEvent(new CustomEvent('model-exhausted', { detail: { modelId: payload.model } }));
+      }
       throw new Error(`Backend Error (${response.status}): ${errorText}`);
     }
     

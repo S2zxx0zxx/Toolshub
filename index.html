@@ -132,6 +132,10 @@
               <span id="toolChipLabel">Choose a tool</span>
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" class="chip-chevron"><polyline points="6 9 12 15 18 9"/></svg>
             </button>
+            <button id="modelChip" class="chip">
+              <span id="modelChipLabel">Llama 3.3 70B</span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" class="chip-chevron"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
           </div>
 
           <div class="input-card">
@@ -519,6 +523,23 @@
     </div>
     <div class="sheet-body">
       <div id="toolAccessList"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ MODEL SELECTOR SHEET ============ -->
+<div id="modelSheetOverlay" class="sheet-overlay">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-head">
+      <button id="modelSheetCloseBtn" aria-label="Close" class="btn-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+      <span class="sheet-title">Chat Model</span>
+      <span></span>
+    </div>
+    <div class="sheet-body">
+      <div id="modelSheetList"></div>
     </div>
   </div>
 </div>

@@ -176,6 +176,78 @@ export const BottomSheet = (() => {
     });
   }
 
+  // ---------- MODEL SELECTOR SHEET ----------
+  const MODEL_OPTIONS = [
+    { id: 'llama-3.3-70b-versatile', label: 'Llama 3.3 70B', sub: 'Best for general chat' },
+    { id: 'llama-3.1-8b-instant',    label: 'Llama 3.1 8B',  sub: 'Fastest responses' },
+    { id: 'groq/compound',           label: 'Compound',      sub: 'Groq\'s agentic model' },
+    { id: 'groq/compound-mini',      label: 'Compound Mini', sub: 'Lightweight agentic model' },
+  ];
+
+  const exhaustedModels = new Set();
+
+  window.addEventListener('model-exhausted', (e) => {
+    if (e.detail && e.detail.modelId) {
+      exhaustedModels.add(e.detail.modelId);
+      if (document.getElementById('modelSheetOverlay')?.classList.contains('is-open')) {
+        renderModelSheet();
+      }
+    }
+  });
+
+  function openModelSheet() {
+    renderModelSheet();
+    openOverlay(document.getElementById('modelSheetOverlay'));
+  }
+  
+  function closeModelSheet() {
+    closeOverlay(document.getElementById('modelSheetOverlay'));
+  }
+
+  function renderModelSheet() {
+    const list = document.getElementById('modelSheetList');
+    const chipLabel = document.getElementById('modelChipLabel');
+    if (!list) return;
+
+    let current = LocalSettings.getSelectedChatModel() || 'llama-3.3-70b-versatile';
+
+    const currentOpt = MODEL_OPTIONS.find(o => o.id === current) || MODEL_OPTIONS[0];
+    if (chipLabel) {
+      chipLabel.textContent = currentOpt.label;
+    }
+
+    list.innerHTML = MODEL_OPTIONS.map(o => {
+      const isExhausted = exhaustedModels.has(o.id);
+      const prefix = isExhausted ? '⚠️ ' : '';
+      return `
+      <button class="list-row ${o.id === current ? 'is-selected' : ''}"
+           data-model="${o.id}">
+        <div class="list-row-body">
+          <div class="list-row-title">${prefix}${o.label}</div>
+          ${o.sub ? `<div class="list-row-subtitle">${o.sub}</div>` : ''}
+        </div>
+        <div class="list-row-trail">
+          <svg class="access-check" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+            stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="20 6 9 17 4 12"/>
+          </svg>
+        </div>
+      </button>
+    `}).join('');
+
+    list.querySelectorAll('[data-model]').forEach(row => {
+      row.addEventListener('click', () => {
+        const val = row.dataset.model;
+        LocalSettings.setSelectedChatModel(val);
+        const opt = MODEL_OPTIONS.find(o => o.id === val);
+        if (chipLabel && opt) {
+          chipLabel.textContent = opt.label;
+        }
+        closeModelSheet();
+      });
+    });
+  }
+
   function init() {
     // "+" sheet triggers
     document.getElementById('addBtn')?.addEventListener('click', openAddSheet);
@@ -238,6 +310,13 @@ export const BottomSheet = (() => {
       if (e.target.id === 'toolSheetOverlay') closeToolSheet();
     });
 
+    // model selector sheet triggers
+    document.getElementById('modelChip')?.addEventListener('click', openModelSheet);
+    document.getElementById('modelSheetCloseBtn')?.addEventListener('click', closeModelSheet);
+    document.getElementById('modelSheetOverlay')?.addEventListener('click', (e) => {
+      if (e.target.id === 'modelSheetOverlay') closeModelSheet();
+    });
+
     // Restore tool-access trail text on load
     const trailEl = document.getElementById('toolAccessTrail');
     if (trailEl) {
@@ -262,6 +341,14 @@ export const BottomSheet = (() => {
         webSearchToggle.classList.add('is-on');
         document.getElementById('webSearchRow')?.setAttribute('aria-pressed', 'true');
       }
+    }
+
+    // Restore model chip label on load
+    const modelChipLabel = document.getElementById('modelChipLabel');
+    if (modelChipLabel) {
+      const current = LocalSettings.getSelectedChatModel() || 'llama-3.3-70b-versatile';
+      const opt = MODEL_OPTIONS.find(o => o.id === current) || MODEL_OPTIONS[0];
+      modelChipLabel.textContent = opt.label;
     }
   }
 

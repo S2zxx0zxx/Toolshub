@@ -16,6 +16,7 @@ export const LocalSettings = (() => {
     TOOL_ACCESS:        'toolshub_tool_access',         // 'auto' | 'always-ask' | 'off'
     PROFILE:            'toolshub_profile',             // { name, email }
     WEB_SEARCH:         'toolshub_web_search',          // boolean
+    SELECTED_CHAT_MODEL: 'toolshub_selected_chat_model', // string model id
   };
 
   function _safeGet(key, fallback) {
@@ -39,6 +40,14 @@ export const LocalSettings = (() => {
   }
 
   return {
+    // ---------- SELECTED CHAT MODEL ----------
+    getSelectedChatModel() {
+      return _safeGet(KEYS.SELECTED_CHAT_MODEL, null);
+    },
+    setSelectedChatModel(modelId) {
+      _safeSet(KEYS.SELECTED_CHAT_MODEL, modelId);
+    },
+
     // ---------- CHATS ----------
     // chat shape: { id, title, toolId, messages: [{role, text, ts}], createdAt, updatedAt }
     getAllChats() {
