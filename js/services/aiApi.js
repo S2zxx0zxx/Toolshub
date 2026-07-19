@@ -69,11 +69,17 @@ export const aiApi = (() => {
 
     if (!response.ok) {
       window.dispatchEvent(new CustomEvent('backend-status', { detail: 'disconnected' }));
+      
       const errorText = await response.text();
-      const lowerError = errorText.toLowerCase();
-      if (response.status === 429 || lowerError.includes('rate_limit') || lowerError.includes('quota') || lowerError.includes('tokens')) {
-        window.dispatchEvent(new CustomEvent('model-exhausted', { detail: { modelId: payload.model } }));
+      
+      // NEW: Detect 429 rate-limit error and dispatch exhaustion event
+      if (response.status === 429 || (errorText && errorText.toLowerCase().includes('rate_limit'))) {
+        const currentModel = LocalSettings.getSelectedChatModel() || 'llama-3.3-70b-versatile';
+        window.dispatchEvent(new CustomEvent('model-exhausted', { 
+          detail: { modelId: currentModel, timestamp: Date.now() } 
+        }));
       }
+      
       throw new Error(`Backend Error (${response.status}): ${errorText}`);
     }
     

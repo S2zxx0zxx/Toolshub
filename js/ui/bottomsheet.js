@@ -14,6 +14,15 @@ import { Sidebar } from './sidebar.js';
 
 export const BottomSheet = (() => {
 
+  const MODEL_CATALOG = [
+    { id: 'llama-3.3-70b-versatile', label: 'Llama 3.3 70B', sub: 'Best for general chat', dailyLimit: 100000 },
+    { id: 'llama-3.1-8b-instant', label: 'Llama 3.1 8B', sub: 'Fastest responses', dailyLimit: 500000 },
+    { id: 'groq/compound', label: 'Compound', sub: "Groq's agentic model", dailyLimit: 70000 },
+    { id: 'groq/compound-mini', label: 'Compound Mini', sub: 'Lightweight agentic model', dailyLimit: 70000 }
+  ];
+
+  const exhaustedModels = new Set(); // In-memory, resets on page reload
+
   function openOverlay(overlayEl) {
     overlayEl.classList.add('is-open');
     document.body.style.overflow = 'hidden';
@@ -177,23 +186,41 @@ export const BottomSheet = (() => {
   }
 
   // ---------- MODEL SELECTOR SHEET ----------
-  const MODEL_OPTIONS = [
-    { id: 'llama-3.3-70b-versatile', label: 'Llama 3.3 70B', sub: 'Best for general chat' },
-    { id: 'llama-3.1-8b-instant',    label: 'Llama 3.1 8B',  sub: 'Fastest responses' },
-    { id: 'groq/compound',           label: 'Compound',      sub: 'Groq\'s agentic model' },
-    { id: 'groq/compound-mini',      label: 'Compound Mini', sub: 'Lightweight agentic model' },
-  ];
 
-  const exhaustedModels = new Set();
-
-  window.addEventListener('model-exhausted', (e) => {
-    if (e.detail && e.detail.modelId) {
-      exhaustedModels.add(e.detail.modelId);
-      if (document.getElementById('modelSheetOverlay')?.classList.contains('is-open')) {
-        renderModelSheet();
+  function setupExhaustionListener() {
+    window.addEventListener('model-exhausted', (e) => {
+      const { modelId } = e.detail;
+      if (modelId) {
+        exhaustedModels.add(modelId);
+        
+        // Re-render the model sheet if it's currently open to show ⚠️
+        const sheetOverlay = document.getElementById('modelSheetOverlay');
+        if (sheetOverlay && sheetOverlay.classList.contains('is-open')) {
+          renderModelSheet();
+        }
       }
+    });
+  }
+
+  function updateModelChip(modelId) {
+    const chip = document.querySelector('#modelChip span');
+    const model = MODEL_CATALOG.find(m => m.id === modelId);
+    if (chip && model) {
+      chip.textContent = model.label;
     }
-  });
+  }
+
+  function restoreModelChip() {
+    const selectedId = LocalSettings.getSelectedChatModel();
+    if (selectedId) {
+      updateModelChip(selectedId);
+    } else {
+      // Show default
+      const chip = document.querySelector('#modelChip span');
+      const defaultModel = MODEL_CATALOG[0];
+      if (chip && defaultModel) chip.textContent = defaultModel.label;
+    }
+  }
 
   function openModelSheet() {
     renderModelSheet();
@@ -206,25 +233,24 @@ export const BottomSheet = (() => {
 
   function renderModelSheet() {
     const list = document.getElementById('modelSheetList');
-    const chipLabel = document.getElementById('modelChipLabel');
     if (!list) return;
 
     let current = LocalSettings.getSelectedChatModel() || 'llama-3.3-70b-versatile';
 
-    const currentOpt = MODEL_OPTIONS.find(o => o.id === current) || MODEL_OPTIONS[0];
-    if (chipLabel) {
-      chipLabel.textContent = currentOpt.label;
-    }
-
-    list.innerHTML = MODEL_OPTIONS.map(o => {
-      const isExhausted = exhaustedModels.has(o.id);
-      const prefix = isExhausted ? '⚠️ ' : '';
-      return `
-      <button class="list-row ${o.id === current ? 'is-selected' : ''}"
-           data-model="${o.id}">
+    list.innerHTML = '';
+    
+    MODEL_CATALOG.forEach(model => {
+      const row = document.createElement('button');
+      row.className = `list-row ${model.id === current ? 'is-selected' : ''}`;
+      row.dataset.modelId = model.id;
+      
+      const isExhausted = exhaustedModels.has(model.id);
+      const label = isExhausted ? `⚠️ ${model.label}` : model.label;
+      
+      row.innerHTML = `
         <div class="list-row-body">
-          <div class="list-row-title">${prefix}${o.label}</div>
-          ${o.sub ? `<div class="list-row-subtitle">${o.sub}</div>` : ''}
+          <div class="list-row-title">${label}</div>
+          <div class="list-row-subtitle">${model.sub}</div>
         </div>
         <div class="list-row-trail">
           <svg class="access-check" viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -232,19 +258,16 @@ export const BottomSheet = (() => {
             <polyline points="20 6 9 17 4 12"/>
           </svg>
         </div>
-      </button>
-    `}).join('');
-
-    list.querySelectorAll('[data-model]').forEach(row => {
+      `;
+      
       row.addEventListener('click', () => {
-        const val = row.dataset.model;
-        LocalSettings.setSelectedChatModel(val);
-        const opt = MODEL_OPTIONS.find(o => o.id === val);
-        if (chipLabel && opt) {
-          chipLabel.textContent = opt.label;
-        }
+        const modelId = row.dataset.modelId;
+        LocalSettings.setSelectedChatModel(modelId);
+        updateModelChip(modelId);
         closeModelSheet();
       });
+      
+      list.appendChild(row);
     });
   }
 
@@ -343,13 +366,8 @@ export const BottomSheet = (() => {
       }
     }
 
-    // Restore model chip label on load
-    const modelChipLabel = document.getElementById('modelChipLabel');
-    if (modelChipLabel) {
-      const current = LocalSettings.getSelectedChatModel() || 'llama-3.3-70b-versatile';
-      const opt = MODEL_OPTIONS.find(o => o.id === current) || MODEL_OPTIONS[0];
-      modelChipLabel.textContent = opt.label;
-    }
+    setupExhaustionListener();
+    restoreModelChip();
   }
 
   return { init, openAddSheet, closeAddSheet, openToolSheet, closeToolSheet };
