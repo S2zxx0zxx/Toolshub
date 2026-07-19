@@ -378,17 +378,11 @@ const Settings = (() => {
       const pullDistance = currentY - startY;
       
       if (pullDistance > TRIGGER_THRESHOLD) {
-        // Require explicit confirmation before reloading — never auto-erase in-progress chat
         indicator.classList.add('is-refreshing');
-        Toast.show('Pull down once more to refresh', 3000);
-        // 2-second cooldown — user must do a second deliberate pull to confirm
-        ptrCoolingDown = true;
+        // Give a tiny visual delay for the spinner, then hard reload
         setTimeout(() => {
-          ptrCoolingDown = false;
-          resetState();
-        }, 2500);
-        isPulling = false;
-        currentY = 0;
+          window.location.reload(true);
+        }, 300);
       } else {
         resetState();
       }
