@@ -30,8 +30,13 @@ function checkRateLimit(ip) {
 }
 
 async function callGitHubModels(modelId, payload, env) {
-  const ghPayload = { ...payload, model: modelId };
-  const ghResponse = await fetch('https://models.inference.ai.azure.com/chat/completions', {
+  const ghPayload = { 
+    max_tokens: 4096,
+    top_p: 1,
+    ...payload, 
+    model: modelId 
+  };
+  const ghResponse = await fetch('https://models.github.ai/inference/chat/completions', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -177,16 +182,19 @@ export default {
       if (targetModel === 'llama-3.3-70b-versatile' && env.GITHUB_MODELS_TOKEN) {
         console.log("Groq failed, attempting GitHub Models fallback (Llama-3.3-70B-Instruct)...");
         try {
+          // TODO: VERIFY EXACT MODEL ID PREFIX for Llama-3.3-70B-Instruct on GitHub Models.
+          // Search found generic Meta prefixes (meta/llama-3.3-70b-instruct or meta-llama/Llama-3.3-70B-Instruct) 
+          // but could not confidently confirm the exact GitHub Models Marketplace string. Update this string once verified!
           const ghRes1 = await callGitHubModels('Llama-3.3-70B-Instruct', payload, env);
           if (ghRes1.ok) {
             console.log("Served by: github-models (Llama-3.3-70B-Instruct) after Groq failure");
             return ghRes1.response;
           }
           
-          console.log("GitHub Models (Llama-3.3-70B-Instruct) failed, attempting secondary fallback (gpt-4o-mini)...");
-          const ghRes2 = await callGitHubModels('gpt-4o-mini', payload, env);
+          console.log("GitHub Models (Llama-3.3-70B-Instruct) failed, attempting secondary fallback (openai/gpt-4o-mini)...");
+          const ghRes2 = await callGitHubModels('openai/gpt-4o-mini', payload, env);
           if (ghRes2.ok) {
-            console.log("Served by: github-models (gpt-4o-mini) after Groq failure");
+            console.log("Served by: github-models (openai/gpt-4o-mini) after Groq failure");
             return ghRes2.response;
           }
         } catch (fallbackErr) {
