@@ -1,4 +1,4 @@
-const CACHE_NAME = 'toolshub-cache-v11';
+const CACHE_NAME = 'toolshub-cache-v12';
 const urlsToCache = [
   './',
   './index.html',
@@ -49,7 +49,7 @@ self.addEventListener('install', event => {
         }).catch(err => console.warn(`[SW] Failed to cache ${url}:`, err));
       });
       await Promise.allSettled(requests);
-      console.log('[SW] Cache v10 installed.');
+      console.log('[SW] Cache v12 installed.');
     })
   );
 });
@@ -93,7 +93,9 @@ self.addEventListener('fetch', event => {
       return response;
     }).catch(() => {
       // Network failed (offline): serve from cache
-      return caches.match(event.request);
+      return caches.match(event.request).then(cachedResponse => {
+        return cachedResponse || new Response('Resource unavailable offline', { status: 503, statusText: 'Service Unavailable' });
+      });
     })
   );
 });
