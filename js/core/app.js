@@ -451,6 +451,7 @@ const Settings = (() => {
 
     // ---- Topbar Mode Pill ----
     document.getElementById('agentModeBtn')?.addEventListener('click', openUpgradeSheet);
+    document.getElementById('deepResearchBtn')?.addEventListener('click', openUpgradeSheet);
     document.querySelector('.mode-pill-btn[data-mode="chat"]')?.addEventListener('click', function() {
       // It's the default behavior, just ensure it's visually active
       document.querySelectorAll('.mode-pill-btn').forEach(b => {

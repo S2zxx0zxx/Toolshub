@@ -25,6 +25,7 @@
   --accent-hover:  #e0a02a;
   --accent-soft:   rgba(200,137,10,0.14);
   --accent-text-on: #14140f; /* text color when sitting on accent bg */
+  --accent-pro:    #a855f7;  /* purple/neon for PRO elements */
 
   /* ---------- COLOR: SEMANTIC ---------- */
   --success: #4caf6d;

@@ -49,8 +49,9 @@
 }
 .mode-pill-lock { 
   font-size:9px; font-weight:700; padding:1px 5px;
-  border-radius:var(--r-sm); background:var(--accent);
-  color:var(--accent-text-on); letter-spacing:0.02em; 
+  border-radius:var(--r-sm); background:var(--accent-pro);
+  color:#fff; letter-spacing:0.02em;
+  box-shadow: 0 0 6px rgba(168, 85, 247, 0.45);
 }
 .ai-status-pill { 
   display:inline-flex; align-items:center;
@@ -219,6 +220,7 @@
 
 .tool-chip-row {
   display: flex; align-items: center; margin-bottom: var(--sp-2);
+  gap: var(--sp-2); flex-wrap: wrap;
   animation: fadeIn var(--dur-base) var(--ease);
 }
 
@@ -245,12 +247,6 @@
   padding: var(--sp-2) var(--sp-2) var(--sp-3);
 }
 .input-textarea::placeholder { color: var(--text-muted); }
-
-.input-chip-row {
-  display: flex; align-items: center; gap: var(--sp-2);
-  flex-wrap: wrap;
-  padding: 0 var(--sp-2) var(--sp-2);
-}
 
 .input-actions {
   display: flex; align-items: center; justify-content: space-between;
