@@ -429,6 +429,26 @@ const Settings = (() => {
     document.getElementById('billingUpgradeBtn')?.addEventListener('click', openUpgradeSheet);
     document.getElementById('upgradeSheetCloseBtn')?.addEventListener('click', closeUpgradeSheet);
 
+    // ---- Sidebar Enhancements ----
+    document.getElementById('sidebarUpgradeBtn')?.addEventListener('click', openUpgradeSheet);
+    document.getElementById('quicknavChatBtn')?.addEventListener('click', () => {
+      document.getElementById('homeLogoBtn')?.click();
+    });
+    document.getElementById('quicknavToolsBtn')?.addEventListener('click', () => {
+      if (window.BottomSheet && BottomSheet.openToolSheet) BottomSheet.openToolSheet();
+    });
+    document.getElementById('quicknavHistoryBtn')?.addEventListener('click', () => {
+      document.getElementById('chatHistoryGroups')?.scrollIntoView({ behavior: 'smooth' });
+    });
+    document.getElementById('quicknavSettingsBtn')?.addEventListener('click', open);
+
+    document.getElementById('sidebarSearchChats')?.addEventListener('input', (e) => {
+      const val = e.target.value.toLowerCase();
+      document.querySelectorAll('#chatHistoryGroups .chat-item').forEach(item => {
+        item.style.display = item.textContent.toLowerCase().includes(val) ? '' : 'none';
+      });
+    });
+
     // ---- Topbar Mode Pill ----
     document.getElementById('agentModeBtn')?.addEventListener('click', openUpgradeSheet);
     document.querySelector('.mode-pill-btn[data-mode="chat"]')?.addEventListener('click', function() {
