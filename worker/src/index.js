@@ -29,6 +29,40 @@ function checkRateLimit(ip) {
   return true;
 }
 
+async function callGitHubModels(modelId, payload, env) {
+  const ghPayload = { ...payload, model: modelId };
+  const ghResponse = await fetch('https://models.inference.ai.azure.com/chat/completions', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${env.GITHUB_MODELS_TOKEN}`,
+      'Accept-Encoding': 'identity'
+    },
+    body: JSON.stringify(ghPayload)
+  });
+
+  if (!ghResponse.ok) {
+    return { ok: false, response: ghResponse };
+  }
+
+  const responseHeaders = new Headers(ghResponse.headers);
+  responseHeaders.delete('content-encoding');
+  responseHeaders.delete('content-length');
+  responseHeaders.delete('transfer-encoding');
+  // corsHeaders is defined globally
+  for (const [key, value] of Object.entries(corsHeaders)) {
+    responseHeaders.set(key, value);
+  }
+
+  return { 
+    ok: true, 
+    response: new Response(ghResponse.body, {
+      status: ghResponse.status,
+      headers: responseHeaders
+    })
+  };
+}
+
 export default {
   async fetch(request, env, ctx) {
 
@@ -119,8 +153,11 @@ export default {
     }
 
     // 6. Proxy Request to Groq API
+    let groqResponse;
+    let groqNetworkFailed = false;
+
     try {
-      const groqResponse = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+      groqResponse = await fetch('https://api.groq.com/openai/v1/chat/completions', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -129,9 +166,38 @@ export default {
         },
         body: JSON.stringify(payload)
       });
+    } catch (e) {
+      console.error("Fetch error to Groq:", e);
+      groqNetworkFailed = true;
+    }
 
-      // 6.1 Handle non-200 Error Passthrough
-      if (!groqResponse.ok) {
+    const groqFailed = groqNetworkFailed || !groqResponse.ok;
+
+    if (groqFailed) {
+      if (targetModel === 'llama-3.3-70b-versatile' && env.GITHUB_MODELS_TOKEN) {
+        console.log("Groq failed, attempting GitHub Models fallback (Llama-3.3-70B-Instruct)...");
+        try {
+          const ghRes1 = await callGitHubModels('Llama-3.3-70B-Instruct', payload, env);
+          if (ghRes1.ok) {
+            console.log("Served by: github-models (Llama-3.3-70B-Instruct) after Groq failure");
+            return ghRes1.response;
+          }
+          
+          console.log("GitHub Models (Llama-3.3-70B-Instruct) failed, attempting secondary fallback (gpt-4o-mini)...");
+          const ghRes2 = await callGitHubModels('gpt-4o-mini', payload, env);
+          if (ghRes2.ok) {
+            console.log("Served by: github-models (gpt-4o-mini) after Groq failure");
+            return ghRes2.response;
+          }
+        } catch (fallbackErr) {
+          console.error("Fallback chain threw an error:", fallbackErr);
+        }
+      }
+
+      // If fallback wasn't eligible or all fallbacks failed, return the real Groq error
+      if (groqNetworkFailed) {
+        return new Response('Internal Server Error: Unable to connect to AI provider.', { status: 500, headers: corsHeaders });
+      } else {
         const responseHeaders = new Headers(groqResponse.headers);
         responseHeaders.delete('content-encoding');
         responseHeaders.delete('content-length');
@@ -144,7 +210,11 @@ export default {
           headers: responseHeaders
         });
       }
+    }
 
+    console.log("Served by: groq");
+
+    try {
       // 6.2 Handle Synthetic SSE for Compound Models
       if (isCompoundModel && !!stream) {
         const data = await groqResponse.json();
@@ -170,7 +240,6 @@ export default {
       // Construct a new Response to ensure CORS headers are injected
       const responseHeaders = new Headers(groqResponse.headers);
       // IMPORTANT: Remove encoding headers because Cloudflare's fetch() decompresses the body automatically.
-      // If we leave them, the browser expects gzipped data but gets raw text, causing a blank response!
       responseHeaders.delete('content-encoding');
       responseHeaders.delete('content-length');
       responseHeaders.delete('transfer-encoding');
@@ -180,15 +249,14 @@ export default {
       }
 
       // If streaming, return the readable stream directly.
-      // Cloudflare Workers natively supports streaming responses!
       return new Response(groqResponse.body, {
         status: groqResponse.status,
         headers: responseHeaders
       });
 
     } catch (e) {
-      console.error("Fetch error to AI Provider:", e);
-      return new Response('Internal Server Error: Unable to connect to AI provider.', { status: 500, headers: corsHeaders });
+      console.error("Error processing successful Groq response:", e);
+      return new Response('Internal Server Error: Error processing AI response.', { status: 500, headers: corsHeaders });
     }
   },
 };

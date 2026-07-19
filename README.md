@@ -91,7 +91,23 @@ If you are an AI tasked with upgrading this system, here is the immediate strate
 
 ---
 
-## 🛠 5. Deployment Playbook
+## 🛡 5. Security Hardening & Fallback Providers
+
+ToolsHub implements automatic zero-frontend-change fallback mechanisms to ensure high availability when primary AI providers fail.
+
+### GitHub Models Fallback
+If the primary Groq API fails (network error, timeout, or non-2xx status), the Cloudflare Worker can automatically failover to GitHub Models.
+- **Supported Models**: Currently only maps `llama-3.3-70b-versatile` to `Llama-3.3-70B-Instruct` (and `gpt-4o-mini` as a secondary fallback). Other models degrade gracefully and return the original error.
+- **Required Secret**: A new Cloudflare secret `GITHUB_MODELS_TOKEN` is required for the fallback to activate. Generate this via a GitHub Personal Access Token with `Models: read` permission, or a GitHub Models playground token.
+- **Command to set**: 
+  ```bash
+  npx wrangler secret put GITHUB_MODELS_TOKEN
+  ```
+- **Graceful Degradation**: If this secret is missing or not configured, the fallback is safely skipped and the app continues to work exactly as it does today (Groq-only, no fallback). This is a purely additive, non-breaking dependency.
+
+---
+
+## 🛠 6. Deployment Playbook
 
 If a deployment is requested, execute exactly this sequence:
 
