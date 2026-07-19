@@ -278,7 +278,7 @@ export const Chat = (() => {
     if (currentChat.messages.length === 0) {
       currentChat.title = text.slice(0, 48) + (text.length > 48 ? '…' : '');
       document.getElementById('chatTitle').textContent = currentChat.title;
-      await CloudDB.saveConversation(currentChat);
+      CloudDB.saveConversation(currentChat).catch(console.warn);
     }
 
     const userMsg = { id: 'msg_' + Date.now(), role: 'user', text, ts: Date.now() };
@@ -286,8 +286,8 @@ export const Chat = (() => {
     currentChat.updatedAt = Date.now();
     renderMessages();
     
-    // Save to Firestore/LocalStorage (CloudDB handles routing)
-    await CloudDB.saveMessage(currentChat.id, userMsg);
+    // Save to Firestore/LocalStorage (CloudDB handles routing) - Fire and forget
+    CloudDB.saveMessage(currentChat.id, userMsg).catch(console.warn);
 
     // Fix #2 — For guest mode (no Firestore subscription), force sidebar to re-render.
     // Firestore onSnapshot handles logged-in users automatically.
@@ -316,7 +316,7 @@ export const Chat = (() => {
     currentChat.messages.push(errMsg);
     currentChat.updatedAt = Date.now();
     renderMessages();
-    await CloudDB.saveMessage(currentChat.id, errMsg);
+    CloudDB.saveMessage(currentChat.id, errMsg).catch(console.warn);
   }
 
   function showTypingIndicator(toolId = null) {
