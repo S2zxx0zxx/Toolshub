@@ -157,6 +157,17 @@ export default {
       return new Response("Internal Server Error: GROQ_API_KEY secret is not set.", { status: 500, headers: corsHeaders });
     }
 
+    // 5.5 Bypass Groq for explicit GitHub Models
+    if (targetModel === 'gpt-4o-mini' && env.GITHUB_MODELS_TOKEN) {
+      try {
+        const ghRes = await callGitHubModels('openai/gpt-4o-mini', payload, env);
+        if (ghRes.ok) return ghRes.response;
+        return new Response('GitHub Models Error: Unable to fetch gpt-4o-mini', { status: 500, headers: corsHeaders });
+      } catch (e) {
+        return new Response('Internal Server Error: GitHub Models unreachable', { status: 500, headers: corsHeaders });
+      }
+    }
+
     // 6. Proxy Request to Groq API
     let groqResponse;
     let groqNetworkFailed = false;
@@ -180,18 +191,15 @@ export default {
 
     if (groqFailed) {
       if (targetModel === 'llama-3.3-70b-versatile' && env.GITHUB_MODELS_TOKEN) {
-        console.log("Groq failed, attempting GitHub Models fallback (Llama-3.3-70B-Instruct)...");
+        console.log("Groq failed, attempting GitHub Models fallback (meta-llama/Llama-3.3-70B-Instruct)...");
         try {
-          // TODO: VERIFY EXACT MODEL ID PREFIX for Llama-3.3-70B-Instruct on GitHub Models.
-          // Search found generic Meta prefixes (meta/llama-3.3-70b-instruct or meta-llama/Llama-3.3-70B-Instruct) 
-          // but could not confidently confirm the exact GitHub Models Marketplace string. Update this string once verified!
-          const ghRes1 = await callGitHubModels('Llama-3.3-70B-Instruct', payload, env);
+          const ghRes1 = await callGitHubModels('meta-llama/Llama-3.3-70B-Instruct', payload, env);
           if (ghRes1.ok) {
-            console.log("Served by: github-models (Llama-3.3-70B-Instruct) after Groq failure");
+            console.log("Served by: github-models (meta-llama/Llama-3.3-70B-Instruct) after Groq failure");
             return ghRes1.response;
           }
           
-          console.log("GitHub Models (Llama-3.3-70B-Instruct) failed, attempting secondary fallback (openai/gpt-4o-mini)...");
+          console.log("GitHub Models (meta-llama/Llama-3.3-70B-Instruct) failed, attempting secondary fallback (openai/gpt-4o-mini)...");
           const ghRes2 = await callGitHubModels('openai/gpt-4o-mini', payload, env);
           if (ghRes2.ok) {
             console.log("Served by: github-models (openai/gpt-4o-mini) after Groq failure");

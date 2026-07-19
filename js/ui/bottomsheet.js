@@ -17,6 +17,7 @@ export const BottomSheet = (() => {
   const MODEL_CATALOG = [
     { id: 'llama-3.3-70b-versatile', label: 'Llama 3.3 70B', sub: 'Best for general chat', dailyLimit: 100000 },
     { id: 'llama-3.1-8b-instant', label: 'Llama 3.1 8B', sub: 'Fastest responses', dailyLimit: 500000 },
+    { id: 'gpt-4o-mini', label: 'ChatGPT 4o-Mini', sub: 'OpenAI via GitHub Models', dailyLimit: 50000 },
     { id: 'groq/compound', label: 'Compound', sub: "Groq's agentic model", dailyLimit: 70000 },
     { id: 'groq/compound-mini', label: 'Compound Mini', sub: 'Lightweight agentic model', dailyLimit: 70000 }
   ];
