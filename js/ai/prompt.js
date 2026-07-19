@@ -103,7 +103,6 @@ IDENTITY & PRODUCT KNOWLEDGE — only surface this when the user actually asks; 
           }
       }
     }
-    }
     
     // Inject RAG context if available
     if (currentRagContext) {
