@@ -15,12 +15,18 @@
 .topbar-nav-row {
   display: flex; justify-content: space-between; align-items: center; width: 100%; padding-bottom: var(--sp-2);
 }
-.topbar-title {
-  font-size: var(--fs-base);
-  font-weight: 600;
-  color: var(--text-primary);
+.topbar-title-row {
+  display: flex; justify-content: center;
+  padding: 0 var(--sp-4) var(--sp-2);
+}
+.topbar-title-row .topbar-title {
+  font-size: var(--fs-sm);
+  font-weight: 500;
+  color: var(--text-secondary);
+  max-width: 80vw;
+  padding-bottom: var(--sp-1);
+  border-bottom: 1px solid var(--border-subtle);
   overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
-  max-width: 50vw;
 }
 .topbar-left, .topbar-right { display: flex; align-items: center; gap: var(--sp-2); }
 
