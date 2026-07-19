@@ -99,11 +99,13 @@ export default {
       targetModel = 'llama-3.1-8b-instant';
     }
 
+    const isCompoundModel = targetModel === 'groq/compound' || targetModel === 'groq/compound-mini';
+
     const payload = {
       model: targetModel,
       messages,
       temperature: typeof temperature === 'number' ? temperature : 0.7,
-      stream: !!stream
+      stream: isCompoundModel ? false : !!stream
     };
     
     if (response_format) {
@@ -128,6 +130,43 @@ export default {
         body: JSON.stringify(payload)
       });
 
+      // 6.1 Handle non-200 Error Passthrough
+      if (!groqResponse.ok) {
+        const responseHeaders = new Headers(groqResponse.headers);
+        responseHeaders.delete('content-encoding');
+        responseHeaders.delete('content-length');
+        responseHeaders.delete('transfer-encoding');
+        for (const [key, value] of Object.entries(corsHeaders)) {
+          responseHeaders.set(key, value);
+        }
+        return new Response(groqResponse.body, {
+          status: groqResponse.status,
+          headers: responseHeaders
+        });
+      }
+
+      // 6.2 Handle Synthetic SSE for Compound Models
+      if (isCompoundModel && !!stream) {
+        const data = await groqResponse.json();
+        const content = data.choices && data.choices[0] && data.choices[0].message ? data.choices[0].message.content || '' : '';
+        
+        // Wrap the full response in a single synthetic chunk
+        const fakeChunk = JSON.stringify({ choices: [{ delta: { content: content } }] });
+        const sseBody = `data: ${fakeChunk}\n\ndata: [DONE]\n\n`;
+
+        const responseHeaders = new Headers();
+        for (const [key, value] of Object.entries(corsHeaders)) {
+          responseHeaders.set(key, value);
+        }
+        responseHeaders.set('Content-Type', 'text/event-stream');
+        
+        return new Response(sseBody, {
+          status: 200,
+          headers: responseHeaders
+        });
+      }
+
+      // 6.3 Handle Standard Streaming Models
       // Construct a new Response to ensure CORS headers are injected
       const responseHeaders = new Headers(groqResponse.headers);
       // IMPORTANT: Remove encoding headers because Cloudflare's fetch() decompresses the body automatically.
