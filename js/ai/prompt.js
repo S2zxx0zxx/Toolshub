@@ -95,7 +95,6 @@ IDENTITY & PRODUCT KNOWLEDGE — only surface this when the user actually asks; 
             // Fallback: still give real behavioral shaping, not a generic label.
             prompt += `- Stay tightly focused on this tool's actual task — don't drift into unrelated general chat unless the user explicitly steers there.\n- Match the output format this task actually needs (e.g. a caption tool gives caption text, not a lecture about captions; a calculator gives the number and brief working, not an essay).\n- Skip framing/preamble specific to explaining what the tool does — the user already knows, they picked it. Just do the task.\n- Still apply all core personality rules (real opinions, no flattery, no generic closers) — tool-focus doesn't mean robotic.`;
           }
-        }
       }
     }
     
