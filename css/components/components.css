@@ -120,7 +120,9 @@
 .list-row-icon svg { width: 18px; height: 18px; }
 .list-row-body { flex: 1; min-width: 0; }
 .list-row-title { font-size: var(--fs-base); font-weight: 500; color: var(--text-primary); }
-.list-row-subtitle { font-size: var(--fs-sm); color: var(--text-muted); margin-top: 2px; }
+.list-row-subtitle { font-size: var(--fs-xs); color: var(--text-muted); margin-top: var(--sp-1); }
+.list-row-subtitle-pro { font-size: 11px; color: var(--text-primary); opacity: 0.85; font-weight: 600; margin-top: 2px; }
+.model-tag-inline { font-size: 10px; opacity: 0.5; font-weight: 400; margin-left: 6px; }
 .list-row-trail { display: flex; align-items: center; gap: var(--sp-2); color: var(--text-muted); font-size: var(--fs-sm); flex-shrink: 0; }
 .list-row-chevron { width: 16px; height: 16px; color: var(--text-muted); }
 

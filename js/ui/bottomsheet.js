@@ -15,11 +15,11 @@ import { Sidebar } from './sidebar.js';
 export const BottomSheet = (() => {
 
   const MODEL_CATALOG = [
-    { id: 'llama-3.3-70b-versatile', label: 'Llama 3.3 70B', sub: 'Best for general chat', dailyLimit: 100000 },
-    { id: 'llama-3.1-8b-instant', label: 'Llama 3.1 8B', sub: 'Fastest responses', dailyLimit: 500000 },
-    { id: 'gpt-4o-mini', label: 'ChatGPT 4o-Mini', sub: 'OpenAI via GitHub Models', dailyLimit: 50000 },
-    { id: 'groq/compound', label: 'Compound', sub: "Groq's agentic model", dailyLimit: 70000 },
-    { id: 'groq/compound-mini', label: 'Compound Mini', sub: 'Lightweight agentic model', dailyLimit: 70000 }
+    { id: 'llama-3.3-70b-versatile', label: 'Digilite', tag: '(medium)', sub: 'General Chats', dailyLimit: 100000 },
+    { id: 'llama-3.1-8b-instant', label: 'DigiPro', tag: '(High)', sub: 'Fastest Ever You Think', dailyLimit: 500000 },
+    { id: 'gpt-4o-mini', label: 'Maya', tag: '(</> Max)', sub: 'You Think I code', dailyLimit: 50000 },
+    { id: 'groq/compound', label: 'Maya Pro', tag: '(Stay Tuned)', sub: 'Premium features coming', dailyLimit: 70000 },
+    { id: 'groq/compound-mini', label: 'Digilite', tag: '(Low)', sub: '(Patched), Not Available', dailyLimit: 70000 }
   ];
 
   const exhaustedModels = new Set(); // In-memory, resets on page reload
@@ -207,7 +207,7 @@ export const BottomSheet = (() => {
     const chip = document.querySelector('#modelChip span');
     const model = MODEL_CATALOG.find(m => m.id === modelId);
     if (chip && model) {
-      chip.textContent = model.label;
+      chip.textContent = model.label + (model.tag ? ' ' + model.tag : '');
     }
   }
 
@@ -219,7 +219,7 @@ export const BottomSheet = (() => {
       // Show default
       const chip = document.querySelector('#modelChip span');
       const defaultModel = MODEL_CATALOG[0];
-      if (chip && defaultModel) chip.textContent = defaultModel.label;
+      if (chip && defaultModel) chip.textContent = defaultModel.label + (defaultModel.tag ? ' ' + defaultModel.tag : '');
     }
   }
 
@@ -250,8 +250,8 @@ export const BottomSheet = (() => {
       
       row.innerHTML = `
         <div class="list-row-body">
-          <div class="list-row-title">${label}</div>
-          <div class="list-row-subtitle">${model.sub}</div>
+          <div class="list-row-title">${label} ${model.tag ? `<span class="model-tag-inline">${model.tag}</span>` : ''}</div>
+          <div class="list-row-subtitle-pro">${model.sub}</div>
         </div>
         <div class="list-row-trail">
           <svg class="access-check" viewBox="0 0 24 24" fill="none" stroke="currentColor"
