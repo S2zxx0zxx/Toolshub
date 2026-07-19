@@ -81,11 +81,9 @@ IDENTITY & PRODUCT KNOWLEDGE — only surface this when the user actually asks; 
     
     // Dynamically add context about the currently active tool
     if (typeof ToolSelector !== 'undefined') {
-      const activeToolId = ToolSelector.getActiveTool();
-      if (activeToolId) {
-        const toolData = ToolSelector.findTool(activeToolId);
-        if (toolData && toolData.tool) {
-          const t = toolData.tool;
+      const activeToolData = ToolSelector.getActiveTool();
+      if (activeToolData && activeToolData.tool) {
+        const t = activeToolData.tool;
           prompt += `\n\nACTIVE TOOL CONTEXT: The user is currently using the "${t.title}" tool`;
           if (t.sub) {
             prompt += ` (${t.sub})`;
