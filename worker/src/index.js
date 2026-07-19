@@ -162,7 +162,9 @@ export default {
       try {
         const ghRes = await callGitHubModels('openai/gpt-4o-mini', payload, env);
         if (ghRes.ok) return ghRes.response;
-        return new Response('GitHub Models Error: Unable to fetch gpt-4o-mini', { status: 500, headers: corsHeaders });
+        
+        const errorText = await ghRes.response.text();
+        return new Response('GitHub Models Error: ' + errorText, { status: 500, headers: corsHeaders });
       } catch (e) {
         return new Response('Internal Server Error: GitHub Models unreachable', { status: 500, headers: corsHeaders });
       }
