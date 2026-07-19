@@ -74,6 +74,7 @@
 .chip .chip-icon { width: 16px; height: 16px; color: var(--accent); flex-shrink: 0; }
 .chip .chip-chevron { width: 14px; height: 14px; color: var(--text-muted); }
 .chip.chip-sm { height: 30px; font-size: var(--fs-xs); padding: 0 var(--sp-3) 0 var(--sp-2); }
+.chip.chip-xs { height: 26px; font-size: 11px; padding: 0 var(--sp-2); }
 
 /* ---------- TOGGLE SWITCH ---------- */
 .toggle {

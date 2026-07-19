@@ -236,17 +236,25 @@
 
 .input-textarea {
   width: 100%;
-  background: none;
+  background: transparent;
   border: none;
-  outline: none;
   resize: none;
   color: var(--text-primary);
+  font-family: inherit;
   font-size: var(--fs-base);
   line-height: 1.5;
-  max-height: 160px;
-  padding: var(--sp-2) var(--sp-2) var(--sp-3);
+  padding: 0; margin-bottom: var(--sp-2);
+  min-height: 24px; max-height: 200px;
 }
+.input-textarea:focus { outline: none; }
 .input-textarea::placeholder { color: var(--text-muted); }
+
+.input-inner-chips {
+  display: flex; align-items: center; gap: var(--sp-2);
+  flex-wrap: wrap;
+  padding-bottom: var(--sp-3);
+  margin-top: -4px; /* Pull it slightly closer to textarea */
+}
 
 .input-actions {
   display: flex; align-items: center; justify-content: space-between;

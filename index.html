@@ -174,19 +174,22 @@
               <span id="toolChipLabel">Choose a tool</span>
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" class="chip-chevron"><polyline points="6 9 12 15 18 9"/></svg>
             </button>
-            <button id="modelChip" class="chip chip-sm">
-              <span id="modelChipLabel">Llama 3.3 70B</span>
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" class="chip-chevron"><polyline points="6 9 12 15 18 9"/></svg>
-            </button>
-            <button id="deepResearchBtn" class="chip chip-sm">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="chip-icon"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-              <span>Deep Research</span>
-              <span class="mode-pill-lock">PRO</span>
-            </button>
           </div>
 
           <div class="input-card">
             <textarea id="inputTextarea" rows="1" placeholder="Choose a tool to get started..." aria-label="Chat input" class="input-textarea"></textarea>
+
+            <div class="input-inner-chips">
+              <button id="modelChip" class="chip chip-xs">
+                <span id="modelChipLabel">Llama 3.3 70B</span>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" class="chip-chevron"><polyline points="6 9 12 15 18 9"/></svg>
+              </button>
+              <button id="deepResearchBtn" class="chip chip-xs">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="chip-icon"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                <span>Deep Research</span>
+                <span class="mode-pill-lock">PRO</span>
+              </button>
+            </div>
 
             <div class="input-actions">
               <div class="input-actions-left">
