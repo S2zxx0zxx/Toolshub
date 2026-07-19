@@ -172,13 +172,15 @@ const Settings = (() => {
     if (!indicator) return;
     
     if (status === 'disconnected') {
-      indicator.innerHTML = '<span class="ai-status-glow" style="background: var(--danger, #ff4d4f); box-shadow: 0 0 8px var(--danger, #ff4d4f);"></span> AI: Disconnected';
+      indicator.classList.remove('is-online');
+      indicator.classList.add('is-offline');
       indicator.title = 'Backend API is currently unreachable.';
-      indicator.style.color = 'var(--text-muted)';
+      indicator.style.color = ''; // Reset old inline style if present
     } else {
-      indicator.innerHTML = '<span class="ai-status-glow"></span> AI: Connected';
+      indicator.classList.remove('is-offline');
+      indicator.classList.add('is-online');
       indicator.title = 'AI Backend Connected — real AI responses active.';
-      indicator.style.color = 'var(--accent, #7c5cfc)';
+      indicator.style.color = ''; // Reset old inline style if present
     }
   }
 
@@ -426,6 +428,18 @@ const Settings = (() => {
     document.getElementById('upgradeBtn')?.addEventListener('click', openUpgradeSheet);
     document.getElementById('billingUpgradeBtn')?.addEventListener('click', openUpgradeSheet);
     document.getElementById('upgradeSheetCloseBtn')?.addEventListener('click', closeUpgradeSheet);
+
+    // ---- Topbar Mode Pill ----
+    document.getElementById('agentModeBtn')?.addEventListener('click', openUpgradeSheet);
+    document.querySelector('.mode-pill-btn[data-mode="chat"]')?.addEventListener('click', function() {
+      // It's the default behavior, just ensure it's visually active
+      document.querySelectorAll('.mode-pill-btn').forEach(b => {
+        b.classList.remove('is-active');
+        b.setAttribute('aria-pressed', 'false');
+      });
+      this.classList.add('is-active');
+      this.setAttribute('aria-pressed', 'true');
+    });
 
     // ---- Logout button ----
     document.getElementById('logoutRow')?.addEventListener('click', confirmLogout);

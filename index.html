@@ -84,17 +84,29 @@
     <div id="screenChat" class="screen screen-chat is-active">
 
       <div class="topbar">
-        <div class="topbar-status-row">
-          <div id="aiStatusIndicator" title="AI Backend Connected" class="extracted-inline-8" style="margin: 0; padding: 4px 10px;"><span class="ai-status-glow"></span> AI: Connected</div>
-        </div>
-        <div class="topbar-nav-row">
+        <div class="topbar-nav-row" style="padding-top: var(--sp-2);">
           <div class="topbar-left">
             <button id="hamburgerBtn" aria-label="Open menu" class="btn-icon hamburger-btn">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
             </button>
-            <span id="chatTitle" class="topbar-title">New chat</span>
+            <span id="chatTitle" class="sr-only">New chat</span>
           </div>
+
+          <div class="mode-pill" id="chatModePill">
+            <button class="mode-pill-btn is-active" data-mode="chat">Chat Mode</button>
+            <button class="mode-pill-btn" data-mode="agent" id="agentModeBtn">
+              Agent Mode <span class="mode-pill-lock">PRO</span>
+            </button>
+          </div>
+
           <div class="topbar-right" style="display: flex; align-items: center; gap: 8px;">
+            <span id="aiStatusIndicator" title="AI Backend Connected" class="ai-status-pill">
+              <svg class="signal-bars" viewBox="0 0 20 20" fill="none">
+                <rect x="1" y="11" width="3" height="7" rx="1"/>
+                <rect x="6" y="7" width="3" height="11" rx="1"/>
+                <rect x="11" y="3" width="3" height="15" rx="1"/>
+              </svg>
+            </span>
             <button id="shareBtn" aria-label="Share" class="btn-icon">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
             </button>

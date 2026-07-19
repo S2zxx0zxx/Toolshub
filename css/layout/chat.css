@@ -11,9 +11,7 @@
   flex-shrink: 0;
   background: var(--bg-app);
 }
-.topbar-status-row {
-  display: flex; justify-content: center; width: 100%; padding-top: var(--sp-2); padding-bottom: var(--sp-1);
-}
+/* topbar-status-row removed */
 .topbar-nav-row {
   display: flex; justify-content: space-between; align-items: center; width: 100%; padding-bottom: var(--sp-2);
 }
@@ -26,6 +24,44 @@
 }
 .topbar-left, .topbar-right { display: flex; align-items: center; gap: var(--sp-2); }
 
+/* ---------- TOP BAR PILLS ---------- */
+.mode-pill { 
+  display:inline-flex; background:var(--bg-surface-2);
+  border:1px solid var(--border-subtle); border-radius:var(--r-full);
+  padding:2px; gap:2px; 
+}
+.mode-pill-btn { 
+  padding: 6px 14px; border-radius:var(--r-full);
+  font-size:var(--fs-sm); font-weight:600; color:var(--text-secondary);
+  display:inline-flex; align-items:center; gap:6px;
+  white-space:nowrap; transition:background var(--dur-fast) var(--ease),
+  color var(--dur-fast) var(--ease); 
+}
+.mode-pill-btn.is-active { 
+  background:var(--text-primary);
+  color:var(--bg-app); 
+}
+.mode-pill-lock { 
+  font-size:9px; font-weight:700; padding:1px 5px;
+  border-radius:var(--r-sm); background:var(--accent);
+  color:var(--accent-text-on); letter-spacing:0.02em; 
+}
+.ai-status-pill { 
+  display:inline-flex; align-items:center;
+  justify-content:center; width:28px; height:28px;
+  border-radius:var(--r-full); background:var(--bg-surface-2);
+  border:1px solid var(--border-subtle); flex-shrink:0; 
+}
+.signal-bars { width:14px; height:14px; }
+.ai-status-pill.is-online .signal-bars rect { fill:var(--success); }
+.ai-status-pill.is-offline .signal-bars rect { fill:var(--danger); }
+
+@media (max-width: 380px) {
+  .mode-pill-btn { padding: 4px 8px; font-size: var(--fs-xs); gap: 4px; }
+  .mode-pill-lock { padding: 1px 3px; font-size: 8px; }
+  .topbar-nav-row { gap: 4px; }
+  .topbar-left, .topbar-right { gap: 4px; }
+}
 /* ---------- CHAT BODY (scroll region) ---------- */
 .chat-body {
   flex: 1;
