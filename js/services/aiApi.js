@@ -47,21 +47,13 @@ export const aiApi = (() => {
     
     try {
       if (localKey) {
-        response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-          method: 'POST',
-          headers: { 
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${localKey}`
-          },
-          body: JSON.stringify(payload)
-        });
-      } else {
-        response = await fetch(API_ENDPOINT, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload)
-        });
+        console.warn("Direct API key usage is deprecated for security. Routing request via Cloudflare Worker.");
       }
+      response = await fetch(API_ENDPOINT, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
     } catch (e) {
       window.dispatchEvent(new CustomEvent('backend-status', { detail: 'disconnected' }));
       throw new Error("Network failure. Backend API temporarily unavailable.");
@@ -133,21 +125,13 @@ export const aiApi = (() => {
     
     try {
       if (localKey) {
-        response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-          method: 'POST',
-          headers: { 
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${localKey}`
-          },
-          body: JSON.stringify(payload)
-        });
-      } else {
-        response = await fetch(API_ENDPOINT, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload)
-        });
+        console.warn("Direct API key usage is deprecated for security. Routing request via Cloudflare Worker.");
       }
+      response = await fetch(API_ENDPOINT, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
       
       if (!response.ok) {
         window.dispatchEvent(new CustomEvent('backend-status', { detail: 'disconnected' }));
