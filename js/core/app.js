@@ -692,6 +692,29 @@ const Settings = (() => {
       });
     });
 
+    // ---- Report Bug row ----
+    document.getElementById('reportBugRow')?.addEventListener('click', () => BottomSheet.openReportBugSheet());
+    document.getElementById('reportBugCloseBtn')?.addEventListener('click', () => BottomSheet.closeReportBugSheet());
+    document.getElementById('reportBugSheetOverlay')?.addEventListener('click', e => {
+      if (e.target.id === 'reportBugSheetOverlay') BottomSheet.closeReportBugSheet();
+    });
+    document.getElementById('reportBugTextarea')?.addEventListener('input', () => BottomSheet.updateReportBugCounter());
+
+    document.getElementById('reportBugSendBtn')?.addEventListener('click', () => {
+      const textarea = document.getElementById('reportBugTextarea');
+      const text = textarea?.value.trim();
+      if (!text) return;
+
+      const subject = encodeURIComponent('ToolsHub Bug Report');
+      const body = encodeURIComponent(
+        `Bug description:\n${text}\n\n---\nApp: ToolsHub\nUser agent: ${navigator.userAgent}`
+      );
+      window.location.href = `mailto:digiriseindia@gmail.com?subject=${subject}&body=${body}`;
+
+      Toast.show('Opening your email app…');
+      BottomSheet.closeReportBugSheet();
+    });
+
     // Initial manage-tools subtitle sync
     updateManageToolsSubtitle();
   }

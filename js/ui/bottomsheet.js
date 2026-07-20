@@ -397,6 +397,25 @@ export const BottomSheet = (() => {
       list.appendChild(row);
     });
   }
+  // ---------- REPORT BUG SHEET ----------
+  function openReportBugSheet() {
+    const textarea = document.getElementById('reportBugTextarea');
+    if (textarea) textarea.value = '';
+    updateReportBugCounter();
+    openOverlay(document.getElementById('reportBugSheetOverlay'));
+  }
+  function closeReportBugSheet() {
+    closeOverlay(document.getElementById('reportBugSheetOverlay'));
+  }
+  function updateReportBugCounter() {
+    const textarea = document.getElementById('reportBugTextarea');
+    const counter = document.getElementById('reportBugCounter');
+    const sendBtn = document.getElementById('reportBugSendBtn');
+    if (!textarea || !counter || !sendBtn) return;
+    const len = textarea.value.length;
+    counter.textContent = `${len} / 2000`;
+    sendBtn.disabled = len === 0;
+  }
 
   function init() {
     // "+" sheet triggers
@@ -497,5 +516,5 @@ export const BottomSheet = (() => {
     restoreModelChip();
   }
 
-  return { init, openAddSheet, closeAddSheet, openToolSheet, closeToolSheet };
+  return { init, openAddSheet, closeAddSheet, openToolSheet, closeToolSheet, openReportBugSheet, closeReportBugSheet, updateReportBugCounter };
 })();
