@@ -33,7 +33,7 @@ export const ChangePlanModal = (() => {
     
     // Default selection to 'popular' if nothing selected yet
     if (!selectedPlanId) {
-      const popularPlan = PLANS.find(p => p.badge === 'Popular') || PLANS[1]; // fallback to DigiPro
+      const popularPlan = PLANS.find(p => p.badge === 'Popular') || PLANS[1]; // fallback to Starter
       selectedPlanId = popularPlan.id;
     }
 
