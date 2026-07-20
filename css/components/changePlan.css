@@ -260,7 +260,7 @@
 
 .plan-card-badge-popular {
   background: var(--accent-pro);
-  color: #ffffff; /* Explicit white for PRO badge to always pop */
+  color: var(--accent-text-on); /* High contrast text on accent backgrounds */
 }
 
 .plan-card-desc {
