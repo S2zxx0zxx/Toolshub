@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Privacy Policy — ToolsHub</title>
+  <link rel="stylesheet" href="./css/core/variables.css">
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background: var(--bg-app);
+      color: var(--text-primary);
+      font-family: var(--font-body);
+      line-height: 1.6;
+    }
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: var(--sp-6) var(--sp-4);
+    }
+    h1, h2, h3 {
+      font-family: var(--font-serif);
+      color: var(--text-primary);
+      margin-top: var(--sp-6);
+      margin-bottom: var(--sp-3);
+    }
+    h1 {
+      font-size: var(--fs-2xl);
+      color: var(--accent);
+      border-bottom: 1px solid var(--border-subtle);
+      padding-bottom: var(--sp-3);
+    }
+    h2 {
+      font-size: var(--fs-xl);
+    }
+    p, ul {
+      color: var(--text-secondary);
+      margin-bottom: var(--sp-4);
+    }
+    li {
+      margin-bottom: var(--sp-2);
+    }
+    a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+    a:hover {
+      text-decoration: underline;
+    }
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--sp-2);
+      margin-bottom: var(--sp-6);
+      font-weight: 500;
+    }
+    .footer {
+      margin-top: var(--sp-8);
+      padding-top: var(--sp-4);
+      border-top: 1px solid var(--border-subtle);
+      color: var(--text-muted);
+      font-size: var(--fs-sm);
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a href="./index.html" class="back-link">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><polyline points="15 18 9 12 15 6"/></svg>
+      Back to ToolsHub
+    </a>
+    
+    <h1>Privacy Policy</h1>
+
+    <h2>Data We Collect</h2>
+    <p>ToolsHub collects the following information to provide a seamless experience:</p>
+    <ul>
+      <li><strong>Account Information:</strong> We collect your name and email address via Firebase Authentication when you create an account or sign in.</li>
+      <li><strong>Chat Messages & History:</strong> For authenticated users, your conversations with the AI are securely stored in Firebase Firestore (path: <code>users/{uid}/conversations</code>).</li>
+      <li><strong>Tool Usage Logs:</strong> We temporarily log tool usage (toolId, execution time) strictly to power the tool history feature within the app.</li>
+      <li><strong>Local Browser Storage:</strong> For guest-mode users, all chat data and preferences are saved locally using your browser's <code>localStorage</code>. For all users, app preferences such as your selected theme, accent color, active persona, and selected model are also saved locally.</li>
+    </ul>
+
+    <h2>Third-Party Processors</h2>
+    <p>We rely on trusted third-party services to power ToolsHub's capabilities. Your data may securely pass through these services:</p>
+    <ul>
+      <li><strong>Groq:</strong> Processes chat messages to generate lightning-fast AI responses. Requests are routed through our secure worker, ensuring your direct API keys are never exposed to the frontend.</li>
+      <li><strong>GitHub Models:</strong> Serves as a reliable fallback AI provider if our primary models are unavailable.</li>
+      <li><strong>Tavily:</strong> Processes search queries securely when you use the web search tool to find real-time information.</li>
+      <li><strong>Cloudflare:</strong> Hosts our edge API worker and processes requests (including your IP address) solely to enforce rate limits and prevent abuse.</li>
+      <li><strong>Firebase & Google Cloud:</strong> Hosts our authentication system and secure database infrastructure.</li>
+    </ul>
+
+    <h2>What We DON'T Do</h2>
+    <ul>
+      <li>We <strong>do not</strong> sell your personal data to any third parties.</li>
+      <li>We <strong>do not</strong> use your conversation content for advertising or marketing purposes.</li>
+      <li>API keys for third-party providers are <strong>never</strong> exposed to the frontend, protecting your security.</li>
+    </ul>
+
+    <h2>Data Retention</h2>
+    <p>Your chat history is retained on our servers until you explicitly choose to delete it. You can delete specific chats or your entire account at any time. For guest-mode users, data lives entirely in your browser's local storage and will be permanently lost if you clear your browser data or switch devices.</p>
+
+    <h2>Your Rights</h2>
+    <p>You have full control over your data. You can export your information or completely delete your account and associated data at any time by visiting <strong>Settings → Data Controls</strong> within the app.</p>
+
+    <h2>Security</h2>
+    <p>We take your privacy seriously. Our Firestore security rules are strictly configured so that all reads and writes are restricted to the authenticated user's own data (<code>request.auth.uid == userId</code>). No other user, third party, or unauthorized entity can access your private conversations.</p>
+
+    <h2>Contact</h2>
+    <p>If you have any questions or concerns regarding this Privacy Policy, please contact us at: <a href="mailto:digiriseindia@gmail.com">digiriseindia@gmail.com</a></p>
+
+    <div class="footer">
+      Last updated: 20 July 2026
+    </div>
+  </div>
+</body>
+</html>

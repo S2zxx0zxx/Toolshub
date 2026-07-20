@@ -20,6 +20,9 @@ import { CloudDB } from '../services/cloudDb.js';
 import { initFirebase, auth, db, fbAuthModule, fbFirestoreModule } from '../services/firebase.js';
 import { aiApi } from '../services/aiApi.js';
 
+const APP_VERSION = '1.0.0';
+const APP_VERSION_DATE = '20 July 2026';
+
 const Settings = (() => {
 
   // ---------- SETTINGS SCREEN OPEN/CLOSE ----------
@@ -551,6 +554,12 @@ const Settings = (() => {
       const sub = document.getElementById('personaSubText');
       if (sub) sub.textContent = p ? p.label : 'General';
     });
+
+    // ---- About row ----
+    document.getElementById('aboutRow')?.addEventListener('click', () => openSubScreen('screenAbout'));
+    document.getElementById('aboutBackBtn')?.addEventListener('click', () => closeSubScreen('screenAbout'));
+    const versionEl = document.getElementById('aboutVersionText');
+    if (versionEl) versionEl.textContent = `v${APP_VERSION} · ${APP_VERSION_DATE}`;
 
     // Initial manage-tools subtitle sync
     updateManageToolsSubtitle();

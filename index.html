@@ -287,6 +287,11 @@
               <div class="list-row-body"><div class="list-row-title">API Keys</div></div>
               <div class="list-row-trail"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="list-row-chevron"><polyline points="9 18 15 12 9 6"/></svg></div>
             </button>
+            <button id="aboutRow" class="list-row">
+              <div class="list-row-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg></div>
+              <div class="list-row-body"><div class="list-row-title">About</div></div>
+              <div class="list-row-trail"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="list-row-chevron"><polyline points="9 18 15 12 9 6"/></svg></div>
+            </button>
             <button id="installAppRow" class="list-row extracted-inline-10">
               <div class="list-row-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg></div>
               <div class="list-row-body"><div class="list-row-title">Install App</div></div>
@@ -431,6 +436,43 @@
               </div>
               <div class="extracted-inline-34">
                 Disabled categories are hidden from the tool selector. At least one must stay enabled.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== ABOUT SUB-SCREEN ===== -->
+      <div id="screenAbout" class="screen-sub">
+        <div class="settings-topbar">
+          <button id="aboutBackBtn" aria-label="Back" class="btn-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+          </button>
+          <span class="settings-topbar-title">About</span>
+          <span style="width:40px;"></span>
+        </div>
+        <div class="settings-body scroll-y">
+          <div class="settings-inner">
+            <div class="settings-group">
+              <a href="mailto:digiriseindia@gmail.com" class="list-row" style="display:flex; text-decoration:none;">
+                <div class="list-row-body"><div class="list-row-title">Help center</div><div class="list-row-subtitle">digiriseindia@gmail.com</div></div>
+                <div class="list-row-trail"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="list-row-chevron"><polyline points="9 18 15 12 9 6"/></svg></div>
+              </a>
+              <a href="./terms.html" target="_blank" rel="noopener noreferrer" class="list-row" style="display:flex; text-decoration:none;">
+                <div class="list-row-body"><div class="list-row-title">Terms of use</div></div>
+                <div class="list-row-trail"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="list-row-chevron"><polyline points="9 18 15 12 9 6"/></svg></div>
+              </a>
+              <a href="./privacy.html" target="_blank" rel="noopener noreferrer" class="list-row" style="display:flex; text-decoration:none;">
+                <div class="list-row-body"><div class="list-row-title">Privacy policy</div></div>
+                <div class="list-row-trail"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="list-row-chevron"><polyline points="9 18 15 12 9 6"/></svg></div>
+              </a>
+            </div>
+            <div class="settings-group">
+              <div class="list-row" style="cursor:default; display:flex;">
+                <div class="list-row-body">
+                  <div class="list-row-title">ToolsHub by DigiRise India</div>
+                  <div class="list-row-subtitle" id="aboutVersionText">Loading…</div>
+                </div>
               </div>
             </div>
           </div>
