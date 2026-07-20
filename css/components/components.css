@@ -149,6 +149,23 @@
   margin-bottom: var(--sp-2);
 }
 
+.sheet-group-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  background: var(--bg-surface-2);
+  color: var(--text-primary);
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 6px 12px;
+  border-radius: var(--r-full);
+  margin-top: var(--sp-4);
+  margin-bottom: var(--sp-2);
+  margin-left: var(--sp-3); /* align with row padding */
+}
+
 /* ---------- SKELETON LOADER ---------- */
 .skeleton {
   border-radius: var(--r-sm);

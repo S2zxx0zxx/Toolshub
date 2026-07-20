@@ -270,8 +270,8 @@ export const BottomSheet = (() => {
     
     MODEL_CATALOG.forEach(group => {
       const header = document.createElement('div');
-      header.className = 'sidebar-group-label';
-      header.textContent = group.category;
+      header.className = 'sheet-group-pill';
+      header.textContent = group.category === 'FLAGSHIP' ? 'FLAGSHIP </>' : group.category;
       list.appendChild(header);
 
       group.models.forEach(model => {
@@ -319,11 +319,7 @@ export const BottomSheet = (() => {
 
     // --- Image Generation Section ---
     const imgHeader = document.createElement('div');
-    imgHeader.className = 'sidebar-group-label';
-    imgHeader.style.marginTop = 'var(--sp-2)';
-    imgHeader.style.display = 'flex';
-    imgHeader.style.alignItems = 'center';
-    imgHeader.style.gap = 'var(--sp-2)';
+    imgHeader.className = 'sheet-group-pill';
     imgHeader.innerHTML = `
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;">
         <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
@@ -360,11 +356,7 @@ export const BottomSheet = (() => {
 
     // --- Video Generation Section ---
     const vidHeader = document.createElement('div');
-    vidHeader.className = 'sidebar-group-label';
-    vidHeader.style.marginTop = 'var(--sp-2)';
-    vidHeader.style.display = 'flex';
-    vidHeader.style.alignItems = 'center';
-    vidHeader.style.gap = 'var(--sp-2)';
+    vidHeader.className = 'sheet-group-pill';
     vidHeader.innerHTML = `
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;">
         <polygon points="23 7 16 12 23 17 23 7"/>
