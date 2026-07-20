@@ -1,0 +1,134 @@
+/* ============================================
+   TOOLSHUB — PERSONA PICKER
+   Modal UI for selecting a persona
+   ============================================ */
+
+.persona-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.7);
+  z-index: var(--z-overlay);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--sp-4);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--dur-base) var(--ease);
+}
+
+.persona-overlay.is-open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.persona-modal {
+  background: var(--bg-surface);
+  border-radius: var(--r-xl);
+  width: 100%;
+  max-width: 520px;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: var(--sh-xl);
+  transform: scale(0.95);
+  transition: transform var(--dur-base) var(--ease);
+}
+
+.persona-overlay.is-open .persona-modal {
+  transform: scale(1);
+}
+
+.persona-header {
+  padding: var(--sp-6) var(--sp-6) var(--sp-4);
+  text-align: center;
+  position: relative;
+}
+
+.persona-close-btn {
+  position: absolute;
+  top: var(--sp-4);
+  right: var(--sp-4);
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  padding: var(--sp-1);
+  border-radius: var(--r-full);
+}
+.persona-close-btn:hover {
+  color: var(--text-primary);
+  background: var(--bg-surface-2);
+}
+
+.persona-title {
+  font-family: var(--font-display);
+  font-size: var(--fs-xl);
+  color: var(--text-primary);
+  margin-bottom: var(--sp-2);
+}
+
+.persona-subtitle {
+  color: var(--text-secondary);
+  font-size: var(--fs-base);
+  line-height: 1.4;
+}
+
+.persona-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--sp-3);
+  padding: 0 var(--sp-6) var(--sp-6);
+  overflow-y: auto;
+}
+
+.persona-card {
+  background: var(--bg-surface-2);
+  border: 1px solid transparent;
+  border-radius: var(--r-lg);
+  padding: var(--sp-4);
+  cursor: pointer;
+  transition: all var(--dur-fast) var(--ease);
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+}
+
+.persona-card:hover {
+  background: var(--bg-surface-3);
+  transform: translateY(-2px);
+}
+
+.persona-card.is-active {
+  background: var(--accent-soft);
+  border-color: var(--accent);
+}
+
+.persona-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--r-md);
+  background: var(--bg-surface);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--accent);
+}
+
+.persona-label {
+  font-size: var(--fs-md);
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.persona-tagline {
+  font-size: var(--fs-sm);
+  color: var(--text-muted);
+  line-height: 1.3;
+}
+
+@media (max-width: 480px) {
+  .persona-grid {
+    grid-template-columns: 1fr;
+  }
+}

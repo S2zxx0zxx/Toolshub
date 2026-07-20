@@ -10,6 +10,8 @@ import { Sidebar } from '../ui/sidebar.js';
 import { BottomSheet } from '../ui/bottomsheet.js';
 import { Chat } from '../ui/chatEngine.js';
 import { ToolSelector } from '../tools/registry.js';
+import { PersonaPicker } from '../ui/personaPicker.js';
+import { PERSONAS } from '../config/personas.js';
 import { Router } from './router.js';
 import { Auth } from '../services/auth.js';
 import { CloudDB } from '../services/cloudDb.js';
@@ -532,6 +534,18 @@ const Settings = (() => {
       if (e.target.id === 'logoutConfirmOverlay') closeLogoutConfirm();
     });
 
+    // ---- Persona mode row ----
+    document.getElementById('personaRow')?.addEventListener('click', () => {
+      if (PersonaPicker) PersonaPicker.open();
+    });
+    
+    // Listen for persona changes to update the subtitle
+    window.addEventListener('persona-changed', (e) => {
+      const p = e.detail;
+      const sub = document.getElementById('personaSubText');
+      if (sub) sub.textContent = p ? p.label : 'General';
+    });
+
     // Initial manage-tools subtitle sync
     updateManageToolsSubtitle();
   }
@@ -636,6 +650,19 @@ document.addEventListener('DOMContentLoaded', async () => {
   BottomSheet.init();
   Chat.init();
   Settings.init();
+  PersonaPicker.init();
+
+  // Set initial persona subtitle in Settings
+  const initialPersonaId = LocalSettings.getPersona();
+  const sub = document.getElementById('personaSubText');
+  if (sub) {
+    if (!initialPersonaId || initialPersonaId === 'general') {
+      sub.textContent = 'General';
+    } else {
+      const p = PERSONAS.find(p => p.id === initialPersonaId);
+      sub.textContent = p ? p.label : 'General';
+    }
+  }
 
   // Check for deep link or default to new chat
   if (window.location.hash && window.location.hash.startsWith('#chat=')) {

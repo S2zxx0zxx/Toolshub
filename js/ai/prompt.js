@@ -1,4 +1,6 @@
 import { ToolSelector } from '../tools/registry.js';
+import { LocalSettings } from '../services/localSettings.js';
+import { PERSONAS } from '../config/personas.js';
 
 export const PromptManager = (() => {
   const DEFAULT_SYSTEM_PROMPT = `You are ToolsHub AI — a sharp, warm, genuinely helpful companion, not a search engine reading definitions.
@@ -84,6 +86,17 @@ IDENTITY & PRODUCT KNOWLEDGE — only surface this when the user actually asks; 
 
   function getSystemPrompt() {
     let prompt = DEFAULT_SYSTEM_PROMPT;
+    
+    // Inject persona context if active
+    if (typeof LocalSettings !== 'undefined' && typeof PERSONAS !== 'undefined') {
+      const personaId = LocalSettings.getPersona();
+      if (personaId && personaId !== 'general') {
+        const persona = PERSONAS.find(p => p.id === personaId);
+        if (persona && persona.promptAddition) {
+          prompt += `\n\nPERSONA CONTEXT: ${persona.promptAddition}\n`;
+        }
+      }
+    }
     
     // Dynamically add context about the currently active tool
     if (typeof ToolSelector !== 'undefined') {

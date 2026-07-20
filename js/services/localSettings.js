@@ -17,6 +17,7 @@ export const LocalSettings = (() => {
     PROFILE:            'toolshub_profile',             // { name, email }
     WEB_SEARCH:         'toolshub_web_search',          // boolean
     SELECTED_CHAT_MODEL: 'toolshub_selected_chat_model', // string model id
+    PERSONA:            'toolshub_persona',             // string persona id or null
   };
 
   function _safeGet(key, fallback) {
@@ -135,6 +136,14 @@ export const LocalSettings = (() => {
     },
     setWebSearchEnabled(value) {
       _safeSet(KEYS.WEB_SEARCH, !!value);
+    },
+
+    // ---------- PERSONA ----------
+    getPersona() {
+      return _safeGet(KEYS.PERSONA, null);
+    },
+    setPersona(personaId) {
+      _safeSet(KEYS.PERSONA, personaId);
     },
 
     // ---------- CLEAR ALL (logout) ----------
