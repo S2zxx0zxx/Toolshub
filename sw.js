@@ -1,4 +1,4 @@
-const CACHE_NAME = 'toolshub-cache-v18';
+const CACHE_NAME = 'toolshub-cache-v20';
 const urlsToCache = [
   './',
   './index.html',
@@ -46,7 +46,9 @@ self.addEventListener('install', event => {
   event.waitUntil(
     caches.open(CACHE_NAME).then(async cache => {
       const requests = urlsToCache.map(url => {
-        return fetch(new URL(url, self.registration.scope).href).then(response => {
+        const fetchUrl = new URL(url, self.registration.scope);
+        fetchUrl.search = '?cb=' + Date.now(); // Cache-bust HTTP cache
+        return fetch(fetchUrl.href).then(response => {
           if (!response.ok) throw new Error(`Status ${response.status}`);
           return cache.put(url, response);
         }).catch(err => console.warn(`[SW] Failed to cache ${url}:`, err));
