@@ -3,3 +3,5 @@ node_modules/
 js/config.js
 js/env.js
 firebase-debug.log
+*.swp
+*.swo

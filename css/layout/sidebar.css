@@ -101,6 +101,7 @@
 
 .chat-item {
   display: block;
+  position: relative;
   padding: var(--sp-2) var(--sp-3);
   border-radius: var(--r-md);
   font-size: var(--fs-sm);
@@ -113,6 +114,30 @@
 }
 .chat-item:hover { background: var(--bg-surface-2); color: var(--text-primary); }
 .chat-item.is-active { background: var(--bg-surface-2); color: var(--text-primary); font-weight: 500; }
+
+.chat-item-delete {
+  position: absolute;
+  right: var(--sp-2);
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  background: var(--bg-surface-2);
+  border-radius: 4px;
+  color: var(--text-muted);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--dur-fast) var(--ease), color var(--dur-fast) var(--ease);
+}
+.chat-item:hover .chat-item-delete {
+  opacity: 1;
+  pointer-events: auto;
+}
+.chat-item-delete:hover {
+  color: var(--accent);
+}
 
 /* footer: profile + settings */
 .sidebar-footer {
