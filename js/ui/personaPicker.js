@@ -43,8 +43,12 @@ export const PersonaPicker = (() => {
     const grid = document.createElement('div');
     grid.className = 'persona-grid';
     
+    // Separate general from regular personas
+    const regularPersonas = PERSONAS.filter(p => p.id !== 'general');
+    const generalPersona = PERSONAS.find(p => p.id === 'general');
+    
     // Populate cards
-    PERSONAS.forEach(p => {
+    regularPersonas.forEach(p => {
       const card = document.createElement('div');
       card.className = 'persona-card';
       card.dataset.id = p.id;
@@ -74,6 +78,22 @@ export const PersonaPicker = (() => {
     
     modal.appendChild(header);
     modal.appendChild(grid);
+    
+    if (generalPersona) {
+      const skipWrap = document.createElement('div');
+      skipWrap.className = 'persona-skip-wrap';
+      
+      const skipBtn = document.createElement('button');
+      skipBtn.className = 'persona-skip-btn';
+      skipBtn.textContent = 'Skip for now';
+      skipBtn.addEventListener('click', () => {
+        selectPersona(generalPersona);
+      });
+      
+      skipWrap.appendChild(skipBtn);
+      modal.appendChild(skipWrap);
+    }
+    
     modalOverlay.appendChild(modal);
     
     document.body.appendChild(modalOverlay);
