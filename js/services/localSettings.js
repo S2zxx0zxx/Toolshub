@@ -18,6 +18,7 @@ export const LocalSettings = (() => {
     WEB_SEARCH:         'toolshub_web_search',          // boolean
     SELECTED_CHAT_MODEL: 'toolshub_selected_chat_model', // string model id
     PERSONA:            'toolshub_persona',             // string persona id or null
+    CURRENT_PLAN:       'toolshub_current_plan',        // string plan id
   };
 
   function _safeGet(key, fallback) {
@@ -47,6 +48,14 @@ export const LocalSettings = (() => {
     },
     setSelectedChatModel(modelId) {
       _safeSet(KEYS.SELECTED_CHAT_MODEL, modelId);
+    },
+
+    // ---------- CURRENT PLAN ----------
+    getCurrentPlan() {
+      return _safeGet(KEYS.CURRENT_PLAN, 'free');
+    },
+    setCurrentPlan(planId) {
+      _safeSet(KEYS.CURRENT_PLAN, planId);
     },
 
     // ---------- CHATS ----------

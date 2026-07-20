@@ -11,7 +11,9 @@ import { BottomSheet } from '../ui/bottomsheet.js';
 import { Chat } from '../ui/chatEngine.js';
 import { ToolSelector } from '../tools/registry.js';
 import { PersonaPicker } from '../ui/personaPicker.js';
+import { ChangePlanModal } from '../ui/changePlanModal.js';
 import { PERSONAS } from '../config/personas.js';
+import { PLANS } from '../config/plans.js';
 import { Router } from './router.js';
 import { Auth } from '../services/auth.js';
 import { CloudDB } from '../services/cloudDb.js';
@@ -453,8 +455,12 @@ const Settings = (() => {
     document.getElementById('apiKeysBackBtn')?.addEventListener('click', () => closeSubScreen('screenApiKeys'));
     document.getElementById('apiKeysSaveBtn')?.addEventListener('click', saveApiKeys);
 
-    // ---- Upgrade button (both in upgrade-card and billing screen — Pattern B/A) ----
-    document.getElementById('upgradeBtn')?.addEventListener('click', openUpgradeSheet);
+    // ---- Subscription & Upgrade ----
+    document.getElementById('changePlanBtn')?.addEventListener('click', () => {
+      if (ChangePlanModal) ChangePlanModal.open();
+    });
+    
+    // Fallback bottomsheet triggers (from prior build, preserved as instructed)
     document.getElementById('billingUpgradeBtn')?.addEventListener('click', openUpgradeSheet);
     document.getElementById('upgradeSheetCloseBtn')?.addEventListener('click', closeUpgradeSheet);
 
@@ -651,6 +657,23 @@ document.addEventListener('DOMContentLoaded', async () => {
   Chat.init();
   Settings.init();
   PersonaPicker.init();
+  ChangePlanModal.init();
+
+  // Set initial subscription state in Settings
+  const initialPlanId = LocalSettings.getCurrentPlan() || 'free';
+  const planObj = PLANS.find(p => p.id === initialPlanId) || PLANS[0];
+  const subName = document.getElementById('subPlanName');
+  const subStatus = document.getElementById('subPlanStatus');
+  const subPeriod = document.getElementById('subPlanPeriod');
+  
+  if (subName) subName.textContent = planObj.label;
+  if (subStatus) {
+    subStatus.textContent = 'active';
+    subStatus.className = 'settings-sub-status-text is-active';
+  }
+  if (subPeriod) {
+    subPeriod.textContent = initialPlanId === 'free' ? 'Forever free' : `Renews: ${planObj.priceLabel}${planObj.periodLabel}`;
+  }
 
   // Set initial persona subtitle in Settings
   const initialPersonaId = LocalSettings.getPersona();

@@ -18,6 +18,7 @@
 <link rel="stylesheet" href="./css/layout/layout.css?v=15">
 <link rel="stylesheet" href="./css/components/components.css?v=15">
 <link rel="stylesheet" href="./css/components/personaPicker.css">
+<link rel="stylesheet" href="./css/components/changePlan.css">
 <link rel="stylesheet" href="./css/layout/sidebar.css?v=15">
 <link rel="stylesheet" href="./css/layout/chat.css?v=15">
 <link rel="stylesheet" href="./css/components/bottomsheet.css?v=15">
@@ -231,10 +232,16 @@
             </div>
           </div>
 
-          <div class="settings-upgrade-card">
-            <div class="settings-upgrade-title">Get more with Pro</div>
-            <div class="settings-upgrade-sub">Higher limits, priority tools, and early access to new categories.</div>
-            <button id="upgradeBtn" class="btn btn-primary">Upgrade</button>
+          <div class="settings-subscription-card">
+            <div class="settings-sub-details">
+              <div class="settings-sub-label">Subscription</div>
+              <div class="settings-sub-plan-name" id="subPlanName">Digilite</div>
+              <div class="settings-sub-status">Status: <span class="settings-sub-status-text is-active" id="subPlanStatus">active</span></div>
+              <div class="settings-sub-period" id="subPlanPeriod">Forever free</div>
+            </div>
+            <div class="settings-sub-actions">
+              <button id="changePlanBtn" class="btn-change-plan">Change plan</button>
+            </div>
           </div>
 
           <div class="settings-group">

@@ -1,0 +1,358 @@
+/* ============================================
+   TOOLSHUB — CHANGE PLAN MODAL
+   Centered modal for selecting subscription plans.
+   ============================================ */
+
+/* ---------- SETTINGS PAGE: SUBSCRIPTION CARD ---------- */
+.settings-subscription-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--r-lg);
+  padding: var(--sp-5);
+  margin-bottom: var(--sp-6);
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-4);
+}
+
+.settings-sub-label {
+  font-family: var(--font-body);
+  font-size: var(--fs-xs);
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  letter-spacing: 0.05em;
+  font-weight: 600;
+}
+
+.settings-sub-details {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-1);
+}
+
+.settings-sub-plan-name {
+  font-family: var(--font-display);
+  font-size: var(--fs-xl);
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+.settings-sub-status {
+  font-family: var(--font-body);
+  font-size: var(--fs-sm);
+  color: var(--text-secondary);
+}
+
+.settings-sub-status-text.is-active {
+  color: var(--success);
+}
+
+.settings-sub-period {
+  font-family: var(--font-body);
+  font-size: var(--fs-xs);
+  color: var(--text-muted);
+}
+
+.settings-sub-actions {
+  display: flex;
+  justify-content: flex-start;
+  margin-top: var(--sp-2);
+}
+
+.btn-change-plan {
+  background: transparent;
+  color: var(--text-primary);
+  border: 1px solid var(--accent);
+  border-radius: var(--r-full);
+  padding: var(--sp-2) var(--sp-4);
+  font-family: var(--font-body);
+  font-size: var(--fs-sm);
+  font-weight: 500;
+  cursor: pointer;
+  transition: background var(--dur-fast) var(--ease), border-color var(--dur-fast) var(--ease);
+}
+
+.btn-change-plan:hover {
+  background: var(--accent-soft);
+  border-color: var(--accent-hover);
+}
+
+@media (min-width: 640px) {
+  .settings-subscription-card {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .settings-sub-actions {
+    margin-top: 0;
+  }
+}
+
+/* ---------- CENTERED MODAL ---------- */
+.change-plan-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: var(--z-sheet);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity var(--dur-base) var(--ease);
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+  padding: var(--sp-4);
+}
+
+.change-plan-overlay.is-open {
+  display: flex;
+  opacity: 1;
+}
+
+.change-plan-modal {
+  background: var(--bg-surface);
+  border-radius: var(--r-xl);
+  box-shadow: var(--sh-xl);
+  width: 100%;
+  max-width: 720px; /* enough for 3 columns */
+  display: flex;
+  flex-direction: column;
+  transform: translateY(10px) scale(0.98);
+  transition: transform var(--dur-base) var(--ease);
+  max-height: 90vh;
+}
+
+.change-plan-overlay.is-open .change-plan-modal {
+  transform: translateY(0) scale(1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .change-plan-overlay {
+    transition: none;
+  }
+  .change-plan-modal {
+    transition: none;
+    transform: none !important;
+  }
+}
+
+/* Modal Header */
+.change-plan-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--sp-5);
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.change-plan-header-content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-1);
+}
+
+.change-plan-title {
+  font-family: var(--font-display);
+  font-size: var(--fs-lg);
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.change-plan-subtitle {
+  font-family: var(--font-body);
+  font-size: var(--fs-sm);
+  color: var(--text-secondary);
+}
+
+.change-plan-close-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  padding: var(--sp-2);
+  border-radius: var(--r-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background var(--dur-fast) var(--ease), color var(--dur-fast) var(--ease);
+}
+
+.change-plan-close-btn:hover {
+  background: var(--bg-surface-2);
+  color: var(--text-primary);
+}
+
+/* Modal Body */
+.change-plan-body {
+  padding: var(--sp-5);
+  overflow-y: auto;
+}
+
+.change-plan-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--sp-4);
+}
+
+@media (max-width: 640px) {
+  .change-plan-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Plan Cards */
+.plan-card {
+  background: var(--bg-surface-2);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--r-md);
+  padding: var(--sp-4);
+  display: flex;
+  flex-direction: column;
+  cursor: pointer;
+  transition: border-color var(--dur-fast) var(--ease), background var(--dur-fast) var(--ease);
+  position: relative;
+}
+
+.plan-card:hover {
+  background: var(--bg-surface-3);
+}
+
+.plan-card.is-selected {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+
+.plan-card.is-popular {
+  border-width: 2px;
+  border-color: var(--accent-pro);
+}
+
+.plan-card.is-popular.is-selected {
+  border-color: var(--accent); /* override if actually selected, or keep pro? Keep pro for popular selected? No, selection takes priority, but let's just make it accent. */
+}
+
+.plan-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--sp-2);
+}
+
+.plan-card-name {
+  font-family: var(--font-body);
+  font-size: var(--fs-base);
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.plan-card-badge {
+  font-family: var(--font-body);
+  font-size: var(--fs-xs);
+  padding: var(--sp-1) var(--sp-2);
+  border-radius: var(--r-full);
+  font-weight: 500;
+}
+
+.plan-card-badge-current {
+  background: var(--bg-surface-3);
+  color: var(--text-secondary);
+}
+
+.plan-card-badge-popular {
+  background: var(--accent-pro);
+  color: #ffffff; /* Explicit white for PRO badge to always pop */
+}
+
+.plan-card-desc {
+  font-family: var(--font-body);
+  font-size: var(--fs-xs);
+  color: var(--text-secondary);
+  line-height: 1.4;
+  margin-bottom: var(--sp-4);
+}
+
+.plan-card-price-row {
+  margin-bottom: var(--sp-4);
+  display: flex;
+  align-items: baseline;
+  gap: 2px;
+}
+
+.plan-card-price {
+  font-family: var(--font-display);
+  font-size: var(--fs-2xl);
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+.plan-card-period {
+  font-family: var(--font-body);
+  font-size: var(--fs-sm);
+  color: var(--text-secondary);
+}
+
+.plan-card-bullets {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+}
+
+.plan-card-bullets li {
+  font-family: var(--font-body);
+  font-size: var(--fs-sm);
+  color: var(--text-secondary);
+  display: flex;
+  line-height: 1.3;
+}
+
+.plan-card-bullets li::before {
+  content: "·";
+  margin-right: var(--sp-2);
+  font-weight: bold;
+  color: var(--text-primary);
+}
+
+/* Modal Footer */
+.change-plan-footer {
+  padding: var(--sp-4) var(--sp-5);
+  border-top: 1px solid var(--border-subtle);
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--sp-3);
+}
+
+.btn-cancel {
+  background: transparent;
+  border: 1px solid var(--border-subtle);
+  color: var(--text-primary);
+  padding: var(--sp-2) var(--sp-4);
+  border-radius: var(--r-md);
+  font-family: var(--font-body);
+  font-size: var(--fs-base);
+  cursor: pointer;
+  transition: background var(--dur-fast) var(--ease);
+}
+
+.btn-cancel:hover {
+  background: var(--bg-surface-2);
+}
+
+.btn-confirm {
+  background: var(--accent);
+  border: none;
+  color: var(--accent-text-on);
+  padding: var(--sp-2) var(--sp-5);
+  border-radius: var(--r-md);
+  font-family: var(--font-body);
+  font-size: var(--fs-base);
+  font-weight: 500;
+  cursor: pointer;
+  transition: background var(--dur-fast) var(--ease);
+}
+
+.btn-confirm:hover {
+  background: var(--accent-hover);
+}
