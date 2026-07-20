@@ -314,7 +314,6 @@ const Settings = (() => {
       console.error('Logout error:', err);
       Toast.show('Failed to log out.');
     }
-    }
   }
 
   // =========================================================
