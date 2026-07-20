@@ -314,7 +314,43 @@ const Settings = (() => {
       console.error('Logout error:', err);
       Toast.show('Failed to log out.');
     }
+    }
   }
+
+  // =========================================================
+  // GENERIC CONFIRM SHEET
+  // =========================================================
+  let _pendingConfirmAction = null;
+
+  function openGenericConfirm({ title, message, showPassword = false, onConfirm }) {
+    document.getElementById('genericConfirmTitle').textContent = title;
+    document.getElementById('genericConfirmMessage').textContent = message;
+    const pwWrap = document.getElementById('genericConfirmPasswordWrap');
+    if (pwWrap) pwWrap.style.display = showPassword ? 'block' : 'none';
+    const pwInput = document.getElementById('genericConfirmPasswordInput');
+    if (pwInput) pwInput.value = '';
+    
+    _pendingConfirmAction = onConfirm;
+    document.getElementById('genericConfirmOverlay').classList.add('is-open');
+    document.body.style.overflow = 'hidden';
+  }
+  
+  function closeGenericConfirm() {
+    document.getElementById('genericConfirmOverlay').classList.remove('is-open');
+    document.body.style.overflow = '';
+    _pendingConfirmAction = null;
+  }
+  
+  document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('genericConfirmCloseBtn')?.addEventListener('click', closeGenericConfirm);
+    document.getElementById('genericConfirmCancelBtn')?.addEventListener('click', closeGenericConfirm);
+    document.getElementById('genericConfirmOverlay')?.addEventListener('click', e => {
+      if (e.target.id === 'genericConfirmOverlay') closeGenericConfirm();
+    });
+    document.getElementById('genericConfirmConfirmBtn')?.addEventListener('click', async () => {
+      if (_pendingConfirmAction) await _pendingConfirmAction();
+    });
+  });
 
   // =========================================================
   // PULL TO REFRESH (PWA)
@@ -560,6 +596,101 @@ const Settings = (() => {
     document.getElementById('aboutBackBtn')?.addEventListener('click', () => closeSubScreen('screenAbout'));
     const versionEl = document.getElementById('aboutVersionText');
     if (versionEl) versionEl.textContent = `v${APP_VERSION} · ${APP_VERSION_DATE}`;
+
+    // ---- Data Controls row ----
+    document.getElementById('dataControlsRow')?.addEventListener('click', () => openSubScreen('screenDataControls'));
+    document.getElementById('dataControlsBackBtn')?.addEventListener('click', () => closeSubScreen('screenDataControls'));
+
+    const deleteAccountRow = document.getElementById('deleteAccountRow');
+    if (deleteAccountRow) deleteAccountRow.style.display = Auth.getCurrentUser() ? 'flex' : 'none';
+
+    document.getElementById('exportDataRow')?.addEventListener('click', async () => {
+      const row = document.getElementById('exportDataRow');
+      const subtext = document.getElementById('exportDataSubtext');
+      const originalText = subtext.textContent;
+      try {
+        subtext.textContent = 'Preparing export…';
+        const data = await CloudDB.exportUserData();
+        const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `toolshub-export-${Date.now()}.json`;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        URL.revokeObjectURL(url);
+        Toast.show('Export downloaded.');
+      } catch (e) {
+        console.error('Export failed:', e);
+        Toast.show('Failed to export data.');
+      } finally {
+        subtext.textContent = originalText;
+      }
+    });
+
+    document.getElementById('clearChatHistoryRow')?.addEventListener('click', () => {
+      openGenericConfirm({
+        title: 'Clear chat history?',
+        message: 'This will permanently delete all your conversations. This cannot be undone.',
+        showPassword: false,
+        onConfirm: async () => {
+          const btn = document.getElementById('genericConfirmConfirmBtn');
+          btn.disabled = true; btn.textContent = 'Clearing…';
+          try {
+            await CloudDB.clearAllConversations();
+            Toast.show('Chat history cleared.');
+            closeGenericConfirm();
+          } catch (e) {
+            console.error('Clear history failed:', e);
+            Toast.show('Failed to clear chat history.');
+          } finally {
+            btn.disabled = false; btn.textContent = 'Confirm';
+          }
+        }
+      });
+    });
+
+    document.getElementById('deleteAccountRow')?.addEventListener('click', () => {
+      const user = Auth.getCurrentUser();
+      const isPasswordUser = user?.providerData?.[0]?.providerId === 'password';
+      openGenericConfirm({
+        title: 'Delete your account?',
+        message: 'This permanently deletes your account and all chat data. This cannot be undone.',
+        showPassword: isPasswordUser,
+        onConfirm: async () => {
+          const btn = document.getElementById('genericConfirmConfirmBtn');
+          btn.disabled = true; btn.textContent = 'Deleting…';
+          try {
+            if (isPasswordUser) {
+              const pw = document.getElementById('genericConfirmPasswordInput').value;
+              if (!pw) { Toast.show('Enter your password to continue.'); btn.disabled = false; btn.textContent = 'Confirm'; return; }
+              await Auth.reauthenticate(pw);
+            } else {
+              if (Auth.reauthenticateWithGooglePopup) {
+                await Auth.reauthenticateWithGooglePopup();
+              }
+            }
+            await CloudDB.deleteUserAccount();
+            await Auth.deleteAccount();
+            closeGenericConfirm();
+            Toast.show('Account deleted.');
+            setTimeout(() => location.reload(), 1200);
+          } catch (e) {
+            console.error('Delete account failed:', e);
+            if (e.code === 'auth/wrong-password' || e.code === 'auth/invalid-credential') {
+              Toast.show('Incorrect password.');
+            } else if (e.code === 'auth/requires-recent-login') {
+              Toast.show('Please sign in again and retry.');
+            } else {
+              Toast.show('Failed to delete account.');
+            }
+          } finally {
+            btn.disabled = false; btn.textContent = 'Confirm';
+          }
+        }
+      });
+    });
 
     // Initial manage-tools subtitle sync
     updateManageToolsSubtitle();

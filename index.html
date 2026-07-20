@@ -287,6 +287,11 @@
               <div class="list-row-body"><div class="list-row-title">API Keys</div></div>
               <div class="list-row-trail"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="list-row-chevron"><polyline points="9 18 15 12 9 6"/></svg></div>
             </button>
+            <button id="dataControlsRow" class="list-row">
+              <div class="list-row-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg></div>
+              <div class="list-row-body"><div class="list-row-title">Data controls</div></div>
+              <div class="list-row-trail"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="list-row-chevron"><polyline points="9 18 15 12 9 6"/></svg></div>
+            </button>
             <button id="aboutRow" class="list-row">
               <div class="list-row-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg></div>
               <div class="list-row-body"><div class="list-row-title">About</div></div>
@@ -479,6 +484,36 @@
         </div>
       </div>
 
+      <!-- ===== DATA CONTROLS SUB-SCREEN ===== -->
+      <div id="screenDataControls" class="screen-sub">
+        <div class="settings-topbar">
+          <button id="dataControlsBackBtn" aria-label="Back" class="btn-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+          </button>
+          <span class="settings-topbar-title">Data controls</span>
+          <span style="width:40px;"></span>
+        </div>
+        <div class="settings-body scroll-y">
+          <div class="settings-inner">
+            <div class="settings-group">
+              <div class="settings-group-label">Your data</div>
+              <button id="exportDataRow" class="list-row">
+                <div class="list-row-body"><div class="list-row-title">Export data</div><div class="list-row-subtitle" id="exportDataSubtext">Download a copy of your chats as JSON</div></div>
+              </button>
+              <button id="clearChatHistoryRow" class="list-row" style="color: var(--danger);">
+                <div class="list-row-body"><div class="list-row-title" style="color: var(--danger);">Clear chat history</div></div>
+              </button>
+            </div>
+            <div class="settings-group">
+              <div class="settings-group-label">Account</div>
+              <button id="deleteAccountRow" class="list-row">
+                <div class="list-row-body"><div class="list-row-title" style="color: var(--danger);">Delete account</div><div class="list-row-subtitle">Permanently deletes your account and all data</div></div>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
     </div><!-- /screenSettings -->
 
   </div><!-- /main-col -->
@@ -608,6 +643,33 @@
       <div style="display: flex; gap: 12px; justify-content: center;">
         <button id="logoutConfirmCancelBtn" class="btn btn-ghost" style="flex: 1;">Cancel</button>
         <button id="logoutConfirmConfirmBtn" class="btn btn-primary" style="flex: 1; background: var(--danger); color: #fff; border-color: var(--danger);">Log out</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ GENERIC CONFIRM SHEET ============ -->
+<div id="genericConfirmOverlay" class="sheet-overlay">
+  <div class="sheet" style="max-height: max-content; padding-bottom: 24px;">
+    <div class="sheet-handle"></div>
+    <div class="sheet-head">
+      <button id="genericConfirmCloseBtn" aria-label="Close" class="btn-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+      <span class="sheet-title" id="genericConfirmTitle">Are you sure?</span>
+      <span></span>
+    </div>
+    <div class="sheet-body" style="text-align: center; padding-top: 16px;">
+      <p style="color: var(--text-secondary); margin-bottom: 24px; font-size: var(--fs-base);" id="genericConfirmMessage"></p>
+      
+      <div id="genericConfirmPasswordWrap" class="field-group" style="display:none; margin-top: 12px; margin-bottom: 24px;">
+        <label for="genericConfirmPasswordInput" class="field-label" style="text-align: left;">Confirm your password</label>
+        <input id="genericConfirmPasswordInput" type="password" autocomplete="current-password" class="field-input">
+      </div>
+
+      <div style="display: flex; gap: 12px; justify-content: center;">
+        <button id="genericConfirmCancelBtn" class="btn btn-ghost" style="flex: 1;">Cancel</button>
+        <button id="genericConfirmConfirmBtn" class="btn btn-primary" style="flex: 1; background: var(--danger); color: #fff; border-color: var(--danger);">Confirm</button>
       </div>
     </div>
   </div>

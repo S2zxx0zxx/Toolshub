@@ -246,6 +246,67 @@ export const CloudDB = (() => {
     await Promise.race([writePromise, timeoutPromise]);
   }
 
+  async function exportUserData() {
+    const uid = _uid();
+    if (!uid || !db || !fbFirestoreModule) {
+      // Guest mode: export whatever's in LocalSettings
+      const chats = LocalSettings.getAllChats();
+      return { exportedAt: new Date().toISOString(), mode: 'guest', conversations: chats };
+    }
+    const convSnap = await fbFirestoreModule.getDocs(
+      fbFirestoreModule.collection(db, `users/${uid}/conversations`)
+    );
+    const conversations = [];
+    for (const convDoc of convSnap.docs) {
+      const msgSnap = await fbFirestoreModule.getDocs(
+        fbFirestoreModule.query(
+          fbFirestoreModule.collection(db, `users/${uid}/conversations/${convDoc.id}/messages`),
+          fbFirestoreModule.orderBy('timestamp', 'asc')
+        )
+      );
+      const messages = msgSnap.docs.map(d => {
+        const m = d.data();
+        return {
+          role: m.role,
+          content: m.content,
+          timestamp: m.timestamp ? m.timestamp.toDate().toISOString() : null,
+          toolId: m.toolId || null
+        };
+      });
+      conversations.push({ id: convDoc.id, ...convDoc.data(), messages });
+    }
+    return { exportedAt: new Date().toISOString(), mode: 'cloud', uid, conversations };
+  }
+
+  async function clearAllConversations() {
+    const uid = _uid();
+    if (!uid || !db || !fbFirestoreModule) {
+      LocalSettings.clearAllChats(); 
+      return;
+    }
+    const convSnap = await fbFirestoreModule.getDocs(
+      fbFirestoreModule.collection(db, `users/${uid}/conversations`)
+    );
+    for (const convDoc of convSnap.docs) {
+      const msgSnap = await fbFirestoreModule.getDocs(
+        fbFirestoreModule.collection(db, `users/${uid}/conversations/${convDoc.id}/messages`)
+      );
+      for (const msgDoc of msgSnap.docs) {
+        await fbFirestoreModule.deleteDoc(msgDoc.ref);
+      }
+      await fbFirestoreModule.deleteDoc(convDoc.ref);
+    }
+  }
+
+  async function deleteUserAccount() {
+    const uid = _uid();
+    if (!uid) throw new Error("No signed-in user.");
+    await clearAllConversations();
+    if (db && fbFirestoreModule) {
+      await fbFirestoreModule.deleteDoc(fbFirestoreModule.doc(db, 'users', uid)).catch(() => {});
+    }
+  }
+
   return {
     subscribeConversations,
     loadChatMessages,
@@ -256,6 +317,9 @@ export const CloudDB = (() => {
     logToolExecution,
     migrateLocalChats,
     isSubscribed,
-    joinProWaitlist
+    joinProWaitlist,
+    exportUserData,
+    clearAllConversations,
+    deleteUserAccount
   };
 })();

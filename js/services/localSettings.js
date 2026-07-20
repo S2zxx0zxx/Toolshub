@@ -77,6 +77,10 @@ export const LocalSettings = (() => {
     getChat(chatId) {
       return this.getAllChats().find(c => c.id === chatId) || null;
     },
+    clearAllChats() {
+      _safeSet(KEYS.CHATS, []);
+      _safeSet(KEYS.ACTIVE_CHAT, null);
+    },
 
     // ---------- ACTIVE CHAT POINTER ----------
     getActiveChatId() {

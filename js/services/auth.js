@@ -131,6 +131,29 @@ export const Auth = (() => {
     }
   }
 
+  async function reauthenticate(password) {
+    if (!firebaseAuth || !fbAuthModule) throw new Error("Firebase Auth is disabled or misconfigured.");
+    const user = firebaseAuth.currentUser;
+    if (!user || !user.email) throw new Error("No signed-in user to re-authenticate.");
+    const credential = fbAuthModule.EmailAuthProvider.credential(user.email, password);
+    await fbAuthModule.reauthenticateWithCredential(user, credential);
+  }
+
+  async function reauthenticateWithGooglePopup() {
+    if (!firebaseAuth || !fbAuthModule) throw new Error("Firebase Auth is disabled or misconfigured.");
+    const user = firebaseAuth.currentUser;
+    if (!user) throw new Error("No signed-in user to re-authenticate.");
+    const provider = new fbAuthModule.GoogleAuthProvider();
+    await fbAuthModule.reauthenticateWithPopup(user, provider);
+  }
+
+  async function deleteAccount() {
+    if (!firebaseAuth || !fbAuthModule) throw new Error("Firebase Auth is disabled or misconfigured.");
+    const user = firebaseAuth.currentUser;
+    if (!user) throw new Error("No signed-in user.");
+    await fbAuthModule.deleteUser(user);
+  }
+
   return {
     signup,
     login,
@@ -139,6 +162,9 @@ export const Auth = (() => {
     handleRedirectResult,
     getCurrentUser,
     onAuthStateChanged,
-    getUserProfile
+    getUserProfile,
+    reauthenticate,
+    reauthenticateWithGooglePopup,
+    deleteAccount
   };
 })();
