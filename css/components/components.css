@@ -126,6 +126,9 @@
 .model-tag-inline { font-size: 10px; opacity: 0.5; font-weight: 400; margin-left: 6px; }
 .list-row-trail { display: flex; align-items: center; gap: var(--sp-2); color: var(--text-muted); font-size: var(--fs-sm); flex-shrink: 0; }
 .list-row-chevron { width: 16px; height: 16px; color: var(--text-muted); }
+.list-row.is-disabled { opacity: 0.5; cursor: not-allowed; }
+.pill-soon { background: var(--warning); color: var(--bg-app); border-radius: var(--r-full); font-size: 10px; font-weight: 700; padding: 2px 6px; letter-spacing: 0.5px; margin-left: auto; }
+.pill-muted { background: var(--bg-surface-3); color: var(--text-muted); border-radius: var(--r-full); font-size: 10px; font-weight: 600; padding: 2px 6px; letter-spacing: 0.5px; }
 
 /* ---------- CARD ---------- */
 .card {

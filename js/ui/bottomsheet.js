@@ -11,16 +11,44 @@ import { FileTools } from '../tools/fileTools.js';
 import { Toast } from './toast.js';
 import { Chat } from './chatEngine.js';
 import { Sidebar } from './sidebar.js';
+import { ChangePlanModal } from './changePlanModal.js';
 
 export const BottomSheet = (() => {
 
   const MODEL_CATALOG = [
-    { id: 'llama-3.3-70b-versatile', label: 'Digilite', tag: '(medium)', sub: 'General Chats', dailyLimit: 100000 },
-    { id: 'llama-3.1-8b-instant', label: 'DigiPro', tag: '(High)', sub: 'Fastest Ever You Think', dailyLimit: 500000 },
-    { id: 'gpt-4o-mini', label: 'Maya', tag: '(</> Max)', sub: 'You Think I code', dailyLimit: 50000 },
-    { id: 'groq/compound', label: 'Maya Pro', tag: '(Stay Tuned)', sub: 'Premium features coming', dailyLimit: 70000 },
-    { id: 'groq/compound-mini', label: 'Digilite', tag: '(Low)', sub: '(Patched), Not Available', dailyLimit: 70000 }
+    {
+      category: 'MINI',
+      models: [
+        { id: 'llama-3.3-70b-versatile', label: 'Digilite', tag: '(medium)', sub: 'General Chats', dailyLimit: 100000, requiredTier: 'free' }
+      ]
+    },
+    {
+      category: 'FULL',
+      models: [
+        { id: 'llama-3.1-8b-instant', label: 'DigiPro', tag: '(High)', sub: 'Fastest Ever You Think', dailyLimit: 500000, requiredTier: 'starter' },
+        { id: 'gpt-4o-mini', label: 'Maya', tag: '(</> Max)', sub: 'You Think I code', dailyLimit: 50000, requiredTier: 'pro' }
+      ]
+    },
+    {
+      category: 'FLAGSHIP',
+      models: [
+        { id: 'groq/compound', label: 'Maya Pro', tag: '(Stay Tuned)', sub: 'Premium features coming', dailyLimit: 70000, requiredTier: 'max' }
+      ]
+    }
   ];
+
+  function tierRank(tier) {
+    return { free: 0, starter: 1, pro: 2, max: 3 }[tier] ?? 0;
+  }
+  
+  function userCanAccess(requiredTier) {
+    const currentPlan = LocalSettings.getCurrentPlan();
+    return tierRank(currentPlan) >= tierRank(requiredTier);
+  }
+  
+  function findModel(id) {
+    return MODEL_CATALOG.flatMap(c => c.models).find(m => m.id === id);
+  }
 
   const exhaustedModels = new Set(); // In-memory, resets on page reload
 
@@ -205,7 +233,7 @@ export const BottomSheet = (() => {
 
   function updateModelChip(modelId) {
     const chip = document.querySelector('#modelChip span');
-    const model = MODEL_CATALOG.find(m => m.id === modelId);
+    const model = findModel(modelId);
     if (chip && model) {
       chip.textContent = model.label + (model.tag ? ' ' + model.tag : '');
     }
@@ -218,7 +246,7 @@ export const BottomSheet = (() => {
     } else {
       // Show default
       const chip = document.querySelector('#modelChip span');
-      const defaultModel = MODEL_CATALOG[0];
+      const defaultModel = MODEL_CATALOG[0]?.models?.[0];
       if (chip && defaultModel) chip.textContent = defaultModel.label + (defaultModel.tag ? ' ' + defaultModel.tag : '');
     }
   }
@@ -240,34 +268,140 @@ export const BottomSheet = (() => {
 
     list.innerHTML = '';
     
-    MODEL_CATALOG.forEach(model => {
+    MODEL_CATALOG.forEach(group => {
+      const header = document.createElement('div');
+      header.className = 'sidebar-group-label';
+      header.textContent = group.category;
+      list.appendChild(header);
+
+      group.models.forEach(model => {
+        const row = document.createElement('button');
+        const canAccess = userCanAccess(model.requiredTier);
+        
+        row.className = `list-row ${model.id === current ? 'is-selected' : ''} ${!canAccess ? 'is-disabled' : ''}`;
+        row.dataset.modelId = model.id;
+        
+        const isExhausted = exhaustedModels.has(model.id);
+        const label = isExhausted ? `⚠️ ${model.label}` : model.label;
+        
+        row.innerHTML = `
+          <div class="list-row-body">
+            <div class="list-row-title">${label} ${model.tag ? `<span class="model-tag-inline">${model.tag}</span>` : ''}</div>
+            <div class="list-row-subtitle-pro">${model.sub}</div>
+          </div>
+          <div class="list-row-trail">
+            ${!canAccess ? `<div class="mode-pill-lock">${model.requiredTier.toUpperCase()}</div>` : `
+            <svg class="access-check" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+              stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="20 6 9 17 4 12"/>
+            </svg>`}
+          </div>
+        `;
+        
+        row.addEventListener('click', () => {
+          if (!canAccess) {
+            closeModelSheet();
+            setTimeout(() => {
+              if (ChangePlanModal) ChangePlanModal.open();
+            }, 120);
+            return;
+          }
+          
+          const modelId = row.dataset.modelId;
+          LocalSettings.setSelectedChatModel(modelId);
+          updateModelChip(modelId);
+          closeModelSheet();
+        });
+        
+        list.appendChild(row);
+      });
+    });
+
+    // --- Image Generation Section ---
+    const imgHeader = document.createElement('div');
+    imgHeader.className = 'sidebar-group-label';
+    imgHeader.style.marginTop = 'var(--sp-2)';
+    imgHeader.style.display = 'flex';
+    imgHeader.style.alignItems = 'center';
+    imgHeader.style.gap = 'var(--sp-2)';
+    imgHeader.innerHTML = `
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;">
+        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+        <circle cx="8.5" cy="8.5" r="1.5"/>
+        <polyline points="21 15 16 10 5 21"/>
+      </svg>
+      IMAGE GENERATION
+      <span style="color:var(--text-muted); text-transform:none; font-weight:400;">· Up to 2</span>
+    `;
+    list.appendChild(imgHeader);
+
+    const imgModels = [
+      { label: 'Image — Fast', sub: 'Standard generation', badge: 'PRO' },
+      { label: 'Image — Ultra', sub: 'High fidelity details', badge: 'MAX' }
+    ];
+
+    imgModels.forEach(m => {
       const row = document.createElement('button');
-      row.className = `list-row ${model.id === current ? 'is-selected' : ''}`;
-      row.dataset.modelId = model.id;
-      
-      const isExhausted = exhaustedModels.has(model.id);
-      const label = isExhausted ? `⚠️ ${model.label}` : model.label;
-      
+      row.className = 'list-row is-disabled';
       row.innerHTML = `
         <div class="list-row-body">
-          <div class="list-row-title">${label} ${model.tag ? `<span class="model-tag-inline">${model.tag}</span>` : ''}</div>
-          <div class="list-row-subtitle-pro">${model.sub}</div>
+          <div class="list-row-title">${m.label}</div>
+          <div class="list-row-subtitle-pro" style="color:var(--text-muted); font-weight:normal;">${m.sub}</div>
         </div>
         <div class="list-row-trail">
-          <svg class="access-check" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-            stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-            <polyline points="20 6 9 17 4 12"/>
-          </svg>
+          <div class="mode-pill-lock">${m.badge}</div>
         </div>
       `;
-      
       row.addEventListener('click', () => {
-        const modelId = row.dataset.modelId;
-        LocalSettings.setSelectedChatModel(modelId);
-        updateModelChip(modelId);
-        closeModelSheet();
+        Toast.show('Image generation is coming soon!');
       });
-      
+      list.appendChild(row);
+    });
+
+    // --- Video Generation Section ---
+    const vidHeader = document.createElement('div');
+    vidHeader.className = 'sidebar-group-label';
+    vidHeader.style.marginTop = 'var(--sp-2)';
+    vidHeader.style.display = 'flex';
+    vidHeader.style.alignItems = 'center';
+    vidHeader.style.gap = 'var(--sp-2)';
+    vidHeader.innerHTML = `
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;">
+        <polygon points="23 7 16 12 23 17 23 7"/>
+        <rect x="1" y="5" width="15" height="14" rx="2" ry="2"/>
+      </svg>
+      VIDEO GENERATION
+      <span class="pill-soon">COMING SOON</span>
+    `;
+    list.appendChild(vidHeader);
+
+    const vidDesc = document.createElement('div');
+    vidDesc.style.color = 'var(--text-muted)';
+    vidDesc.style.fontSize = 'var(--fs-xs)';
+    vidDesc.style.padding = '0 var(--sp-4) var(--sp-2)';
+    vidDesc.textContent = "Video models aren't available yet — they'll unlock in an upcoming release.";
+    list.appendChild(vidDesc);
+
+    const vidModels = [
+      { label: 'Video — Standard', sub: 'Fast motion clips' },
+      { label: 'Video — Pro', sub: 'Cinematic quality' }
+    ];
+
+    vidModels.forEach(m => {
+      const row = document.createElement('button');
+      row.className = 'list-row is-disabled';
+      row.innerHTML = `
+        <div class="list-row-body">
+          <div class="list-row-title">${m.label}</div>
+          <div class="list-row-subtitle-pro" style="color:var(--text-muted); font-weight:normal;">${m.sub}</div>
+        </div>
+        <div class="list-row-trail">
+          <div class="pill-muted">SOON</div>
+        </div>
+      `;
+      row.addEventListener('click', () => {
+        Toast.show("Video generation isn't available yet — coming in a future update!");
+      });
       list.appendChild(row);
     });
   }
