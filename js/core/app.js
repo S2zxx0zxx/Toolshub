@@ -528,29 +528,11 @@ const Settings = (() => {
       });
     });
 
-    // ---- Topbar Mode Pill ----
+    // ---- Topbar Mode Pill — Agent Mode ----
     document.getElementById('agentModeBtn')?.addEventListener('click', function(e) {
       e.preventDefault();
       
-      // Developer passcode shortcut (Shift + Click to trigger prompt)
-      if (e.shiftKey && LocalSettings.getCurrentPlan() !== 'max') {
-        const pass = prompt("Enter Developer Access Code:");
-        if (pass === "0909") {
-          sessionStorage.setItem('dev_bypass_0909', 'true');
-          alert("Developer Bypass Activated! Please click the button again.");
-          return;
-        } else if (pass !== null) {
-          alert("Incorrect code");
-        }
-      }
-
-      const plan = LocalSettings.getCurrentPlan() || 'free';
-      if (plan === 'free') {
-        if (ChangePlanModal) ChangePlanModal.open();
-        return;
-      }
-      
-      // Update UI for Agent Mode
+      // Switch UI pill state
       document.querySelectorAll('.mode-pill-btn').forEach(b => {
         b.classList.remove('is-active');
         b.setAttribute('aria-pressed', 'false');
@@ -559,46 +541,55 @@ const Settings = (() => {
       this.setAttribute('aria-pressed', 'true');
       Chat.setAgentMode(true);
       
-      // Always show Agent Intro screen on switch to clearly indicate Agent Mode is active
+      // Always show Agent Intro/Welcome screen
       document.getElementById('emptyState').style.display = 'none';
       document.getElementById('msgList').style.display = 'none';
-        document.getElementById('utilityPanel').style.display = 'none';
+      document.getElementById('utilityPanel').style.display = 'none';
+      
+      const introState = document.getElementById('agentIntroState');
+      const categoriesContainer = document.getElementById('agentIntroCategories');
+      if (introState && categoriesContainer) {
+        introState.style.display = 'flex';
+        categoriesContainer.innerHTML = '';
         
-        const introState = document.getElementById('agentIntroState');
-        const categoriesContainer = document.getElementById('agentIntroCategories');
-        if (introState && categoriesContainer) {
-          introState.style.display = 'flex';
-          categoriesContainer.innerHTML = ''; // clear
-          
-          const catMap = getToolCategoryMap();
-          const uniqueCats = Array.from(new Set(Object.values(catMap)));
-          
-          uniqueCats.forEach(catId => {
-            if (catId === 'all') return;
-            // Format ID to Title Case (e.g. 'social' -> 'Social', 'web' -> 'Web')
-            const label = catId.charAt(0).toUpperCase() + catId.slice(1).replace(/-/g, ' ');
-            
-            const chip = document.createElement('div');
-            chip.className = 'chip chip-sm';
-            chip.style.background = 'var(--bg-surface-2)';
-            chip.style.border = '1px solid var(--border-med)';
-            chip.style.color = 'var(--text-1)';
-            chip.style.pointerEvents = 'none';
-            chip.textContent = label;
-            categoriesContainer.appendChild(chip);
-          });
-        }
-      });
+        const catMap = getToolCategoryMap();
+        const uniqueCats = Array.from(new Set(Object.values(catMap)));
+        
+        uniqueCats.forEach(catId => {
+          if (catId === 'all') return;
+          const label = catId.charAt(0).toUpperCase() + catId.slice(1).replace(/-/g, ' ');
+          const chip = document.createElement('div');
+          chip.className = 'chip chip-sm';
+          chip.style.background = 'var(--bg-surface-2)';
+          chip.style.border = '1px solid var(--border-med)';
+          chip.style.color = 'var(--text-1)';
+          chip.style.pointerEvents = 'none';
+          chip.textContent = label;
+          categoriesContainer.appendChild(chip);
+        });
+      }
+    });
     
     document.getElementById('agentIntroStartBtn')?.addEventListener('click', function() {
       LocalSettings.setHasSeenAgentIntro(true);
       document.getElementById('agentIntroState').style.display = 'none';
-      const list = document.getElementById('msgList');
-      if (list && list.children.length === 0) {
+      document.getElementById('emptyState').style.display = 'none';
+      document.getElementById('msgList').style.display = 'none';
+      
+      // Show the dedicated Agent Mode ready screen
+      const agentReadyEl = document.getElementById('agentReadyState');
+      if (agentReadyEl) {
+        agentReadyEl.style.display = 'flex';
+      } else {
+        // Fallback: show normal empty state but with agent-mode class
         document.getElementById('emptyState').style.display = 'flex';
-      } else if (list) {
-        list.style.display = 'block';
       }
+      
+      // Mark chatBody as agent-active for CSS styling
+      document.getElementById('chatBody')?.classList.add('agent-active');
+      
+      // Focus the input so user can start typing immediately
+      document.getElementById('chatInput')?.focus();
     });
 
     document.getElementById('deepResearchBtn')?.addEventListener('click', openUpgradeSheet);
@@ -614,6 +605,9 @@ const Settings = (() => {
       
       const introState = document.getElementById('agentIntroState');
       if (introState) introState.style.display = 'none';
+      const agentReady = document.getElementById('agentReadyState');
+      if (agentReady) agentReady.style.display = 'none';
+      document.getElementById('chatBody')?.classList.remove('agent-active');
       
       const list = document.getElementById('msgList');
       if (list && list.children.length === 0) {

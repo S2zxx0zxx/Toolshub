@@ -77,7 +77,9 @@ export const Chat = (() => {
 
   function renderEmptyState() {
     const intro = document.getElementById('agentIntroState');
-    if (intro && intro.style.display === 'flex') return; // Don't override if intro is showing
+    const agentReady = document.getElementById('agentReadyState');
+    // Don't override if any agent screen is actively showing
+    if ((intro && intro.style.display === 'flex') || (agentReady && agentReady.style.display === 'flex')) return;
     document.getElementById('emptyState').style.display = 'flex';
     document.getElementById('msgList').style.display = 'none';
     document.getElementById('msgList').innerHTML = '';
@@ -86,6 +88,8 @@ export const Chat = (() => {
   function renderMessages() {
     const intro = document.getElementById('agentIntroState');
     if (intro) intro.style.display = 'none';
+    const agentReady = document.getElementById('agentReadyState');
+    if (agentReady) agentReady.style.display = 'none';
     
     document.getElementById('emptyState').style.display = 'none';
     const list = document.getElementById('msgList');
@@ -357,12 +361,7 @@ export const Chat = (() => {
         });
         
         if (!response.success) {
-          if (response.error === 'agent-locked') {
-            Toast.show("Agent Mode requires Starter plan or higher.");
-            if (window.ChangePlanModal) window.ChangePlanModal.open();
-          } else {
-            appendErrorMessage(response.message || "An unexpected error occurred.");
-          }
+          appendErrorMessage(response.message || "An unexpected error occurred.");
           return;
         }
 

@@ -23,18 +23,9 @@ const MAX_STEPS_MAX_TIER = 12;
 export async function executeAgentTask(userMessage, conversationHistory, options = {}) {
   try {
     // 1. Determine tier and model
+    // 1. Determine maxSteps based on plan
     const currentPlanId = LocalSettings.getCurrentPlan ? LocalSettings.getCurrentPlan() : 'free';
     const activePlan = PLANS.find(p => p.id === currentPlanId) || PLANS[0];
-    
-    if (activePlan.id === 'free') {
-      return { 
-        success: false, 
-        error: 'agent-locked', 
-        message: 'Agent Mode requires Starter plan or higher.' 
-      };
-    }
-
-    // 2. Set maxSteps using named constants and plan label
     const maxSteps = (activePlan.label === 'Max') ? MAX_STEPS_MAX_TIER : MAX_STEPS_DEFAULT;
     
     // 3. Build initial messages array

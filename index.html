@@ -169,6 +169,22 @@
             <button id="agentIntroStartBtn" class="btn-send" style="padding: 10px 24px; border-radius: 20px; width: auto; height: auto;">Get started</button>
           </div>
 
+          <!-- Agent Ready State (shown after Get Started) -->
+          <div id="agentReadyState" class="empty-state" style="display: none; flex-direction: column; align-items: center; gap: 16px;">
+            <div style="width:64px; height:64px; border-radius:50%; background: linear-gradient(135deg, var(--primary, #6c63ff), var(--accent, #4f46e5)); display:flex; align-items:center; justify-content:center; box-shadow: 0 8px 32px rgba(108,99,255,0.3);">
+              <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg>
+            </div>
+            <div class="empty-greeting" style="font-size:20px;">Agent is ready</div>
+            <div style="color: var(--text-2); font-size: 13px; text-align: center; max-width: 340px; line-height: 1.6;">
+              Type your task below. The agent will automatically pick the right tools and complete it step by step.
+            </div>
+            <div style="display:flex; flex-wrap:wrap; gap:8px; justify-content:center; margin-top:8px;">
+              <div class="chip chip-sm" style="background:var(--bg-surface-2); border:1px solid var(--border-med); color:var(--text-1); cursor:pointer;" onclick="document.getElementById('chatInput').value='Calculate 15% of 8500'; document.getElementById('chatInput').dispatchEvent(new Event('input'));">Calculate 15% of 8500</div>
+              <div class="chip chip-sm" style="background:var(--bg-surface-2); border:1px solid var(--border-med); color:var(--text-1); cursor:pointer;" onclick="document.getElementById('chatInput').value='What is the weather today?'; document.getElementById('chatInput').dispatchEvent(new Event('input'));">What is the weather today?</div>
+              <div class="chip chip-sm" style="background:var(--bg-surface-2); border:1px solid var(--border-med); color:var(--text-1); cursor:pointer;" onclick="document.getElementById('chatInput').value='Write a LinkedIn post about productivity'; document.getElementById('chatInput').dispatchEvent(new Event('input'));">Write a LinkedIn post</div>
+            </div>
+          </div>
+
           <div id="msgList" class="msg-list extracted-inline-6"></div>
           <!-- Utility/File tool inline panel — shown instead of emptyState for mode:'utility' tools -->
           <div id="utilityPanel" class="extracted-inline-7"></div>
