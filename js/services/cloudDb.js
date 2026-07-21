@@ -168,7 +168,8 @@ export const CloudDB = (() => {
     const uid = _uid();
     if (!uid || !tokensCount || !db || !fbFirestoreModule) return;
     try {
-      const usageRef = fbFirestoreModule.doc(db, `users/${uid}/usage`, 'current');
+      const today = new Date().toISOString().slice(0, 10);
+      const usageRef = fbFirestoreModule.doc(db, `users/${uid}/usage`, today);
       await fbFirestoreModule.setDoc(usageRef, {
         requestsToday: fbFirestoreModule.increment(1),
         tokensUsed: fbFirestoreModule.increment(tokensCount),
@@ -189,9 +190,12 @@ export const CloudDB = (() => {
       const snap = await fbFirestoreModule.getDoc(usageRef);
       if (snap.exists()) {
         const data = snap.data();
-        return { count: data.count || 0 };
+        return { 
+          count: data.requestsToday || 0,
+          tokens: data.tokensUsed || 0
+        };
       }
-      return { count: 0 };
+      return { count: 0, tokens: 0 };
     } catch (e) {
       console.warn("Failed to fetch today usage:", e);
       return null;

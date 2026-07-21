@@ -476,10 +476,20 @@ export const BottomSheet = (() => {
       if (e.target.id === 'toolAccessSheetOverlay') closeToolAccessSheet();
     });
 
-    // ---- Connectors row (Pattern C: honest "coming soon" toast) ----
+    // ---- Connectors row ----
     document.getElementById('connectorsRow')?.addEventListener('click', () => {
       closeAddSheet();
-      setTimeout(() => Toast.show('Connectors are coming soon.'), 120);
+      setTimeout(() => {
+        document.dispatchEvent(new Event('open-connectors-sheet'));
+      }, 120);
+    });
+
+    // ---- Advanced Controls row ----
+    document.getElementById('advancedControlsBtnRow')?.addEventListener('click', () => {
+      closeAddSheet();
+      setTimeout(() => {
+        document.dispatchEvent(new Event('open-advanced-controls'));
+      }, 120);
     });
 
     // tool selector sheet triggers

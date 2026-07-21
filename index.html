@@ -285,6 +285,16 @@
             </div>
           </div>
 
+          <div class="settings-usage-block" id="usageBlock">
+            <div class="settings-usage-row">
+              <div class="settings-usage-label">Tokens / Credits Used</div>
+              <div class="settings-usage-value" id="settingsUsageValue">0 / 15</div>
+            </div>
+            <div class="settings-usage-bar">
+              <div class="settings-usage-bar-fill" id="settingsUsageBarFill" style="width: 0%"></div>
+            </div>
+          </div>
+
           <div class="settings-group">
             <div class="settings-group-label">Account</div>
             <!-- Profile row — now has id -->
@@ -621,6 +631,13 @@
       <button id="connectorsRow" class="list-row">
         <div class="list-row-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 010 20 15.3 15.3 0 010-20z"/></svg></div>
         <div class="list-row-body"><div class="list-row-title">Connectors</div></div>
+        <div class="list-row-trail"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="list-row-chevron"><polyline points="9 18 15 12 9 6"/></svg></div>
+      </button>
+      
+      <!-- Advanced Controls trigger -->
+      <button id="advancedControlsBtnRow" class="list-row">
+        <div class="list-row-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20V10M18 20V4M6 20v-4"/></svg></div>
+        <div class="list-row-body"><div class="list-row-title">Advanced controls</div></div>
         <div class="list-row-trail"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="list-row-chevron"><polyline points="9 18 15 12 9 6"/></svg></div>
       </button>
     </div>

@@ -41,6 +41,7 @@ const Settings = (() => {
   function open() {
     Router.navigate('settings');
     updateManageToolsSubtitle();
+    window.dispatchEvent(new Event('plan-changed'));
   }
   function close() {
     Router.navigate('chat');
@@ -606,6 +607,14 @@ const Settings = (() => {
         chatInput.dispatchEvent(new Event('input'));
         chatInput.focus();
       }
+    });
+
+    // Wire newly exposed features from BottomSheet
+    document.addEventListener('open-advanced-controls', () => {
+      if (AdvancedControls) AdvancedControls.open();
+    });
+    document.addEventListener('open-connectors-sheet', () => {
+      if (ConnectorsSheet) ConnectorsSheet.open();
     });
     document.querySelector('.mode-pill-btn[data-mode="chat"]')?.addEventListener('click', function() {
       // It's the default behavior, just ensure it's visually active
