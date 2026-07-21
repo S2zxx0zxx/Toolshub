@@ -531,27 +531,22 @@ const Settings = (() => {
     // ---- Topbar Mode Pill ----
     document.getElementById('agentModeBtn')?.addEventListener('click', function(e) {
       e.preventDefault();
-      const plan = LocalSettings.getCurrentPlan() || 'free';
-      let isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
       
-      // Developer passcode check (Alt + Click to trigger prompt)
-      if (plan === 'free' && !isLocalhost && e.altKey) {
+      // Developer passcode shortcut (Alt + Click to trigger prompt)
+      if (e.altKey && LocalSettings.getCurrentPlan() !== 'max') {
         const pass = prompt("Enter Developer Access Code:");
         if (pass === "0909") {
           sessionStorage.setItem('dev_bypass_0909', 'true');
+          alert("Developer Bypass Activated! Please click the button again.");
+          return;
         } else if (pass !== null) {
           alert("Incorrect code");
         }
       }
 
-      // Check if session bypass is active
-      if (sessionStorage.getItem('dev_bypass_0909') === 'true') {
-        isLocalhost = true;
-      }
-      
-      // Developer bypass: Allow Agent Mode on localhost or via passcode even for 'free' plan
-      if (plan === 'free' && !isLocalhost) {
-        if (window.ChangePlanModal) ChangePlanModal.open();
+      const plan = LocalSettings.getCurrentPlan() || 'free';
+      if (plan === 'free') {
+        if (ChangePlanModal) ChangePlanModal.open();
         return;
       }
       
@@ -930,10 +925,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         topbarPlanPill.style.display = 'none';
         aiStatusIndicator.style.display = 'inline-flex';
       } else {
-        topbarPlanPill.textContent = planObj.label.toUpperCase();
         topbarPlanPill.style.display = 'inline-block';
+        topbarPlanPill.textContent = planObj.label.toUpperCase();
         aiStatusIndicator.style.display = 'none';
-        topbarPlanPill.onclick = () => { if (window.ChangePlanModal) window.ChangePlanModal.open(); };
+        topbarPlanPill.onclick = () => { if (ChangePlanModal) ChangePlanModal.open(); };
       }
     }
     const subName = document.getElementById('subPlanName');
