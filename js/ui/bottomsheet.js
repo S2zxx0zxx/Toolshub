@@ -13,6 +13,7 @@ import { Toast } from './toast.js';
 import { Chat } from './chatEngine.js';
 import { Sidebar } from './sidebar.js';
 import { ChangePlanModal } from './changePlanModal.js';
+import { OverlayManager } from '../services/overlayManager.js';
 
 export const BottomSheet = (() => {
 
@@ -56,12 +57,10 @@ export const BottomSheet = (() => {
   const exhaustedModels = new Set(); // In-memory, resets on page reload
 
   function openOverlay(overlayEl) {
-    overlayEl.classList.add('is-open');
-    document.body.style.overflow = 'hidden';
+    OverlayManager.open(overlayEl);
   }
   function closeOverlay(overlayEl) {
-    overlayEl.classList.remove('is-open');
-    document.body.style.overflow = '';
+    OverlayManager.close(overlayEl);
   }
 
   // ---------- "+" ADD-TO-CHAT SHEET ----------
@@ -289,7 +288,7 @@ export const BottomSheet = (() => {
         
         let tierUI = '';
         if (!canAccess) {
-            tierUI = `<span class="mode-pill-lock"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg> ${model.requiredTier.toUpperCase()}</span>`;
+            tierUI = `<span class="mode-pill-lock"><span class="mode-pill-lock-text">${model.requiredTier.toUpperCase()}</span><svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg></span>`;
         } else {
             let tierName = 'Free';
             if (model.requiredTier === 'monthly') tierName = 'Starter';
@@ -350,13 +349,14 @@ export const BottomSheet = (() => {
     imgModels.forEach(m => {
       const row = document.createElement('button');
       row.className = 'list-row is-disabled';
+      const badgeClass = m.badge === 'MAX' ? 'badge-max' : 'badge-pro';
       row.innerHTML = `
         <div class="list-row-body">
           <div class="list-row-title">${m.label}</div>
           <div class="list-row-subtitle-pro" style="color:var(--text-muted); font-weight:normal;">${m.sub}</div>
         </div>
         <div class="list-row-trail">
-          <div class="mode-pill-lock">${m.badge}</div>
+          <div class="mode-pill-lock ${badgeClass}">${m.badge}</div>
         </div>
       `;
       row.addEventListener('click', () => {

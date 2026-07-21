@@ -11,10 +11,21 @@ import { Sidebar } from './sidebar.js';
 import { Toast } from './toast.js';
 import { AIRouter } from '../ai/router.js';
 import { executeAgentTask } from '../ai/agentEngine.js';
+import { OverlayManager } from '../services/overlayManager.js';
 
 export const Chat = (() => {
   let currentChat = null; // { id, title, toolId, messages, createdAt, updatedAt }
   let isAgentMode = false;
+  let isSending = false; // guards against overlapping sendMessage calls
+
+  // Locks/unlocks the composer while a message is in flight so a
+  // second tap can't fire an overlapping request mid-stream.
+  function setSendLocked(locked) {
+    const sendBtn = document.getElementById('sendBtn');
+    const textarea = document.getElementById('inputTextarea');
+    if (sendBtn) sendBtn.disabled = locked;
+    if (textarea) textarea.disabled = locked;
+  }
 
   function setAgentMode(enabled) {
     isAgentMode = !!enabled;
@@ -309,6 +320,9 @@ export const Chat = (() => {
   // ---------- SEND FLOW ----------
   async function sendMessage(text) {
     if (!text.trim() && !attachedFileContent) return;
+    if (isSending) return; // ignore double-send while a request is in flight
+    isSending = true;
+    setSendLocked(true);
     if (!currentChat) newChat();
 
     let finalPayloadText = text;
@@ -386,6 +400,13 @@ export const Chat = (() => {
       }
     } catch (err) {
       appendErrorMessage(err.message || "AI service temporarily unavailable.");
+    } finally {
+      // Always release the lock, even if something above threw
+      // outside the inner try (e.g. CloudDB/Firestore failures),
+      // so the send button / textarea never stays stuck.
+      hideTypingIndicator();
+      isSending = false;
+      setSendLocked(false);
     }
   }
 
@@ -572,8 +593,7 @@ export const Chat = (() => {
           // Close bottom sheet if open properly
           const addSheet = document.getElementById('addSheetOverlay');
           if (addSheet) {
-            addSheet.classList.remove('is-open');
-            document.body.style.overflow = '';
+            OverlayManager.close(addSheet);
             addSheet.style.display = ''; // Clear inline block if it was ever set
           }
           updateSendState(); // Make Send button active
@@ -587,6 +607,7 @@ export const Chat = (() => {
     }
 
     function doSend() {
+      if (isSending) return;
       const text = textarea.value;
       if (!text.trim() && !attachedFileContent) return;
       sendMessage(text);

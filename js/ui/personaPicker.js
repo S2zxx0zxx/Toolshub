@@ -141,8 +141,11 @@ export const PersonaPicker = (() => {
     });
   }
 
+  let _closeTimer = null;
+
   function open() {
     if (!modalOverlay) return;
+    if (_closeTimer) { clearTimeout(_closeTimer); _closeTimer = null; }
     const currentPersona = LocalSettings ? LocalSettings.getPersona() : null;
     updateActiveCard(currentPersona || 'general');
     
@@ -156,8 +159,12 @@ export const PersonaPicker = (() => {
   function close() {
     if (!modalOverlay) return;
     modalOverlay.classList.remove('is-open');
-    setTimeout(() => {
-      modalOverlay.style.display = 'none';
+    if (_closeTimer) clearTimeout(_closeTimer);
+    _closeTimer = setTimeout(() => {
+      if (!modalOverlay.classList.contains('is-open')) {
+        modalOverlay.style.display = 'none';
+      }
+      _closeTimer = null;
     }, 220); // match var(--dur-base)
   }
 

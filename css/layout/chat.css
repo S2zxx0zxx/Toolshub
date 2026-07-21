@@ -48,10 +48,25 @@
   color:var(--bg-app); 
 }
 .mode-pill-lock { 
-  font-size:9px; font-weight:700; padding:1px 5px;
-  border-radius:var(--r-sm); background:var(--accent-pro);
+  font-size:9px; font-weight:700; padding:3px 7px;
+  border-radius:var(--r-full); background:var(--accent-pro);
   color:#fff; letter-spacing:0.02em;
   box-shadow: 0 0 6px rgba(168, 85, 247, 0.45);
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  flex-direction: row;
+  white-space: nowrap;
+  line-height: 1;
+}
+.mode-pill-lock svg {
+  width: 11px;
+  height: 11px;
+  flex-shrink: 0;
+  order: 2; /* icon ko text ke baad (right side) le jao */
+}
+.mode-pill-lock-text {
+  order: 1;
 }
 .mode-pill-tier {
   background: var(--accent-soft);
@@ -65,6 +80,29 @@
   display: inline-flex;
   align-items: center;
 }
+
+/* Image / Video generation badges — bigger + distinct styling */
+.mode-pill-lock.badge-pro {
+  font-size: 10px;
+  padding: 4px 9px;
+  background: var(--accent-pro);
+  box-shadow: 0 0 8px rgba(168, 85, 247, 0.5);
+}
+.mode-pill-lock.badge-max {
+  font-size: 11px;
+  font-weight: 800;
+  padding: 5px 11px;
+  border-radius: var(--r-full);
+  background: linear-gradient(135deg, #3a2a05, #171105 60%, #000 100%);
+  color: #ffd76a;
+  border: 1px solid rgba(255, 200, 60, 0.55);
+  box-shadow:
+    0 0 10px rgba(255, 200, 60, 0.55),
+    0 0 22px rgba(255, 170, 20, 0.35),
+    inset 0 0 6px rgba(255, 210, 100, 0.25);
+  text-shadow: 0 0 6px rgba(255, 210, 120, 0.6);
+  letter-spacing: 0.04em;
+}
 .ai-status-pill { 
   display:inline-flex; align-items:center;
   justify-content:center; width:28px; height:28px;
@@ -77,7 +115,8 @@
 
 @media (max-width: 380px) {
   .mode-pill-btn { padding: 4px 8px; font-size: var(--fs-xs); gap: 4px; }
-  .mode-pill-lock { padding: 1px 3px; font-size: 8px; }
+  .mode-pill-lock { padding: 2px 5px; font-size: 8px; }
+  .mode-pill-lock.badge-max { font-size: 9px; padding: 3px 7px; }
   .topbar-nav-row { gap: 4px; }
   .topbar-left, .topbar-right { gap: 4px; }
 }

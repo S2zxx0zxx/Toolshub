@@ -3,6 +3,7 @@ import { PLANS } from '../config/plans.js';
 import { Toast } from './toast.js';
 import { Auth } from '../services/auth.js';
 import { CloudDB } from '../services/cloudDb.js';
+import { OverlayManager } from '../services/overlayManager.js';
 
 export const ChangePlanModal = (() => {
   let modalOverlay = null;
@@ -338,22 +339,27 @@ export const ChangePlanModal = (() => {
     }
   }
 
+  let _closeTimer = null;
+
   function open() {
     if (!modalOverlay) return;
+    if (_closeTimer) { clearTimeout(_closeTimer); _closeTimer = null; }
     selectedPlanId = null; // reset selection state on open
     renderModal();
     modalOverlay.style.display = 'flex';
-    // Small timeout for CSS transition
-    setTimeout(() => {
-      modalOverlay.classList.add('is-open');
-    }, 10);
+    OverlayManager.open(modalOverlay);
   }
 
   function close() {
     if (!modalOverlay) return;
-    modalOverlay.classList.remove('is-open');
-    setTimeout(() => {
-      modalOverlay.style.display = 'none';
+    OverlayManager.close(modalOverlay);
+    if (_closeTimer) clearTimeout(_closeTimer);
+    _closeTimer = setTimeout(() => {
+      // Only hide if it wasn't re-opened in the meantime
+      if (!modalOverlay.classList.contains('is-open')) {
+        modalOverlay.style.display = 'none';
+      }
+      _closeTimer = null;
     }, 220); // match var(--dur-base)
   }
 

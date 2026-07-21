@@ -19,6 +19,7 @@ import { Auth } from '../services/auth.js';
 import { CloudDB } from '../services/cloudDb.js';
 import { initFirebase, auth, db, fbAuthModule, fbFirestoreModule } from '../services/firebase.js';
 import { aiApi } from '../services/aiApi.js';
+import { OverlayManager } from '../services/overlayManager.js';
 
 // Pre-load Agent Mode modules (Phase 1)
 import { getToolCategoryMap } from '../ai/toolSchemas.js';
@@ -157,14 +158,10 @@ const Settings = (() => {
     closeOverlay(document.getElementById('upgradeSheetOverlay'));
   }
   function openOverlay(el) {
-    if (!el) return;
-    el.classList.add('is-open');
-    document.body.style.overflow = 'hidden';
+    OverlayManager.open(el);
   }
   function closeOverlay(el) {
-    if (!el) return;
-    el.classList.remove('is-open');
-    document.body.style.overflow = '';
+    OverlayManager.close(el);
   }
 
   // =========================================================
@@ -304,13 +301,11 @@ const Settings = (() => {
   // LOGOUT CONFIRM SHEET
   // =========================================================
   function confirmLogout() {
-    document.getElementById('logoutConfirmOverlay').classList.add('is-open');
-    document.body.style.overflow = 'hidden';
+    OverlayManager.open(document.getElementById('logoutConfirmOverlay'));
   }
 
   function closeLogoutConfirm() {
-    document.getElementById('logoutConfirmOverlay').classList.remove('is-open');
-    document.body.style.overflow = '';
+    OverlayManager.close(document.getElementById('logoutConfirmOverlay'));
   }
 
   async function executeLogout() {
@@ -341,13 +336,11 @@ const Settings = (() => {
     if (pwInput) pwInput.value = '';
     
     _pendingConfirmAction = onConfirm;
-    document.getElementById('genericConfirmOverlay').classList.add('is-open');
-    document.body.style.overflow = 'hidden';
+    OverlayManager.open(document.getElementById('genericConfirmOverlay'));
   }
   
   function closeGenericConfirm() {
-    document.getElementById('genericConfirmOverlay').classList.remove('is-open');
-    document.body.style.overflow = '';
+    OverlayManager.close(document.getElementById('genericConfirmOverlay'));
     _pendingConfirmAction = null;
   }
   
@@ -916,6 +909,7 @@ const PWA = (() => {
 
 /* ---------- APP BOOTSTRAP ---------- */
 document.addEventListener('DOMContentLoaded', async () => {
+  OverlayManager.init();
   PWA.init();
   ToolSelector.init();
   Sidebar.init();
