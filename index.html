@@ -18,14 +18,21 @@
 <link rel="stylesheet" href="./css/core/variables.css?v=32">
 <link rel="stylesheet" href="./css/layout/layout.css?v=32">
 <link rel="stylesheet" href="./css/components/components.css?v=32">
-<link rel="stylesheet" href="./css/components/personaPicker.css?v=32">
-<link rel="stylesheet" href="./css/components/changePlan.css?v=32">
-<link rel="stylesheet" href="./css/layout/sidebar.css?v=32">
-<link rel="stylesheet" href="./css/layout/chat.css?v=32">
-<link rel="stylesheet" href="./css/components/bottomsheet.css?v=32">
-<link rel="stylesheet" href="./css/components/tools.css?v=32">
-<link rel="stylesheet" href="./css/layout/screens-extra.css?v=32">
-<link rel="stylesheet" href="./css/components/inline-extracted.css?v=32">
+<link rel="stylesheet" href="./css/core/variables.css?v=34">
+<link rel="stylesheet" href="./css/layout/layout.css?v=34">
+<link rel="stylesheet" href="./css/components/components.css?v=34">
+<link rel="stylesheet" href="./css/components/personaPicker.css?v=34">
+<link rel="stylesheet" href="./css/components/changePlan.css?v=34">
+<link rel="stylesheet" href="./css/layout/sidebar.css?v=34">
+<link rel="stylesheet" href="./css/layout/chat.css?v=34">
+<link rel="stylesheet" href="./css/components/bottomsheet.css?v=34">
+<link rel="stylesheet" href="./css/components/tools.css?v=34">
+<link rel="stylesheet" href="./css/layout/screens-extra.css?v=34">
+<link rel="stylesheet" href="./css/components/inline-extracted.css?v=34">
+  <link rel="stylesheet" href="./css/components/chatHistory.css?v=34">
+  <link rel="stylesheet" href="./css/components/bugReport.css?v=34">
+  <link rel="stylesheet" href="./css/components/advancedControls.css?v=34">
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 </head>
 <body>
@@ -43,7 +50,16 @@
         </span>
         <span class="extracted-inline-2">A Product By Digirise India</span>
       </div>
-      <button id="sidebarUpgradeBtn" class="sidebar-upgrade-pill">Upgrade</button>
+          <div class="settings-usage-block" id="settingsUsageBlock">
+            <div class="settings-usage-row">
+              <span class="settings-usage-label">Messages today</span>
+              <span class="settings-usage-value" id="settingsUsageValue">-- / --</span>
+            </div>
+            <div class="settings-usage-bar">
+              <div class="settings-usage-bar-fill" id="settingsUsageBarFill" style="width: 0%;"></div>
+            </div>
+          </div>
+          <button class="settings-manage-billing-btn" id="billingUpgradeBtn">Upgrade Plan</button>
       <button id="sidebarCloseBtn" aria-label="Close menu" class="btn-icon sidebar-close-btn">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
       </button>
@@ -823,7 +839,9 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" integrity="sha384-JcnsjUPPylna1s1fvi1u12X5qjY5OL56iySh75FdtrwhO/SWXgMjoVqcKyIIWOLk" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js" integrity="sha384-weMABwrltA6jWR8DDe9Jp5blk+tZQh7ugpCsF3JwSA53WZM9/14PjS5LAJNHNjAI" crossorigin="anonymous"></script>
 
-<script type="module" src="./js/core/app.js?v=33"></script>
+<script type="module" src="./js/ui/advancedControls.js?v=34"></script>
+<script type="module" src="./js/ui/connectorsSheet.js?v=34"></script>
+<script type="module" src="./js/core/app.js?v=34"></script>
 <!-- ============ AUTH OVERLAY ============ -->
 <div id="authOverlay" class="extracted-inline-50">
   <div class="extracted-inline-51">
@@ -851,6 +869,78 @@
       <div class="extracted-inline-62">
         <button id="authSkipBtn" class="extracted-inline-63">Not now</button>
       </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ ADVANCED CONTROLS OVERLAY ============ -->
+<div id="advancedControlsOverlay" class="sheet-overlay">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-head">
+      <div class="sheet-title">Advanced Controls</div>
+      <button class="sheet-close" id="advancedControlsCloseBtn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="sheet-body">
+      <!-- Agent Mode Toggle -->
+      <div class="list-row" id="advancedControlsAgentModeRow">
+        <div class="list-row-icon" style="color:var(--accent);"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2 L14.5 9.5 L22 12 L14.5 14.5 L12 22 L9.5 14.5 L2 12 L9.5 9.5 Z"/></svg></div>
+        <div class="list-row-body">
+          <div class="list-row-title">Agent Mode</div>
+          <div class="list-row-subtitle">Auto-pick tools and execute step-by-step</div>
+        </div>
+        <div class="list-row-trail">
+          <div class="toggle" id="advancedControlsAgentToggle"><div class="toggle-knob"></div></div>
+        </div>
+      </div>
+      
+      <div class="advanced-controls-section-label">Select Model</div>
+      <div class="list-row" id="advancedControlsSelectModelRow">
+        <div class="list-row-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg></div>
+        <div class="list-row-body">
+          <div class="list-row-title">LLM Engine</div>
+          <div class="list-row-subtitle">Choose reasoning capability</div>
+        </div>
+        <div class="list-row-trail"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;"><path d="M9 18l6-6-6-6"/></svg></div>
+      </div>
+
+      <div class="advanced-controls-section-label">Select Tools <span class="pill-new">New</span></div>
+      <div class="list-row" id="advancedControlsConnectorsRow">
+        <div class="list-row-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="8" rx="2" ry="2"></rect><rect x="2" y="14" width="20" height="8" rx="2" ry="2"></rect><line x1="6" y1="6" x2="6.01" y2="6"></line><line x1="6" y1="18" x2="6.01" y2="18"></line></svg></div>
+        <div class="list-row-body">
+          <div class="list-row-title">Connectors</div>
+          <div class="list-row-subtitle">Connect external services (Slack, Notion, etc)</div>
+        </div>
+        <div class="list-row-trail"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;"><path d="M9 18l6-6-6-6"/></svg></div>
+      </div>
+
+      <div class="advanced-controls-section-label">Mode / Template</div>
+      <div class="list-row" id="advancedControlsPersonaRow">
+        <div class="list-row-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg></div>
+        <div class="list-row-body">
+          <div class="list-row-title">Persona</div>
+          <div class="list-row-subtitle">Change behavior or template</div>
+        </div>
+        <div class="list-row-trail" id="advancedControlsPersonaTrail" style="color:var(--text-secondary); font-size:var(--fs-sm); display:flex; align-items:center; gap:var(--sp-2);">Default<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;"><path d="M9 18l6-6-6-6"/></svg></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ CONNECTORS OVERLAY ============ -->
+<div id="connectorsSheetOverlay" class="sheet-overlay">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-head">
+      <div class="sheet-title">Connectors</div>
+      <button class="sheet-close" id="connectorsSheetCloseBtn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="sheet-body" id="connectorsSheetBody">
+      <!-- Populated by connectorsSheet.js -->
     </div>
   </div>
 </div>

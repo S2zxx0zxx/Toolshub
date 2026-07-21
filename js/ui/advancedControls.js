@@ -1,0 +1,124 @@
+import { BottomSheet } from './bottomsheet.js';
+import { ConnectorsSheet } from './connectorsSheet.js';
+import { PersonaPicker } from './personaPicker.js';
+import { Chat } from './chatEngine.js';
+import { LocalSettings } from '../services/localSettings.js';
+import { PERSONAS } from '../config/personas.js';
+
+export const AdvancedControls = (() => {
+
+  function openOverlay(overlayEl) {
+    if (!overlayEl) return;
+    overlayEl.style.display = 'flex';
+    void overlayEl.offsetWidth;
+    const sheet = overlayEl.querySelector('.sheet');
+    if (sheet) sheet.classList.add('open');
+  }
+
+  function closeOverlay(overlayEl) {
+    if (!overlayEl) return;
+    const sheet = overlayEl.querySelector('.sheet');
+    if (sheet) {
+      sheet.classList.remove('open');
+      setTimeout(() => {
+        overlayEl.style.display = 'none';
+      }, 300);
+    } else {
+      overlayEl.style.display = 'none';
+    }
+  }
+
+  function render() {
+    // Update Persona trail text
+    const currentPersonaId = LocalSettings.getPersona();
+    const persona = PERSONAS.find(p => p.id === currentPersonaId) || PERSONAS[0];
+    const personaTrail = document.getElementById('advancedControlsPersonaTrail');
+    if (personaTrail && personaTrail.childNodes[0]) {
+      personaTrail.childNodes[0].textContent = persona.name;
+    }
+
+    // Agent Mode toggle state
+    // Check if agent mode is gated or freely available: it is not currently gated in app.js.
+    const agentToggle = document.getElementById('advancedControlsAgentToggle');
+    if (agentToggle && Chat.isAgentModeOn) {
+      if (Chat.isAgentModeOn()) {
+        agentToggle.classList.add('is-active');
+      } else {
+        agentToggle.classList.remove('is-active');
+      }
+    }
+  }
+
+  function open() {
+    render();
+    openOverlay(document.getElementById('advancedControlsOverlay'));
+  }
+
+  function close() {
+    closeOverlay(document.getElementById('advancedControlsOverlay'));
+  }
+
+  function init() {
+    const overlay = document.getElementById('advancedControlsOverlay');
+    if (overlay) {
+      overlay.addEventListener('click', (e) => {
+        if (e.target.id === 'advancedControlsOverlay') close();
+      });
+    }
+    const closeBtn = document.getElementById('advancedControlsCloseBtn');
+    if (closeBtn) {
+      closeBtn.addEventListener('click', close);
+    }
+
+    // Connectors Row
+    const connectorsRow = document.getElementById('advancedControlsConnectorsRow');
+    if (connectorsRow) {
+      connectorsRow.addEventListener('click', () => {
+        close();
+        setTimeout(() => ConnectorsSheet.open(), 120);
+      });
+    }
+
+    // Persona/Template Row
+    const personaRow = document.getElementById('advancedControlsPersonaRow');
+    if (personaRow) {
+      personaRow.addEventListener('click', () => {
+        close();
+        setTimeout(() => {
+          if (PersonaPicker && PersonaPicker.open) {
+            PersonaPicker.open();
+          }
+        }, 120);
+      });
+    }
+
+    // Agent Mode Row
+    const agentModeRow = document.getElementById('advancedControlsAgentModeRow');
+    if (agentModeRow) {
+      agentModeRow.addEventListener('click', () => {
+        // reuse existing agentModeBtn handler
+        const btn = document.getElementById('agentModeBtn');
+        if (btn) btn.click();
+        
+        // update toggle locally immediately
+        const toggle = document.getElementById('advancedControlsAgentToggle');
+        if (toggle) toggle.classList.toggle('is-active');
+      });
+    }
+
+    // Select Model Row
+    const selectModelRow = document.getElementById('advancedControlsSelectModelRow');
+    if (selectModelRow) {
+      selectModelRow.addEventListener('click', () => {
+        close();
+        setTimeout(() => {
+          if (BottomSheet && BottomSheet.openModelSheet) {
+            BottomSheet.openModelSheet();
+          }
+        }, 120);
+      });
+    }
+  }
+
+  return { init, open, close, render };
+})();

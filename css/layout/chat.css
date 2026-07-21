@@ -53,6 +53,18 @@
   color:#fff; letter-spacing:0.02em;
   box-shadow: 0 0 6px rgba(168, 85, 247, 0.45);
 }
+.mode-pill-tier {
+  background: var(--accent-soft);
+  color: var(--accent);
+  padding: 4px 8px;
+  border-radius: var(--r-full);
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  display: inline-flex;
+  align-items: center;
+}
 .ai-status-pill { 
   display:inline-flex; align-items:center;
   justify-content:center; width:28px; height:28px;

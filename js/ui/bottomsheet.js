@@ -287,17 +287,25 @@ export const BottomSheet = (() => {
         const isExhausted = exhaustedModels.has(model.id);
         const label = isExhausted ? `⚠️ ${model.label}` : model.label;
         
+        let tierUI = '';
+        if (!canAccess) {
+            tierUI = `<span class="mode-pill-lock"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg> ${model.requiredTier.toUpperCase()}</span>`;
+        } else {
+            let tierName = 'Free';
+            if (model.requiredTier === 'monthly') tierName = 'Starter';
+            else if (model.requiredTier === '6month') tierName = 'Pro';
+            else if (model.requiredTier === 'yearly') tierName = 'Max';
+            tierUI = `<span class="mode-pill-tier">${tierName}</span>`;
+        }
+        
         row.innerHTML = `
           <div class="list-row-body">
             <div class="list-row-title">${label} ${model.tag ? `<span class="model-tag-inline">${model.tag}</span>` : ''}</div>
             <div class="list-row-subtitle-pro">${model.sub}</div>
           </div>
           <div class="list-row-trail">
-            ${!canAccess ? `<div class="mode-pill-lock">${model.requiredTier.toUpperCase()}</div>` : `
-            <svg class="access-check" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-              stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-              <polyline points="20 6 9 17 4 12"/>
-            </svg>`}
+            ${tierUI}
+            ${canAccess ? `<svg class="access-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>` : ''}
           </div>
         `;
         
@@ -519,5 +527,5 @@ export const BottomSheet = (() => {
     restoreModelChip();
   }
 
-  return { init, openAddSheet, closeAddSheet, openToolSheet, closeToolSheet, openReportBugSheet, closeReportBugSheet, updateReportBugCounter };
+  return { init, openAddSheet, closeAddSheet, openToolSheet, closeToolSheet, openModelSheet, closeModelSheet, openReportBugSheet, closeReportBugSheet, updateReportBugCounter };
 })();

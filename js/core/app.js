@@ -27,6 +27,9 @@ import '../ai/agentToolBridge.js';
 import '../ai/agentEngine.js';
 // Dynamic suggestion chips (Issue 7)
 import { getSuggestionChips } from '../config/suggestionPool.js';
+// Advanced Controls & Connectors (v2)
+import { AdvancedControls } from '../ui/advancedControls.js';
+import { ConnectorsSheet } from '../ui/connectorsSheet.js';
 
 const APP_VERSION = '1.0.0';
 const APP_VERSION_DATE = '20 July 2026';
@@ -531,77 +534,22 @@ const Settings = (() => {
       });
     });
 
-    // ---- Topbar Mode Pill — Agent Mode ----
-    document.getElementById('agentModeBtn')?.addEventListener('click', function(e) {
-      e.preventDefault();
-      
-      // Switch UI pill state
-      document.querySelectorAll('.mode-pill-btn').forEach(b => {
-        b.classList.remove('is-active');
-        b.setAttribute('aria-pressed', 'false');
-      });
-      this.classList.add('is-active');
-      this.setAttribute('aria-pressed', 'true');
-      Chat.setAgentMode(true);
-      
-      // Always show Agent Intro/Welcome screen
-      document.getElementById('emptyState').style.display = 'none';
-      document.getElementById('msgList').style.display = 'none';
-      document.getElementById('utilityPanel').style.display = 'none';
-      
-      const introState = document.getElementById('agentIntroState');
-      const categoriesContainer = document.getElementById('agentIntroCategories');
-      if (introState && categoriesContainer) {
-        introState.style.display = 'flex';
-        categoriesContainer.innerHTML = '';
-        
-        const catMap = getToolCategoryMap();
-        const uniqueCats = Array.from(new Set(Object.values(catMap)));
-
-        // Starter prompts per category for chip click pre-fill
-        const CAT_STARTERS = {
-          social:    'Help me create a social media post for',
-          web:       'Analyze this website for me:',
-          edu:       'Help me write a professional email about',
-          career:    'Help me improve my resume for a role in',
-          utilities: 'Help me with a quick calculation:',
-          files:     'Help me with a file conversion task'
-        };
-        
-        uniqueCats.forEach(catId => {
-          if (catId === 'all') return;
-          const label = catId.charAt(0).toUpperCase() + catId.slice(1).replace(/-/g, ' ');
-          const chip = document.createElement('div');
-          chip.className = 'chip chip-sm';
-          chip.dataset.category = catId;
-          chip.style.background = 'var(--bg-surface-2)';
-          chip.style.border = '1px solid var(--border-med)';
-          chip.style.color = 'var(--text-1)';
-          chip.style.cursor = 'pointer';
-          chip.style.transition = 'background 0.15s, border-color 0.15s';
-          chip.textContent = label;
-          chip.addEventListener('click', () => {
-            // Toggle active state
-            categoriesContainer.querySelectorAll('.chip').forEach(c => {
-              c.classList.remove('is-active');
-              c.style.background = 'var(--bg-surface-2)';
-              c.style.borderColor = 'var(--border-med)';
-            });
-            chip.classList.add('is-active');
-            chip.style.background = 'var(--accent-soft, rgba(108,99,255,0.12))';
-            chip.style.borderColor = 'var(--accent, #6c63ff)';
-            // Pre-fill input with category starter so user sees what this category can do
-            const chatInput = document.getElementById('chatInput');
-            if (chatInput) {
-              chatInput.value = CAT_STARTERS[catId] || `Help me with ${label}`;
-              chatInput.dispatchEvent(new Event('input'));
-              chatInput.focus();
-            }
-          });
-          categoriesContainer.appendChild(chip);
-        });
+    // ---- Topbar Mode ----
+    function handleAgentModeToggle() {
+      if (Chat && Chat.isAgentModeOn) {
+        const isAgent = Chat.isAgentModeOn();
+        if (isAgent) {
+          Chat.setAgentMode(false);
+          document.querySelectorAll('.mode-pill-btn[data-mode="chat"]').forEach(b => b.classList.add('is-active'));
+          document.querySelectorAll('.mode-pill-btn[data-mode="agent"]').forEach(b => b.classList.remove('is-active'));
+        } else {
+          Chat.setAgentMode(true);
+          document.querySelectorAll('.mode-pill-btn[data-mode="chat"]').forEach(b => b.classList.remove('is-active'));
+          document.querySelectorAll('.mode-pill-btn[data-mode="agent"]').forEach(b => b.classList.add('is-active'));
+        }
       }
-    });
+    }
+    document.getElementById('agentModeBtn')?.addEventListener('click', handleAgentModeToggle);
     
     document.getElementById('agentIntroStartBtn')?.addEventListener('click', function() {
       LocalSettings.setHasSeenAgentIntro(true);
@@ -963,10 +911,38 @@ document.addEventListener('DOMContentLoaded', async () => {
   ToolSelector.init();
   Sidebar.init();
   BottomSheet.init();
+  ChangePlanModal.init();
+  ConnectorsSheet.init();
+  AdvancedControls.init();
+  Router.init();
   Chat.init();
   Settings.init();
   PersonaPicker.init();
-  ChangePlanModal.init();
+
+  async function renderUsageBlock() {
+    const valueEl = document.getElementById('settingsUsageValue');
+    const fillEl = document.getElementById('settingsUsageBarFill');
+    if (!valueEl || !fillEl) return;
+
+    const planId = LocalSettings.getCurrentPlan();
+    const plan = PLANS.find(p => p.id === planId);
+    const cap = plan ? plan.dailyMessageCap : 15;
+
+    const usage = await CloudDB.getTodayUsage();
+    if (!usage) {
+      valueEl.textContent = '-- / --';
+      fillEl.style.width = '0%';
+      return;
+    }
+
+    if (cap === Infinity) {
+      valueEl.textContent = `${usage.count} / Unlimited`;
+      fillEl.style.width = '100%';
+    } else {
+      valueEl.textContent = `${usage.count} / ${cap}`;
+      fillEl.style.width = `${Math.min(100, (usage.count / cap) * 100)}%`;
+    }
+  }
 
   // Function to update the plan UI
   function updatePlanUI() {
@@ -999,6 +975,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (subPeriod) {
       subPeriod.textContent = currentPlanId === 'free' ? 'Forever free' : `Renews: ${planObj.priceLabel}${planObj.periodLabel}`;
     }
+
+    renderUsageBlock();
   }
 
   // Initial update and event listener

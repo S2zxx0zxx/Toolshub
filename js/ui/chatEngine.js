@@ -662,5 +662,5 @@ export const Chat = (() => {
     });
   }
 
-  return { init, newChat, loadChat, sendMessage, assignProject, setAgentMode };
+  return { init, newChat, loadChat, sendMessage, assignProject, setAgentMode, isAgentModeOn: () => isAgentMode };
 })();

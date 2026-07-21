@@ -180,6 +180,24 @@ export const CloudDB = (() => {
     }
   }
 
+  async function getTodayUsage() {
+    const uid = _uid();
+    if (!uid || !db || !fbFirestoreModule) return null;
+    try {
+      const today = new Date().toISOString().slice(0, 10);
+      const usageRef = fbFirestoreModule.doc(db, `users/${uid}/usage`, today);
+      const snap = await fbFirestoreModule.getDoc(usageRef);
+      if (snap.exists()) {
+        const data = snap.data();
+        return { count: data.count || 0 };
+      }
+      return { count: 0 };
+    } catch (e) {
+      console.warn("Failed to fetch today usage:", e);
+      return null;
+    }
+  }
+
   async function logToolExecution(metadata) {
     const uid = _uid();
     if (!uid || !metadata || !db || !fbFirestoreModule) return;
@@ -350,6 +368,7 @@ export const CloudDB = (() => {
     exportUserData,
     clearAllConversations,
     deleteUserAccount,
-    syncPlanFromServer
+    syncPlanFromServer,
+    getTodayUsage
   };
 })();

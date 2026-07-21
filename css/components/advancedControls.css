@@ -1,0 +1,27 @@
+/* css/components/advancedControls.css */
+/* Advanced Controls UI using strictly existing variables */
+
+.pill-new {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2px 6px;
+  border-radius: var(--r-full);
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  background: var(--accent-soft);
+  color: var(--accent);
+  margin-left: var(--sp-2);
+}
+
+.advanced-controls-section-label {
+  display: block;
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-muted);
+  margin: var(--sp-4) var(--sp-4) var(--sp-2) var(--sp-4);
+}

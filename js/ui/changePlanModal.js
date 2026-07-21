@@ -78,8 +78,9 @@ export const ChangePlanModal = (() => {
     const upgradePlans = PLANS.filter(p => p.id !== 'free');
     
     upgradePlans.forEach(p => {
+      const isFlagship = p.badge === 'Popular';
       const card = document.createElement('div');
-      card.className = `plan-card ${p.badge === 'Popular' ? 'is-popular' : ''} ${selectedPlanId === p.id ? 'is-selected' : ''}`;
+      card.className = `plan-card ${isFlagship ? 'is-flagship' : ''} ${selectedPlanId === p.id ? 'is-selected' : ''}`;
       
       const cardHeader = document.createElement('div');
       cardHeader.className = 'plan-card-header';
@@ -108,6 +109,17 @@ export const ChangePlanModal = (() => {
       
       const priceRow = document.createElement('div');
       priceRow.className = 'plan-card-price-row';
+      
+      if (p.originalPriceLabel) {
+        const origPrice = document.createElement('span');
+        origPrice.style.textDecoration = 'line-through';
+        origPrice.style.color = 'var(--text-muted)';
+        origPrice.style.fontSize = 'var(--fs-xs)';
+        origPrice.style.marginRight = 'var(--sp-2)';
+        origPrice.textContent = p.originalPriceLabel;
+        priceRow.appendChild(origPrice);
+      }
+
       const price = document.createElement('div');
       price.className = 'plan-card-price';
       price.textContent = p.priceLabel;
@@ -119,10 +131,47 @@ export const ChangePlanModal = (() => {
       
       const bulletsList = document.createElement('ul');
       bulletsList.className = 'plan-card-bullets';
-      p.bullets.forEach(b => {
-        const li = document.createElement('li');
-        li.textContent = b;
-        bulletsList.appendChild(li);
+      p.bullets.forEach((b, idx) => {
+        if (idx < 3) {
+          const li = document.createElement('li');
+          li.textContent = b;
+          bulletsList.appendChild(li);
+        } else if (idx === 3) {
+          // create a wrapper for expandable list
+          const expandBtn = document.createElement('div');
+          expandBtn.className = 'plan-feature-expand-trigger';
+          expandBtn.style.fontSize = 'var(--fs-xs)';
+          expandBtn.style.color = 'var(--accent)';
+          expandBtn.style.cursor = 'pointer';
+          expandBtn.style.marginTop = 'var(--sp-2)';
+          expandBtn.style.fontWeight = '500';
+          expandBtn.textContent = 'Show all features';
+          
+          const expandedDiv = document.createElement('div');
+          expandedDiv.className = 'plan-feature-expanded';
+          expandedDiv.style.maxHeight = '0';
+          expandedDiv.style.overflow = 'hidden';
+          expandedDiv.style.transition = 'max-height var(--dur-base) var(--ease)';
+          
+          expandBtn.addEventListener('click', (e) => {
+            e.stopPropagation(); // prevent card selection trigger
+            expandedDiv.classList.toggle('is-expanded');
+            expandBtn.textContent = expandedDiv.classList.contains('is-expanded') ? 'Show less' : 'Show all features';
+          });
+          
+          const li = document.createElement('li');
+          li.textContent = b;
+          expandedDiv.appendChild(li);
+          
+          bulletsList.appendChild(expandBtn);
+          bulletsList.appendChild(expandedDiv);
+        } else {
+          // Append to existing expanded div
+          const expandedDiv = bulletsList.querySelector('.plan-feature-expanded');
+          const li = document.createElement('li');
+          li.textContent = b;
+          expandedDiv.appendChild(li);
+        }
       });
       
       card.appendChild(cardHeader);

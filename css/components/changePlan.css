@@ -395,3 +395,53 @@
   }
 }
 
+/* ---- Advanced Controls Polish ---- */
+
+.plan-card.is-flagship {
+  background: linear-gradient(135deg, var(--bg-surface-2), var(--accent-soft));
+  border-color: var(--accent);
+}
+
+.plan-feature-expanded.is-expanded {
+  max-height: 500px !important;
+}
+
+.settings-usage-block {
+  background: var(--bg-surface-2);
+  border-radius: var(--r-md);
+  padding: var(--sp-4);
+  margin-top: var(--sp-4);
+}
+
+.settings-usage-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--sp-2);
+  font-size: var(--fs-sm);
+  font-weight: 500;
+}
+
+.settings-usage-label {
+  color: var(--text-secondary);
+}
+
+.settings-usage-value {
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+}
+
+.settings-usage-bar {
+  height: 6px;
+  border-radius: var(--r-full);
+  background: var(--bg-surface-3);
+  overflow: hidden;
+}
+
+.settings-usage-bar-fill {
+  height: 100%;
+  background: var(--accent);
+  border-radius: var(--r-full);
+  transition: width var(--dur-base) var(--ease);
+}
+

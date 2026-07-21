@@ -6,6 +6,7 @@ export const PLANS = [
     priceLabel: '₹0',
     periodLabel: '/mo',
     description: 'Basic access to everyday utilities.',
+    dailyMessageCap: 15,
     bullets: [
       'Standard AI engine only',
       '15 messages per day',
@@ -20,6 +21,7 @@ export const PLANS = [
     priceLabel: '₹99',
     periodLabel: '/mo',
     description: 'Built for the work you do every single day.',
+    dailyMessageCap: Infinity,
     bullets: [
       'Unlimited AI conversations — zero daily caps',
       'Every tool, every mode, fully unlocked',
@@ -35,6 +37,8 @@ export const PLANS = [
     priceLabel: '₹349',
     periodLabel: ' total',
     description: 'Where most serious users land.',
+    originalPriceLabel: '₹894',
+    dailyMessageCap: Infinity,
     bullets: [
       'Unlimited conversations + every tool, fully unlocked',
       'All AI models, plus priority processing on every request',
@@ -46,16 +50,18 @@ export const PLANS = [
   {
     id: 'yearly',
     label: 'Max',
-    badge: null,
+    badge: 'Best Value',
     priceLabel: '₹999',
-    periodLabel: '/yr',
-    description: 'Full platform. Full speed. Built for power users.',
+    periodLabel: ' total',
+    description: 'For absolute power users.',
+    originalPriceLabel: '₹1788',
+    dailyMessageCap: Infinity,
     bullets: [
-      'Everything in Pro',
-      'Our most advanced AI engine, Max-only',
-      'First access to every new release — image, video, and beyond',
-      'Highest priority support, always answered first',
-      'You\'re not just using the platform — you\'re growing with it'
+      'Everything in Pro, completely unlocked',
+      'Deep Research enabled — our most capable reasoning mode',
+      'Highest API priority — jump to the front of every queue',
+      'Custom Connectors — bring your own data (coming soon)',
+      'Lock in this pricing forever'
     ]
   }
 ];
