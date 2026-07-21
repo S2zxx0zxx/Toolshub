@@ -26,7 +26,18 @@
       "firebase.json",
       "**/.*",
       "**/node_modules/**",
-      "security_rules_test_firestore/**"
+      "security_rules_test_firestore/**",
+      "**/*.bat",
+      "**/*.py",
+      "**/*.ipynb",
+      "**/*.sh",
+      "**/*.exe",
+      "worker/**",
+      "scripts/**",
+      "test.js",
+      "restore.ipynb",
+      "extract_styles.py",
+      "process_icon.py"
     ],
     "headers": [
       {
