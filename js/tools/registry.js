@@ -357,7 +357,7 @@ export const ToolSelector = (() => {
       card.addEventListener('click', () => {
         const prompt = card.dataset.prompt;
         if (!prompt) return;
-        const chatInput = document.getElementById('chatInput');
+        const chatInput = document.getElementById('inputTextarea');
         if (chatInput) {
           chatInput.value = prompt;
           chatInput.dispatchEvent(new Event('input'));

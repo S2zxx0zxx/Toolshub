@@ -591,7 +591,7 @@ const Settings = (() => {
       document.getElementById('chatBody')?.classList.add('agent-active');
       
       // Focus the input so user can start typing immediately
-      document.getElementById('chatInput')?.focus();
+      document.getElementById('inputTextarea')?.focus();
     });
 
     document.getElementById('deepResearchBtn')?.addEventListener('click', () => ChangePlanModal.open());
@@ -600,7 +600,7 @@ const Settings = (() => {
     document.addEventListener('suggestion-click', (e) => {
       const prompt = e.detail?.prompt;
       if (!prompt) return;
-      const chatInput = document.getElementById('chatInput');
+      const chatInput = document.getElementById('inputTextarea');
       if (chatInput) {
         chatInput.value = prompt;
         chatInput.dispatchEvent(new Event('input'));
@@ -917,7 +917,6 @@ document.addEventListener('DOMContentLoaded', async () => {
   ChangePlanModal.init();
   ConnectorsSheet.init();
   AdvancedControls.init();
-  Router.init();
   Chat.init();
   Settings.init();
   PersonaPicker.init();
