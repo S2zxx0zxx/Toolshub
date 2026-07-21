@@ -10,9 +10,15 @@ import { ToolSelector } from '../tools/registry.js';
 import { Sidebar } from './sidebar.js';
 import { Toast } from './toast.js';
 import { AIRouter } from '../ai/router.js';
+import { executeAgentTask } from '../ai/agentEngine.js';
 
 export const Chat = (() => {
   let currentChat = null; // { id, title, toolId, messages, createdAt, updatedAt }
+  let isAgentMode = false;
+
+  function setAgentMode(enabled) {
+    isAgentMode = !!enabled;
+  }
 
   function genId() {
     return 'c_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
@@ -70,12 +76,17 @@ export const Chat = (() => {
   }
 
   function renderEmptyState() {
+    const intro = document.getElementById('agentIntroState');
+    if (intro && intro.style.display === 'flex') return; // Don't override if intro is showing
     document.getElementById('emptyState').style.display = 'flex';
     document.getElementById('msgList').style.display = 'none';
     document.getElementById('msgList').innerHTML = '';
   }
 
   function renderMessages() {
+    const intro = document.getElementById('agentIntroState');
+    if (intro) intro.style.display = 'none';
+    
     document.getElementById('emptyState').style.display = 'none';
     const list = document.getElementById('msgList');
     list.style.display = 'block';
@@ -121,6 +132,32 @@ export const Chat = (() => {
         </div>`;
     }
 
+    let stepsHtml = '';
+    if (m.isAgent && m.steps && m.steps.length > 0) {
+      stepsHtml = m.steps.map(step => {
+        const t = ToolSelector.findTool(step.toolId);
+        const iconSvg = t ? ToolSelector.icon(t.tool.icon) : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/></svg>';
+        const titleText = t ? t.tool.title : step.toolId;
+        const statusIcon = step.status === 'running' 
+          ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px; height:14px; animation: spin 1s linear infinite;"><path d="M12 2v4m0 12v4M4.93 4.93l2.83 2.83m8.48 8.48l2.83 2.83M2 12h4m12 0h4M4.93 19.07l2.83-2.83m8.48-8.48l2.83-2.83"/></svg>'
+          : (step.status === 'error' ? '<svg viewBox="0 0 24 24" fill="none" stroke="var(--danger, #ff4d4f)" stroke-width="2" style="width:14px; height:14px;"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>' : '<svg viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2" style="width:14px; height:14px;"><polyline points="20 6 9 17 4 12"/></svg>');
+          
+        return `
+          <details class="agent-step-card" style="margin-bottom: var(--sp-2); border: 1px solid var(--border-med); border-radius: var(--radius-md); font-size: var(--fs-xs); background: var(--bg-surface-2);">
+            <summary style="padding: var(--sp-2); cursor: pointer; display: flex; align-items: center; gap: var(--sp-2); list-style: none; user-select: none;">
+              <div style="flex: 1; display: flex; align-items: center; gap: var(--sp-2);">
+                 <div style="width:14px; height:14px; color:var(--text-secondary);">${iconSvg}</div>
+                 <strong style="color:var(--text-1);">${escapeHtml(titleText)}</strong>
+              </div>
+              <div>${statusIcon}</div>
+            </summary>
+            <div style="padding: var(--sp-2); border-top: 1px solid var(--border-med); white-space: pre-wrap; font-family: monospace; max-height: 200px; overflow-y: auto; color:var(--text-2); word-break: break-all;">
+              ${escapeHtml(step.result || 'Running...')}
+            </div>
+          </details>`;
+      }).join('');
+    }
+
     return `
       <div class="msg msg-assistant">
         <div style="flex: 1;">
@@ -128,7 +165,8 @@ export const Chat = (() => {
             <div style="width:16px; height:16px; color:var(--text-secondary);">${svgIcon}</div>
             <div style="${m.isError ? 'color: var(--danger, #ff4d4f);' : ''}"><strong>${escapeHtml(title)} Agent</strong></div>
           </div>
-          <div class="msg-bubble markdown-body" style="${bubbleStyle}">${renderMarkdown(m.text)}</div>
+          ${stepsHtml}
+          ${m.text ? `<div class="msg-bubble markdown-body" style="${bubbleStyle}">${renderMarkdown(m.text)}</div>` : ''}
           <div class="msg-actions">
             <button class="msg-action-btn" data-action="copy" title="Copy">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
@@ -300,12 +338,53 @@ export const Chat = (() => {
       clearAttachedFile(); // Clear file state after sending
       
       const chatHistory = currentChat.messages.slice(0, -1);
-      const streamGenerator = AIRouter.processInput(finalPayloadText, chatHistory, (toolId) => {
-        // Update typing indicator when tool starts
-        hideTypingIndicator();
-        showTypingIndicator(toolId);
-      });
-      await consumeStream(streamGenerator);
+      
+      if (isAgentMode) {
+        hideTypingIndicator(); // Agent flow uses its own cards
+        
+        // create a container for step cards and the final answer
+        const agentContainerId = 'msg_' + Date.now();
+        const agentMsg = { id: agentContainerId, role: 'assistant', text: '', ts: Date.now(), isAgent: true, steps: [] };
+        currentChat.messages.push(agentMsg);
+        renderMessages();
+
+        const response = await executeAgentTask(finalPayloadText, chatHistory.map(m => ({ role: m.role, content: m.text })), {
+          onStep: (stepData) => {
+            agentMsg.steps.push(stepData);
+            currentChat.updatedAt = Date.now();
+            renderMessages();
+          }
+        });
+        
+        if (!response.success) {
+          if (response.error === 'agent-locked') {
+            Toast.show("Agent Mode requires Starter plan or higher.");
+            if (window.ChangePlanModal) window.ChangePlanModal.open();
+          } else {
+            appendErrorMessage(response.message || "An unexpected error occurred.");
+          }
+          return;
+        }
+
+        let finalText = response.message || "";
+        if (response.truncated) {
+          finalText += "\n\n_Reached the step limit — you can ask me to continue._";
+        }
+        
+        agentMsg.text = finalText;
+        currentChat.updatedAt = Date.now();
+        renderMessages();
+        CloudDB.saveMessage(currentChat.id, agentMsg).catch(console.warn);
+
+      } else {
+        // Normal flow
+        const streamGenerator = AIRouter.processInput(finalPayloadText, chatHistory, (toolId) => {
+          // Update typing indicator when tool starts
+          hideTypingIndicator();
+          showTypingIndicator(toolId);
+        });
+        await consumeStream(streamGenerator);
+      }
     } catch (err) {
       appendErrorMessage(err.message || "AI service temporarily unavailable.");
     }
@@ -584,5 +663,5 @@ export const Chat = (() => {
     });
   }
 
-  return { init, newChat, loadChat, sendMessage, assignProject };
+  return { init, newChat, loadChat, sendMessage, assignProject, setAgentMode };
 })();

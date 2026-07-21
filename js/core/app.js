@@ -21,7 +21,7 @@ import { initFirebase, auth, db, fbAuthModule, fbFirestoreModule } from '../serv
 import { aiApi } from '../services/aiApi.js';
 
 // Pre-load Agent Mode modules (Phase 1)
-import '../ai/toolSchemas.js';
+import { getToolCategoryMap } from '../ai/toolSchemas.js';
 import '../ai/agentToolBridge.js';
 // Pre-load Agent Mode engine (Phase 2)
 import '../ai/agentEngine.js';
@@ -529,7 +529,67 @@ const Settings = (() => {
     });
 
     // ---- Topbar Mode Pill ----
-    document.getElementById('agentModeBtn')?.addEventListener('click', openUpgradeSheet);
+    document.getElementById('agentModeBtn')?.addEventListener('click', function(e) {
+      e.preventDefault();
+      const plan = LocalSettings.getCurrentPlan() || 'free';
+      if (plan === 'free') {
+        if (window.ChangePlanModal) ChangePlanModal.open();
+        return;
+      }
+      
+      // Update UI for Agent Mode
+      document.querySelectorAll('.mode-pill-btn').forEach(b => {
+        b.classList.remove('is-active');
+        b.setAttribute('aria-pressed', 'false');
+      });
+      this.classList.add('is-active');
+      this.setAttribute('aria-pressed', 'true');
+      Chat.setAgentMode(true);
+      
+      // Check first-run
+      if (!LocalSettings.getHasSeenAgentIntro()) {
+        document.getElementById('emptyState').style.display = 'none';
+        document.getElementById('msgList').style.display = 'none';
+        document.getElementById('utilityPanel').style.display = 'none';
+        
+        const introState = document.getElementById('agentIntroState');
+        const categoriesContainer = document.getElementById('agentIntroCategories');
+        if (introState && categoriesContainer) {
+          introState.style.display = 'flex';
+          categoriesContainer.innerHTML = ''; // clear
+          
+          const catMap = getToolCategoryMap();
+          const uniqueCats = Array.from(new Set(Object.values(catMap)));
+          
+          uniqueCats.forEach(catId => {
+            if (catId === 'all') return;
+            // Format ID to Title Case (e.g. 'social' -> 'Social', 'web' -> 'Web')
+            const label = catId.charAt(0).toUpperCase() + catId.slice(1).replace(/-/g, ' ');
+            
+            const chip = document.createElement('div');
+            chip.className = 'chip chip-sm';
+            chip.style.background = 'var(--bg-surface-2)';
+            chip.style.border = '1px solid var(--border-med)';
+            chip.style.color = 'var(--text-1)';
+            chip.style.pointerEvents = 'none';
+            chip.textContent = label;
+            categoriesContainer.appendChild(chip);
+          });
+        }
+      }
+    });
+    
+    document.getElementById('agentIntroStartBtn')?.addEventListener('click', function() {
+      LocalSettings.setHasSeenAgentIntro(true);
+      document.getElementById('agentIntroState').style.display = 'none';
+      const list = document.getElementById('msgList');
+      if (list && list.children.length === 0) {
+        document.getElementById('emptyState').style.display = 'flex';
+      } else if (list) {
+        list.style.display = 'block';
+      }
+    });
+
     document.getElementById('deepResearchBtn')?.addEventListener('click', openUpgradeSheet);
     document.querySelector('.mode-pill-btn[data-mode="chat"]')?.addEventListener('click', function() {
       // It's the default behavior, just ensure it's visually active
@@ -539,6 +599,18 @@ const Settings = (() => {
       });
       this.classList.add('is-active');
       this.setAttribute('aria-pressed', 'true');
+      Chat.setAgentMode(false);
+      
+      const introState = document.getElementById('agentIntroState');
+      if (introState) introState.style.display = 'none';
+      
+      const list = document.getElementById('msgList');
+      if (list && list.children.length === 0) {
+        list.style.display = 'none';
+        document.getElementById('emptyState').style.display = 'flex';
+      } else if (list) {
+        list.style.display = 'block';
+      }
     });
 
     // ---- Logout button ----
@@ -830,6 +902,21 @@ document.addEventListener('DOMContentLoaded', async () => {
   // Set initial subscription state in Settings
   const initialPlanId = LocalSettings.getCurrentPlan() || 'free';
   const planObj = PLANS.find(p => p.id === initialPlanId) || PLANS[0];
+  
+  // Update Topbar Pill
+  const topbarPlanPill = document.getElementById('topbarPlanPill');
+  const aiStatusIndicator = document.getElementById('aiStatusIndicator');
+  if (topbarPlanPill && aiStatusIndicator) {
+    if (initialPlanId === 'free') {
+      topbarPlanPill.style.display = 'none';
+      aiStatusIndicator.style.display = 'inline-flex';
+    } else {
+      topbarPlanPill.textContent = planObj.label.toUpperCase();
+      topbarPlanPill.style.display = 'inline-block';
+      aiStatusIndicator.style.display = 'none';
+      topbarPlanPill.onclick = () => { if (window.ChangePlanModal) window.ChangePlanModal.open(); };
+    }
+  }
   const subName = document.getElementById('subPlanName');
   const subStatus = document.getElementById('subPlanStatus');
   const subPeriod = document.getElementById('subPlanPeriod');

@@ -19,6 +19,7 @@ export const LocalSettings = (() => {
     SELECTED_CHAT_MODEL: 'toolshub_selected_chat_model', // string model id
     PERSONA:            'toolshub_persona',             // string persona id or null
     CURRENT_PLAN:       'toolshub_current_plan',        // string plan id
+    AGENT_INTRO:        'toolshub_agent_intro',         // boolean
   };
 
   function _safeGet(key, fallback) {
@@ -157,6 +158,14 @@ export const LocalSettings = (() => {
     },
     setPersona(personaId) {
       _safeSet(KEYS.PERSONA, personaId);
+    },
+
+    // ---------- AGENT INTRO ----------
+    getHasSeenAgentIntro() {
+      return _safeGet(KEYS.AGENT_INTRO, false);
+    },
+    setHasSeenAgentIntro(value) {
+      _safeSet(KEYS.AGENT_INTRO, !!value);
     },
 
     // ---------- CLEAR ALL (logout) ----------

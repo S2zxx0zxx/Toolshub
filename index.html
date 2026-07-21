@@ -126,6 +126,7 @@
           </div>
 
           <div class="topbar-right" style="display: flex; align-items: center; gap: 8px;">
+            <button id="topbarPlanPill" title="Change Plan" class="mode-pill-lock" style="display: none; border: none; cursor: pointer; padding: 4px 8px; font-size: 10px;">PRO</button>
             <span id="aiStatusIndicator" title="AI Backend Connected" class="ai-status-pill">
               <svg class="signal-bars" viewBox="0 0 20 20" fill="none">
                 <rect x="1" y="11" width="3" height="7" rx="1"/>
@@ -152,6 +153,19 @@
             <div id="promptCards" class="prompt-cards">
               <!-- populated by toolSelector.js based on active tool -->
             </div>
+          </div>
+
+          <!-- Agent Intro State -->
+          <div id="agentIntroState" class="empty-state" style="display: none;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="empty-mark"><path d="M12 2 L14.5 9.5 L22 12 L14.5 14.5 L12 22 L9.5 14.5 L2 12 L9.5 9.5 Z"/></svg>
+            <div class="empty-greeting">Meet your Agent</div>
+            <div style="color: var(--text-2); font-size: 14px; margin-bottom: 24px; text-align: center; max-width: 400px; line-height: 1.5;">
+              Give it a task. It'll pick the right tools, run them, and get it done — no manual switching.
+            </div>
+            <div id="agentIntroCategories" style="display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; margin-bottom: 32px;">
+              <!-- Populated by JS -->
+            </div>
+            <button id="agentIntroStartBtn" class="btn-send" style="padding: 10px 24px; border-radius: 20px; width: auto; height: auto;">Get started</button>
           </div>
 
           <div id="msgList" class="msg-list extracted-inline-6"></div>
