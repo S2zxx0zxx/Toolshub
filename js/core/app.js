@@ -20,6 +20,10 @@ import { CloudDB } from '../services/cloudDb.js';
 import { initFirebase, auth, db, fbAuthModule, fbFirestoreModule } from '../services/firebase.js';
 import { aiApi } from '../services/aiApi.js';
 
+// Pre-load Agent Mode modules (Phase 1)
+import '../ai/toolSchemas.js';
+import '../ai/agentToolBridge.js';
+
 const APP_VERSION = '1.0.0';
 const APP_VERSION_DATE = '20 July 2026';
 

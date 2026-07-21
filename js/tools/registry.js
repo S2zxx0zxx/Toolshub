@@ -346,6 +346,12 @@ export const ToolSelector = (() => {
     // default: no tool selected, level 2 empty until a category is tapped
   }
 
+  function getToolMetaById(toolId) {
+    const found = findTool(toolId);
+    if (!found) return null;
+    return { ...found.tool, category: found.category.id };
+  }
+
   return {
     DATA,
     icon,
@@ -353,6 +359,7 @@ export const ToolSelector = (() => {
     selectTool,
     getActiveTool,
     findTool,
+    getToolMetaById,
     renderCategoryLevel,
     renderToolLevel,
     backToCategoryLevel,
