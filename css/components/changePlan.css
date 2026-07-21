@@ -356,3 +356,42 @@
 .btn-confirm:hover {
   background: var(--accent-hover);
 }
+
+/* ---- Mobile / Short-screen responsive fix ---- */
+/* 
+ * On small viewports (<480px wide or <700px tall), 3 full-height cards
+ * overflow the 90vh outer sheet. This fix: compresses spacing,
+ * enables independent scrolling on the card grid, and ensures
+ * the "Choose Plan" CTA button is never clipped below the fold.
+ */
+@media (max-width: 480px), (max-height: 700px) {
+  .change-plan-modal {
+    max-height: 96vh;
+    border-radius: var(--r-lg);
+  }
+
+  .change-plan-header {
+    padding: var(--sp-3) var(--sp-4);
+  }
+
+  .change-plan-title {
+    font-size: var(--fs-base);
+  }
+
+  .change-plan-body {
+    padding: var(--sp-3);
+    overflow-y: auto;
+  }
+
+  .change-plan-grid {
+    gap: var(--sp-3);
+    max-height: calc(96vh - 130px);
+    overflow-y: auto;
+    padding-bottom: var(--sp-2);
+  }
+
+  .plan-card {
+    padding: var(--sp-3);
+  }
+}
+

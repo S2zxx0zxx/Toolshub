@@ -5,6 +5,7 @@
    ============================================ */
 
 import { LocalSettings } from '../services/localSettings.js';
+import { rankOf } from '../config/planVocabulary.js';
 import { ToolSelector } from '../tools/registry.js';
 import { UtilityTools } from '../tools/utilityTools.js';
 import { FileTools } from '../tools/fileTools.js';
@@ -15,6 +16,7 @@ import { ChangePlanModal } from './changePlanModal.js';
 
 export const BottomSheet = (() => {
 
+  // Vocabulary MUST match worker/src/planResolver.js — do not use starter/pro/max aliases here.
   const MODEL_CATALOG = [
     {
       category: 'MINI',
@@ -25,25 +27,26 @@ export const BottomSheet = (() => {
     {
       category: 'FULL',
       models: [
-        { id: 'llama-3.1-8b-instant', label: 'DigiPro', tag: '(High)', sub: 'Fastest Ever You Think', dailyLimit: 500000, requiredTier: 'starter' },
-        { id: 'gpt-4o-mini', label: 'Maya', tag: '(</> Max)', sub: 'You Think I code', dailyLimit: 50000, requiredTier: 'pro' }
+        { id: 'llama-3.1-8b-instant', label: 'DigiPro', tag: '(High)', sub: 'Fastest Ever You Think', dailyLimit: 500000, requiredTier: 'monthly' },
+        { id: 'gpt-4o-mini', label: 'Maya', tag: '(</> Max)', sub: 'You Think I code', dailyLimit: 50000, requiredTier: '6month' }
       ]
     },
     {
       category: 'FLAGSHIP',
       models: [
-        { id: 'groq/compound', label: 'Maya Pro', tag: '(Stay Tuned)', sub: 'Premium features coming', dailyLimit: 70000, requiredTier: 'max' }
+        { id: 'groq/compound', label: 'Maya Pro', tag: '(Stay Tuned)', sub: 'Premium features coming', dailyLimit: 70000, requiredTier: 'yearly' }
       ]
     }
   ];
 
+  // Vocabulary MUST match worker/src/planResolver.js PLAN_MAX_STEPS keys — do not introduce aliases here.
   function tierRank(tier) {
-    return { free: 0, starter: 1, pro: 2, max: 3 }[tier] ?? 0;
+    return rankOf(tier);
   }
   
   function userCanAccess(requiredTier) {
     const currentPlan = LocalSettings.getCurrentPlan();
-    return tierRank(currentPlan) >= tierRank(requiredTier);
+    return rankOf(currentPlan) >= rankOf(requiredTier);
   }
   
   function findModel(id) {

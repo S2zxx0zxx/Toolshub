@@ -20,6 +20,7 @@ export const LocalSettings = (() => {
     PERSONA:            'toolshub_persona',             // string persona id or null
     CURRENT_PLAN:       'toolshub_current_plan',        // string plan id
     AGENT_INTRO:        'toolshub_agent_intro',         // boolean
+    TOOL_USAGE:         'th_tool_usage',                // { [toolId]: count }
   };
 
   function _safeGet(key, fallback) {
@@ -166,6 +167,22 @@ export const LocalSettings = (() => {
     },
     setHasSeenAgentIntro(value) {
       _safeSet(KEYS.AGENT_INTRO, !!value);
+    },
+
+    // ---------- TOOL USAGE TRACKING ----------
+    // Increments tool open count for dynamic pinning.
+    recordToolUsage(toolId) {
+      if (!toolId) return;
+      const usage = _safeGet(KEYS.TOOL_USAGE, {});
+      usage[toolId] = (usage[toolId] || 0) + 1;
+      _safeSet(KEYS.TOOL_USAGE, usage);
+    },
+    getTopUsedTools(limit = 3) {
+      const usage = _safeGet(KEYS.TOOL_USAGE, {});
+      return Object.entries(usage)
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, limit)
+        .map(([id]) => id);
     },
 
     // ---------- CLEAR ALL (logout) ----------

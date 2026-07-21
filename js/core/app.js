@@ -25,6 +25,8 @@ import { getToolCategoryMap } from '../ai/toolSchemas.js';
 import '../ai/agentToolBridge.js';
 // Pre-load Agent Mode engine (Phase 2)
 import '../ai/agentEngine.js';
+// Dynamic suggestion chips (Issue 7)
+import { getSuggestionChips } from '../config/suggestionPool.js';
 
 const APP_VERSION = '1.0.0';
 const APP_VERSION_DATE = '20 July 2026';
@@ -504,17 +506,18 @@ const Settings = (() => {
       if (ChangePlanModal) ChangePlanModal.open();
     });
     
-    // Fallback bottomsheet triggers (from prior build, preserved as instructed)
-    document.getElementById('billingUpgradeBtn')?.addEventListener('click', openUpgradeSheet);
+    // All upgrade entry points route to the real Razorpay-integrated ChangePlanModal
+    document.getElementById('billingUpgradeBtn')?.addEventListener('click', () => ChangePlanModal.open());
     document.getElementById('upgradeSheetCloseBtn')?.addEventListener('click', closeUpgradeSheet);
 
     // ---- Sidebar Enhancements ----
-    document.getElementById('sidebarUpgradeBtn')?.addEventListener('click', openUpgradeSheet);
+    document.getElementById('sidebarUpgradeBtn')?.addEventListener('click', () => ChangePlanModal.open());
     document.getElementById('quicknavChatBtn')?.addEventListener('click', () => {
       document.getElementById('homeLogoBtn')?.click();
     });
     document.getElementById('quicknavToolsBtn')?.addEventListener('click', () => {
-      if (window.BottomSheet && BottomSheet.openToolSheet) BottomSheet.openToolSheet();
+      // BottomSheet is an ES module import — never use window.BottomSheet
+      if (BottomSheet?.openToolSheet) BottomSheet.openToolSheet();
     });
     document.getElementById('quicknavHistoryBtn')?.addEventListener('click', () => {
       document.getElementById('chatHistoryGroups')?.scrollIntoView({ behavior: 'smooth' });
@@ -554,17 +557,47 @@ const Settings = (() => {
         
         const catMap = getToolCategoryMap();
         const uniqueCats = Array.from(new Set(Object.values(catMap)));
+
+        // Starter prompts per category for chip click pre-fill
+        const CAT_STARTERS = {
+          social:    'Help me create a social media post for',
+          web:       'Analyze this website for me:',
+          edu:       'Help me write a professional email about',
+          career:    'Help me improve my resume for a role in',
+          utilities: 'Help me with a quick calculation:',
+          files:     'Help me with a file conversion task'
+        };
         
         uniqueCats.forEach(catId => {
           if (catId === 'all') return;
           const label = catId.charAt(0).toUpperCase() + catId.slice(1).replace(/-/g, ' ');
           const chip = document.createElement('div');
           chip.className = 'chip chip-sm';
+          chip.dataset.category = catId;
           chip.style.background = 'var(--bg-surface-2)';
           chip.style.border = '1px solid var(--border-med)';
           chip.style.color = 'var(--text-1)';
-          chip.style.pointerEvents = 'none';
+          chip.style.cursor = 'pointer';
+          chip.style.transition = 'background 0.15s, border-color 0.15s';
           chip.textContent = label;
+          chip.addEventListener('click', () => {
+            // Toggle active state
+            categoriesContainer.querySelectorAll('.chip').forEach(c => {
+              c.classList.remove('is-active');
+              c.style.background = 'var(--bg-surface-2)';
+              c.style.borderColor = 'var(--border-med)';
+            });
+            chip.classList.add('is-active');
+            chip.style.background = 'var(--accent-soft, rgba(108,99,255,0.12))';
+            chip.style.borderColor = 'var(--accent, #6c63ff)';
+            // Pre-fill input with category starter so user sees what this category can do
+            const chatInput = document.getElementById('chatInput');
+            if (chatInput) {
+              chatInput.value = CAT_STARTERS[catId] || `Help me with ${label}`;
+              chatInput.dispatchEvent(new Event('input'));
+              chatInput.focus();
+            }
+          });
           categoriesContainer.appendChild(chip);
         });
       }
@@ -580,6 +613,25 @@ const Settings = (() => {
       const agentReadyEl = document.getElementById('agentReadyState');
       if (agentReadyEl) {
         agentReadyEl.style.display = 'flex';
+        
+        // Render dynamic suggestion chips (Issue 7)
+        const chipsContainer = document.getElementById('agentReadyChips');
+        if (chipsContainer) {
+          const chips = getSuggestionChips(3);
+          chipsContainer.innerHTML = chips.map(prompt => `
+            <div class="chip chip-sm" style="background:var(--bg-surface-2); border:1px solid var(--border-med); color:var(--text-1); cursor:pointer;" 
+                 data-prompt="${prompt.replace(/"/g, '&quot;')}">
+              ${prompt}
+            </div>
+          `).join('');
+          
+          chipsContainer.querySelectorAll('.chip').forEach(chip => {
+            chip.addEventListener('click', () => {
+              document.dispatchEvent(new CustomEvent('suggestion-click', { detail: { prompt: chip.dataset.prompt } }));
+            });
+          });
+        }
+        
       } else {
         // Fallback: show normal empty state but with agent-mode class
         document.getElementById('emptyState').style.display = 'flex';
@@ -592,7 +644,19 @@ const Settings = (() => {
       document.getElementById('chatInput')?.focus();
     });
 
-    document.getElementById('deepResearchBtn')?.addEventListener('click', openUpgradeSheet);
+    document.getElementById('deepResearchBtn')?.addEventListener('click', () => ChangePlanModal.open());
+
+    // Listen for prompt card / suggestion chip clicks (Issues 7 & 9)
+    document.addEventListener('suggestion-click', (e) => {
+      const prompt = e.detail?.prompt;
+      if (!prompt) return;
+      const chatInput = document.getElementById('chatInput');
+      if (chatInput) {
+        chatInput.value = prompt;
+        chatInput.dispatchEvent(new Event('input'));
+        chatInput.focus();
+      }
+    });
     document.querySelector('.mode-pill-btn[data-mode="chat"]')?.addEventListener('click', function() {
       // It's the default behavior, just ensure it's visually active
       document.querySelectorAll('.mode-pill-btn').forEach(b => {

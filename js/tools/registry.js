@@ -167,6 +167,16 @@ export const ToolSelector = (() => {
   }
 
   function getPinned() {
+    // Phase 2: Dynamic — prefer the 3 most-used tools as pins if enough data exists.
+    // Cold-start fallback: tools hardcoded with pinned:true in the DATA model.
+    const topUsed = LocalSettings ? LocalSettings.getTopUsedTools(3) : [];
+    if (topUsed.length >= 3) {
+      return topUsed
+        .map(id => findTool(id))
+        .filter(Boolean)
+        .map(({ tool, category }) => ({ ...tool, categoryId: category.id }));
+    }
+    // Cold-start fallback: static pinned:true tools
     const pinned = [];
     const enabledIds = LocalSettings ? LocalSettings.getEnabledCategories() : null;
     DATA.forEach(cat => {
@@ -259,6 +269,9 @@ export const ToolSelector = (() => {
     if (!found) return;
     activeToolId = toolId;
 
+    // Track usage for dynamic pinning (Issue 6)
+    if (LocalSettings) LocalSettings.recordToolUsage(toolId);
+
     // Update chip label and icon
     const chipLabel = document.getElementById('toolChipLabel');
     const chipIcon  = document.querySelector('#toolChip .chip-icon');
@@ -329,15 +342,31 @@ export const ToolSelector = (() => {
 
     // simple generic quick-actions per tool; kept short and tool-flavored
     const suggestions = [
-      { title: `Start with ${tool.title}`, sub: tool.sub },
-      { title: 'See an example output', sub: 'Quick sample to get a feel' },
+      { title: `Start with ${tool.title}`, prompt: `Use ${tool.title} to help me`, sub: tool.sub },
+      { title: 'See an example output', prompt: `Show me an example output for ${tool.title}`, sub: 'Quick sample to get a feel' },
     ];
     el.innerHTML = suggestions.map(s => `
-      <button class="prompt-card">
+      <button class="prompt-card" data-prompt="${s.prompt.replace(/"/g, '&quot;')}">
         <div class="prompt-card-title">${s.title}</div>
         <div class="prompt-card-sub">${s.sub}</div>
       </button>
     `).join('');
+
+    // Wire click handlers: populate chat input and dispatch to send (Issue 9)
+    el.querySelectorAll('.prompt-card').forEach(card => {
+      card.addEventListener('click', () => {
+        const prompt = card.dataset.prompt;
+        if (!prompt) return;
+        const chatInput = document.getElementById('chatInput');
+        if (chatInput) {
+          chatInput.value = prompt;
+          chatInput.dispatchEvent(new Event('input'));
+          chatInput.focus();
+          // Dispatch custom event so app.js can auto-send if desired
+          document.dispatchEvent(new CustomEvent('suggestion-click', { detail: { prompt } }));
+        }
+      });
+    });
   }
 
   function init() {

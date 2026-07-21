@@ -82,6 +82,7 @@
       <div id="sidebarProjectsList" class="sidebar-group">
         <!-- populated by sidebar.js: Projects -->
       </div>
+      <div class="sidebar-section-label" style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; color: var(--text-muted); margin: 24px 12px 8px 12px;">HISTORY</div>
       <div id="chatHistoryGroups" class="sidebar-group">
         <!-- populated by localSettings.js: Today / Yesterday / Older -->
       </div>
@@ -158,7 +159,10 @@
 
           <!-- Agent Intro State -->
           <div id="agentIntroState" class="empty-state" style="display: none;">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="empty-mark"><path d="M12 2 L14.5 9.5 L22 12 L14.5 14.5 L12 22 L9.5 14.5 L2 12 L9.5 9.5 Z"/></svg>
+            <!-- Custom Bot/Sparkle Icon for Agent Intro (Issue 8) -->
+            <svg id="agentIntroMark" class="empty-mark empty-mark--agent" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 00-2.456 2.456zM16.894 20.567L16.5 21.75l-.394-1.183a2.25 2.25 0 00-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 001.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 001.423 1.423l1.183.394-1.183.394a2.25 2.25 0 00-1.423 1.423z" />
+            </svg>
             <div class="empty-greeting">Meet your Agent</div>
             <div style="color: var(--text-2); font-size: 14px; margin-bottom: 24px; text-align: center; max-width: 400px; line-height: 1.5;">
               Give it a task. It'll pick the right tools, run them, and get it done — no manual switching.
@@ -178,10 +182,8 @@
             <div style="color: var(--text-2); font-size: 13px; text-align: center; max-width: 340px; line-height: 1.6;">
               Type your task below. The agent will automatically pick the right tools and complete it step by step.
             </div>
-            <div style="display:flex; flex-wrap:wrap; gap:8px; justify-content:center; margin-top:8px;">
-              <div class="chip chip-sm" style="background:var(--bg-surface-2); border:1px solid var(--border-med); color:var(--text-1); cursor:pointer;" onclick="document.getElementById('chatInput').value='Calculate 15% of 8500'; document.getElementById('chatInput').dispatchEvent(new Event('input'));">Calculate 15% of 8500</div>
-              <div class="chip chip-sm" style="background:var(--bg-surface-2); border:1px solid var(--border-med); color:var(--text-1); cursor:pointer;" onclick="document.getElementById('chatInput').value='What is the weather today?'; document.getElementById('chatInput').dispatchEvent(new Event('input'));">What is the weather today?</div>
-              <div class="chip chip-sm" style="background:var(--bg-surface-2); border:1px solid var(--border-med); color:var(--text-1); cursor:pointer;" onclick="document.getElementById('chatInput').value='Write a LinkedIn post about productivity'; document.getElementById('chatInput').dispatchEvent(new Event('input'));">Write a LinkedIn post</div>
+            <!-- Dynamic suggestion chips populated by JS (Issue 7) -->
+            <div id="agentReadyChips" style="display:flex; flex-wrap:wrap; gap:8px; justify-content:center; margin-top:8px;">
             </div>
           </div>
 
@@ -821,7 +823,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" integrity="sha384-JcnsjUPPylna1s1fvi1u12X5qjY5OL56iySh75FdtrwhO/SWXgMjoVqcKyIIWOLk" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js" integrity="sha384-weMABwrltA6jWR8DDe9Jp5blk+tZQh7ugpCsF3JwSA53WZM9/14PjS5LAJNHNjAI" crossorigin="anonymous"></script>
 
-<script type="module" src="./js/core/app.js?v=32"></script>
+<script type="module" src="./js/core/app.js?v=33"></script>
 <!-- ============ AUTH OVERLAY ============ -->
 <div id="authOverlay" class="extracted-inline-50">
   <div class="extracted-inline-51">
