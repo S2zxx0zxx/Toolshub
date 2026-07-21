@@ -23,6 +23,8 @@ import { aiApi } from '../services/aiApi.js';
 // Pre-load Agent Mode modules (Phase 1)
 import '../ai/toolSchemas.js';
 import '../ai/agentToolBridge.js';
+// Pre-load Agent Mode engine (Phase 2)
+import '../ai/agentEngine.js';
 
 const APP_VERSION = '1.0.0';
 const APP_VERSION_DATE = '20 July 2026';

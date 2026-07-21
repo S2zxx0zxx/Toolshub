@@ -186,7 +186,7 @@ export default {
       }
     }
 
-    const { messages, model, temperature, stream, response_format } = body;
+    const { messages, model, temperature, stream, response_format, mode, tools } = body;
     if (!messages || !Array.isArray(messages)) {
       return new Response('Bad Request: Missing or invalid "messages" array.', { status: 400, headers: corsHeaders });
     }
@@ -211,6 +211,10 @@ export default {
     
     if (response_format) {
       payload.response_format = response_format;
+    }
+
+    if (mode === 'agent' && tools) {
+      payload.tools = tools;
     }
 
     // 5. Secret Key Verification

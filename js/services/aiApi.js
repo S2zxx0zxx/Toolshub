@@ -149,9 +149,49 @@ export const aiApi = (() => {
     }
   }
 
+  async function chatAgentRound(messages, tools) {
+    const payload = {
+      mode: 'agent',
+      model: LocalSettings.getSelectedChatModel() || CHAT_MODEL,
+      messages: messages,
+      tools: tools,
+      temperature: 0.7,
+      stream: false
+    };
+    
+    let response;
+    const localKey = getLocalKey();
+    
+    try {
+      if (localKey) {
+        console.warn("Direct API key usage is deprecated for security. Routing request via Cloudflare Worker.");
+      }
+      response = await fetch(API_ENDPOINT, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      
+      if (!response.ok) {
+        window.dispatchEvent(new CustomEvent('backend-status', { detail: 'disconnected' }));
+        const errorText = await response.text();
+        throw new Error(`Agent request failed (${response.status}): ${errorText}`);
+      }
+      
+      window.dispatchEvent(new CustomEvent('backend-status', { detail: 'connected' }));
+      const data = await response.json();
+      return data;
+    } catch (e) {
+      window.dispatchEvent(new CustomEvent('backend-status', { detail: 'disconnected' }));
+      console.error("Agent round failed:", e);
+      throw e;
+    }
+  }
+
   return {
     chatStream,
     chatCompletionJson,
+    chatAgentRound,
     pingBackend
   };
 })();
