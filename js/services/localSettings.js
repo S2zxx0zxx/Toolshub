@@ -53,10 +53,6 @@ export const LocalSettings = (() => {
 
     // ---------- CURRENT PLAN ----------
     getCurrentPlan() {
-      const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-      if (isLocalhost || sessionStorage.getItem('dev_bypass_0909') === 'true') {
-        return 'max'; // Unlocks everything globally for developers
-      }
       return _safeGet(KEYS.CURRENT_PLAN, 'free');
     },
     setCurrentPlan(planId) {

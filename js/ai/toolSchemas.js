@@ -8,7 +8,7 @@ export function getAllToolSchemas() {
       type: "function",
       function: {
         name: "calculator",
-        description: "Perform mathematical calculations safely. Use for arithmetic, percentages, unit math, etc.",
+        description: "Perform mathematical calculations safely. Use for arithmetic, percentages, unit math, etc. You may use % directly, e.g. '15% of 4500' or '20%'.",
         parameters: {
           type: "object",
           properties: {

@@ -13,7 +13,13 @@ service cloud.firestore {
       allow update: if request.auth != null && request.auth.uid == userId && !request.resource.data.diff(resource.data).affectedKeys().hasAny(['subscription']);
       allow delete: if request.auth != null && request.auth.uid == userId;
       
+      match /usage/{document=**} {
+        allow read: if request.auth != null && request.auth.uid == userId;
+        allow write: if false; // Only the Cloudflare Worker (admin) can write usage stats
+      }
+      
       match /{subcollection}/{document=**} {
+        // Prevent matching the usage subcollection again (though specific matches take precedence, it's good practice)
         allow read, write: if request.auth != null && request.auth.uid == userId;
       }
     }

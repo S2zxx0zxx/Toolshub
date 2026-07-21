@@ -1,4 +1,4 @@
-const CACHE_NAME = 'toolshub-cache-v31';
+const CACHE_NAME = 'toolshub-cache-v32';
 const urlsToCache = [
   './',
   './index.html',

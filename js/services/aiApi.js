@@ -1,4 +1,5 @@
 import { LocalSettings } from './localSettings.js';
+import { Auth } from './auth.js';
 
 export const aiApi = (() => {
   // Always route to live Cloudflare Worker
@@ -11,6 +12,18 @@ export const aiApi = (() => {
   // Check if Developer Mode key is set
   function getLocalKey() {
     return localStorage.getItem('GROQ_API_KEY');
+  }
+
+  async function getAuthHeader() {
+    const user = Auth.getCurrentUser();
+    if (!user) return {};
+    try {
+      const token = await user.getIdToken();
+      return { 'Authorization': `Bearer ${token}` };
+    } catch (e) {
+      console.warn('Failed to get ID token:', e);
+      return {};
+    }
   }
 
   async function pingBackend() {
@@ -49,9 +62,10 @@ export const aiApi = (() => {
       if (localKey) {
         console.warn("Direct API key usage is deprecated for security. Routing request via Cloudflare Worker.");
       }
+      const authHeader = await getAuthHeader();
       response = await fetch(API_ENDPOINT, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', ...authHeader },
         body: JSON.stringify(payload)
       });
     } catch (e) {
@@ -128,9 +142,10 @@ export const aiApi = (() => {
       if (localKey) {
         console.warn("Direct API key usage is deprecated for security. Routing request via Cloudflare Worker.");
       }
+      const authHeader = await getAuthHeader();
       response = await fetch(API_ENDPOINT, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', ...authHeader },
         body: JSON.stringify(payload)
       });
       
@@ -166,9 +181,10 @@ export const aiApi = (() => {
       if (localKey) {
         console.warn("Direct API key usage is deprecated for security. Routing request via Cloudflare Worker.");
       }
+      const authHeader = await getAuthHeader();
       response = await fetch(API_ENDPOINT, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', ...authHeader },
         body: JSON.stringify(payload)
       });
       

@@ -1,4 +1,7 @@
 import { handlePaymentRequest } from './payments.js';
+import { resolvePlan } from './planResolver.js';
+import { checkAndIncrementDailyUsage } from './usageTracker.js';
+import { FirebaseAdmin } from './firebaseAdmin.js';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*', // Fixed: wildcard to prevent CORS blocks
@@ -9,6 +12,7 @@ const corsHeaders = {
 
 // Simple rate limiter implementation using Map is NOT fully reliable across Cloudflare edge nodes,
 // but works as a basic deterrent within a single isolate.
+// Deterrent only — durable per-user quota is enforced via Firestore in planResolver.js/usageTracker.js.
 const ipRateLimits = new Map();
 const RATE_LIMIT_WINDOW_MS = 60000;
 const MAX_REQUESTS_PER_WINDOW = 30;
@@ -127,6 +131,16 @@ export default {
       return new Response('Too Many Requests. Please slow down.', { status: 429, headers: corsHeaders });
     }
 
+    let callerPlan;
+    try {
+      callerPlan = await resolvePlan(request, env);
+    } catch (e) {
+      return new Response(JSON.stringify({ error: 'Invalid or expired authentication token.' }), {
+        status: 401,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+      });
+    }
+
     // 4. Request Validation
     let body;
     try {
@@ -218,6 +232,15 @@ export default {
       } catch (e) {
         return new Response(JSON.stringify({ error: 'RAG query failed.', details: e.message }), { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
       }
+    }
+
+    const fbAdmin = new FirebaseAdmin(env.FIREBASE_SERVICE_ACCOUNT);
+    const usageCheck = await checkAndIncrementDailyUsage(fbAdmin, callerPlan.uid, callerPlan.dailyLimit, env);
+    if (!usageCheck.allowed) {
+      return new Response(JSON.stringify({ error: 'daily_limit_reached', limit: callerPlan.dailyLimit }), {
+        status: 429,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+      });
     }
 
     const { messages, model, temperature, stream, response_format, mode, tools } = body;
@@ -364,6 +387,17 @@ export default {
       
       for (const [key, value] of Object.entries(corsHeaders)) {
         responseHeaders.set(key, value);
+      }
+
+      if (!stream && !isCompoundModel) {
+        const data = await groqResponse.json();
+        if (mode === 'agent') {
+          data.meta = { planId: callerPlan.planId, maxSteps: callerPlan.maxSteps };
+        }
+        return new Response(JSON.stringify(data), {
+          status: groqResponse.status,
+          headers: responseHeaders
+        });
       }
 
       // If streaming, return the readable stream directly.

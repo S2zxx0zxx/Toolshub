@@ -1,5 +1,6 @@
 import { LocalSettings } from '../services/localSettings.js';
 import { PromptManager } from './prompt.js';
+import { ContextManager } from './context.js';
 import { aiApi } from '../services/aiApi.js';
 import { getAllToolSchemas } from './toolSchemas.js';
 import { executeAgentTool } from './agentToolBridge.js';
@@ -20,27 +21,40 @@ When the user asks you to perform a task, use the provided tools to gather data,
 const MAX_STEPS_DEFAULT = 8;
 const MAX_STEPS_MAX_TIER = 12;
 
+function formatDataResult(toolId, result) {
+  if (toolId === 'weather' && result) {
+    return `Weather in ${result.location || 'the requested location'}: ${result.temperature ?? '?'}°C, wind ${result.windspeed ?? '?'} km/h.`;
+  }
+  if (toolId === 'calculator' && result) {
+    return `${result.original_expression} = ${result.result}`;
+  }
+  if (toolId === 'search' && result) {
+    const answer = result.answer ? `Summary: ${result.answer}\n` : '';
+    const top = (result.results || []).slice(0, 3).map(r => `- ${r.title}: ${r.url}`).join('\n');
+    return `${answer}${top}`.trim() || JSON.stringify(result);
+  }
+  return JSON.stringify(result);
+}
+
 export async function executeAgentTask(userMessage, conversationHistory, options = {}) {
   try {
     // 1. Determine tier and model
     // 1. Determine maxSteps based on plan
     const currentPlanId = LocalSettings.getCurrentPlan ? LocalSettings.getCurrentPlan() : 'free';
     const activePlan = PLANS.find(p => p.id === currentPlanId) || PLANS[0];
-    const maxSteps = (activePlan.label === 'Max') ? MAX_STEPS_MAX_TIER : MAX_STEPS_DEFAULT;
+    let maxSteps = (activePlan.label === 'Max') ? MAX_STEPS_MAX_TIER : MAX_STEPS_DEFAULT;
     
-    // 3. Build initial messages array
-    const baseSystemPrompt = PromptManager.getSystemPrompt();
-    const fullSystemPrompt = baseSystemPrompt + AGENT_INSTRUCTIONS;
-    
+    const builtContext = ContextManager.buildContext(conversationHistory || [], options.toolResults || []);
     const messages = [
-      { role: "system", content: fullSystemPrompt },
-      ...(conversationHistory || []),
+      ...builtContext,
+      { role: "system", content: AGENT_INSTRUCTIONS },
       { role: "user", content: userMessage }
     ];
 
     const schemas = getAllToolSchemas();
     
     let step = 0;
+    let lastPartialText = null;
     
     // 4. Loop
     while (step < maxSteps) {
@@ -48,6 +62,10 @@ export async function executeAgentTask(userMessage, conversationHistory, options
       
       // a. Call worker in agent mode
       const response = await aiApi.chatAgentRound(messages, schemas);
+
+      if (step === 1 && response.meta && response.meta.maxSteps) {
+        maxSteps = response.meta.maxSteps;
+      }
       
       const responseMessage = response.choices && response.choices[0] && response.choices[0].message;
       if (!responseMessage) {
@@ -56,12 +74,21 @@ export async function executeAgentTask(userMessage, conversationHistory, options
 
       // b. If tool calls exist
       if (responseMessage.tool_calls && responseMessage.tool_calls.length > 0) {
+        if (responseMessage.content) {
+          lastPartialText = responseMessage.content;
+        }
+
         // Append the assistant's tool call message exactly as returned
         messages.push(responseMessage);
         
         // Process each tool call
         for (const toolCall of responseMessage.tool_calls) {
           const toolId = toolCall.function.name;
+
+          if (options.onStep) {
+            options.onStep({ stepNumber: step, toolId, status: 'running' });
+          }
+
           let parsedParams = {};
           try {
             parsedParams = JSON.parse(toolCall.function.arguments || '{}');
@@ -83,21 +110,28 @@ export async function executeAgentTask(userMessage, conversationHistory, options
             } 
             // e. kind: "content"
             else if (toolResult.kind === 'content') {
+              const CONTENT_GEN_TIMEOUT_MS = 20000;
               try {
                 // Secondary generation using the prompt hint
-                const contentGenResponse = await aiApi.chatAgentRound([
+                const contentGenPromise = aiApi.chatAgentRound([
                   { role: "system", content: toolResult.result.systemPromptHint },
                   { role: "user", content: toolResult.result.userInput }
                 ], undefined); // no tools
                 
-                toolResponseText = contentGenResponse.choices[0].message.content;
+                const timeoutPromise = new Promise((_, reject) =>
+                  setTimeout(() => reject(new Error('Content generation timed out.')), CONTENT_GEN_TIMEOUT_MS)
+                );
+
+                const contentGenResponse = await Promise.race([contentGenPromise, timeoutPromise]);
+                const choice = contentGenResponse?.choices?.[0]?.message?.content;
+                toolResponseText = choice ? choice : "Content generation returned an empty response.";
               } catch (err) {
                 toolResponseText = `Content generation failed: ${err.message}`;
               }
             } 
             // kind: "data"
             else {
-              toolResponseText = JSON.stringify(toolResult.result);
+              toolResponseText = formatDataResult(toolId, toolResult.result);
             }
           }
           
@@ -128,14 +162,8 @@ export async function executeAgentTask(userMessage, conversationHistory, options
     }
     
     // f. Max steps reached without final text answer
-    let partialMessage = "Task incomplete after maximum steps reached.";
-    // Try to find the last assistant message that had some text content
-    for (let i = messages.length - 1; i >= 0; i--) {
-      if (messages[i].role === 'assistant' && messages[i].content) {
-        partialMessage = messages[i].content;
-        break;
-      }
-    }
+    const partialMessage = lastPartialText
+      || "I made progress on this task but couldn't finish within the step limit. Could you narrow the request or ask me to continue?";
     
     return {
       success: true,

@@ -122,4 +122,30 @@ export class FirebaseAdmin {
     if (data.error) throw new Error(data.error.message);
     return data;
   }
+
+  async getUserDoc(uid) {
+    const token = await this.getAccessToken();
+    const res = await fetch(`https://firestore.googleapis.com/v1/projects/${this.projectId}/databases/(default)/documents/users/${uid}`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    if (res.status === 404) return null;
+    const data = await res.json();
+    if (data.error) throw new Error(data.error.message);
+    // Flatten Firestore's typed field format into plain JS
+    const flat = {};
+    for (const [key, val] of Object.entries(data.fields || {})) {
+      if ('stringValue' in val) flat[key] = val.stringValue;
+      else if ('integerValue' in val) flat[key] = parseInt(val.integerValue, 10);
+      else if ('booleanValue' in val) flat[key] = val.booleanValue;
+      else if ('mapValue' in val) {
+        flat[key] = {};
+        for (const [k2, v2] of Object.entries(val.mapValue.fields || {})) {
+          if ('stringValue' in v2) flat[key][k2] = v2.stringValue;
+          else if ('integerValue' in v2) flat[key][k2] = parseInt(v2.integerValue, 10);
+          else if ('booleanValue' in v2) flat[key][k2] = v2.booleanValue;
+        }
+      }
+    }
+    return flat;
+  }
 }
