@@ -12,6 +12,8 @@ import { Chat } from '../ui/chatEngine.js';
 import { ToolSelector } from '../tools/registry.js';
 import { PersonaPicker } from '../ui/personaPicker.js';
 import { ChangePlanModal } from '../ui/changePlanModal.js';
+import { AdvancedControls } from '../ui/advancedControls.js';
+import { ConnectorsSheet } from '../ui/connectorsSheet.js';
 import { PERSONAS } from '../config/personas.js';
 import { PLANS } from '../config/plans.js';
 import { Router } from './router.js';
