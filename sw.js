@@ -1,44 +1,74 @@
-const CACHE_NAME = 'toolshub-cache-v32';
+const CACHE_NAME = 'toolshub-cache-v35';
 const urlsToCache = [
   './',
   './index.html',
   './terms.html',
   './privacy.html',
   './refund-policy.html',
+  './manifest.json',
+  // === CSS ===
   './css/core/variables.css',
   './css/layout/layout.css',
   './css/components/components.css',
+  './css/components/personaPicker.css',
+  './css/components/changePlan.css',
   './css/layout/sidebar.css',
   './css/layout/chat.css',
   './css/components/bottomsheet.css',
   './css/components/tools.css',
   './css/layout/screens-extra.css',
   './css/components/inline-extracted.css',
+  './css/components/chatHistory.css',
+  './css/components/bugReport.css',
+  './css/components/advancedControls.css',
+  // === JS CORE ===
   './js/core/app.js',
   './js/core/events.js',
   './js/core/router.js',
+  // === JS SERVICES ===
   './js/services/localSettings.js',
   './js/services/firebase.js',
   './js/services/auth.js',
   './js/services/cloudDb.js',
+  './js/services/aiApi.js',
+  './js/services/ragService.js',
+  './js/services/overlayManager.js',
+  // === JS TOOLS ===
   './js/tools/registry.js',
   './js/tools/utilityTools.js',
   './js/tools/fileTools.js',
+  './js/tools/permissions.js',
+  './js/tools/executor.js',
+  // === JS UI ===
   './js/ui/sidebar.js',
   './js/ui/bottomsheet.js',
   './js/ui/chatEngine.js',
   './js/ui/toast.js',
+  './js/ui/changePlanModal.js',
+  './js/ui/personaPicker.js',
+  './js/ui/advancedControls.js',
+  './js/ui/connectorsSheet.js',
+  // === JS AI ===
   './js/ai/prompt.js',
   './js/ai/context.js',
   './js/ai/intent.js',
   './js/ai/router.js',
-  './js/services/aiApi.js',
-  './js/services/ragService.js',
-  './js/tools/permissions.js',
-  './js/tools/executor.js',
+  './js/ai/agentEngine.js',
+  './js/ai/toolSchemas.js',
+  // === JS SERVICES/TOOLS ===
   './js/services/tools/calculatorService.js',
   './js/services/tools/weatherService.js',
-  './js/services/tools/searchService.js'
+  './js/services/tools/searchService.js',
+  // === JS CONFIG ===
+  './js/config/plans.js',
+  './js/config/personas.js',
+  './js/config/planVocabulary.js',
+  './js/config/suggestionPool.js',
+  './js/env.js',
+  // === JS TOOLS EXTRA ===
+  './js/tools/connectorsRegistry.js',
+  // === JS AI EXTRA ===
+  './js/ai/agentToolBridge.js'
 ];
 
 self.addEventListener('install', event => {
