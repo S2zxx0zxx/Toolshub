@@ -559,10 +559,9 @@ const Settings = (() => {
       this.setAttribute('aria-pressed', 'true');
       Chat.setAgentMode(true);
       
-      // Check first-run
-      if (!LocalSettings.getHasSeenAgentIntro()) {
-        document.getElementById('emptyState').style.display = 'none';
-        document.getElementById('msgList').style.display = 'none';
+      // Always show Agent Intro screen on switch to clearly indicate Agent Mode is active
+      document.getElementById('emptyState').style.display = 'none';
+      document.getElementById('msgList').style.display = 'none';
         document.getElementById('utilityPanel').style.display = 'none';
         
         const introState = document.getElementById('agentIntroState');
@@ -589,8 +588,7 @@ const Settings = (() => {
             categoriesContainer.appendChild(chip);
           });
         }
-      }
-    });
+      });
     
     document.getElementById('agentIntroStartBtn')?.addEventListener('click', function() {
       LocalSettings.setHasSeenAgentIntro(true);
