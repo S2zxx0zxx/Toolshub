@@ -1074,6 +1074,11 @@ document.addEventListener('DOMContentLoaded', async () => {
       
       Toast.show(`Welcome, ${name}!`);
 
+      // Sync plan from Firestore source of truth
+      CloudDB.syncPlanFromServer().then(() => {
+        window.dispatchEvent(new CustomEvent('plan-changed'));
+      });
+
       // Migrate local chats if any
       CloudDB.migrateLocalChats().then(() => {
         // Subscribe to real-time chats for sidebar
@@ -1096,6 +1101,11 @@ document.addEventListener('DOMContentLoaded', async () => {
 
       const logoutRow = document.getElementById('logoutRow');
       if (logoutRow) logoutRow.style.display = 'none';
+      
+      // Guest mode always gets free plan
+      CloudDB.syncPlanFromServer().then(() => {
+        window.dispatchEvent(new CustomEvent('plan-changed'));
+      });
 
       // Load Guest chats
       CloudDB.subscribeConversations((chats) => {

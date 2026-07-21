@@ -1,3 +1,5 @@
+import { handlePaymentRequest } from './payments.js';
+
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*', // Fixed: wildcard to prevent CORS blocks
   'Access-Control-Allow-Methods': 'GET,HEAD,POST,OPTIONS',
@@ -23,6 +25,28 @@ function checkRateLimit(ip) {
     return true;
   }
   if (record.count >= MAX_REQUESTS_PER_WINDOW) {
+    return false;
+  }
+  record.count++;
+  return true;
+}
+
+const paymentRateLimits = new Map();
+const PAYMENT_RATE_LIMIT_WINDOW_MS = 60000;
+const PAYMENT_MAX_REQUESTS_PER_WINDOW = 100; // Looser limit for payments
+
+function checkPaymentRateLimit(ip) {
+  const now = Date.now();
+  if (!paymentRateLimits.has(ip)) {
+    paymentRateLimits.set(ip, { count: 1, resetTime: now + PAYMENT_RATE_LIMIT_WINDOW_MS });
+    return true;
+  }
+  const record = paymentRateLimits.get(ip);
+  if (now > record.resetTime) {
+    paymentRateLimits.set(ip, { count: 1, resetTime: now + PAYMENT_RATE_LIMIT_WINDOW_MS });
+    return true;
+  }
+  if (record.count >= PAYMENT_MAX_REQUESTS_PER_WINDOW) {
     return false;
   }
   record.count++;
@@ -89,6 +113,16 @@ export default {
 
     // 3. Rate Limiting
     const clientIp = request.headers.get('cf-connecting-ip') || 'unknown';
+    
+    // Check if it's a payment request
+    const url = new URL(request.url);
+    if (url.pathname.startsWith('/api/payment/')) {
+      if (!checkPaymentRateLimit(clientIp)) {
+        return new Response('Too Many Requests. Please slow down.', { status: 429, headers: corsHeaders });
+      }
+      return await handlePaymentRequest(request, env, corsHeaders);
+    }
+
     if (!checkRateLimit(clientIp)) {
       return new Response('Too Many Requests. Please slow down.', { status: 429, headers: corsHeaders });
     }

@@ -1,6 +1,8 @@
 import { LocalSettings } from '../services/localSettings.js';
 import { PLANS } from '../config/plans.js';
 import { Toast } from './toast.js';
+import { Auth } from '../services/auth.js';
+import { CloudDB } from '../services/cloudDb.js';
 
 export const ChangePlanModal = (() => {
   let modalOverlay = null;
@@ -164,13 +166,127 @@ export const ChangePlanModal = (() => {
     modalOverlay.appendChild(modal);
   }
 
-  function initiatePayment(planId) {
+  async function initiatePayment(planId) {
     console.log('initiatePayment called for plan:', planId);
-    // TODO: Wire up actual payment gateway
-    if (Toast) {
-      Toast.show('Payment integration coming soon!');
+    
+    // 1. Confirm user is signed in
+    const currentUser = Auth.getCurrentUser();
+    if (!currentUser) {
+      if (Toast) Toast.show('Please sign in to upgrade your plan.');
+      close();
+      const authOverlay = document.getElementById('authOverlay');
+      if (authOverlay) authOverlay.style.display = 'flex';
+      return;
     }
-    close();
+
+    const confirmBtn = modalOverlay.querySelector('.btn-confirm');
+    if (confirmBtn) {
+      confirmBtn.disabled = true;
+      confirmBtn.textContent = 'Processing...';
+    }
+
+    try {
+      // 2. Get the user's Firebase ID token
+      const idToken = await currentUser.getIdToken();
+      
+      // 3. Call POST {WORKER_URL}/api/payment/create-order
+      const API_ENDPOINT = 'https://toolshub-api-worker.theliquidlounge-co.workers.dev/api/payment/create-order';
+      const orderRes = await fetch(API_ENDPOINT, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${idToken}`
+        },
+        body: JSON.stringify({ planId })
+      });
+
+      const orderData = await orderRes.json();
+      if (!orderRes.ok || orderData.error) {
+        throw new Error(orderData.error || 'Failed to create order');
+      }
+
+      // Find plan details for Razorpay UI
+      const planDetails = PLANS.find(p => p.id === planId) || PLANS[1];
+
+      // 4. Open Razorpay's checkout
+      const options = {
+        key: orderData.keyId,
+        amount: orderData.amount,
+        currency: orderData.currency,
+        name: 'ToolsHub',
+        description: `${planDetails.label} Plan`,
+        order_id: orderData.orderId,
+        theme: {
+          color: getComputedStyle(document.body).getPropertyValue('--accent').trim() || '#4f46e5'
+        },
+        handler: async function (response) {
+          // 5. Verify Payment
+          try {
+            if (Toast) Toast.show('Verifying payment...', 'info');
+            const VERIFY_ENDPOINT = 'https://toolshub-api-worker.theliquidlounge-co.workers.dev/api/payment/verify';
+            const verifyRes = await fetch(VERIFY_ENDPOINT, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${idToken}`
+              },
+              body: JSON.stringify({
+                razorpay_order_id: response.razorpay_order_id,
+                razorpay_payment_id: response.razorpay_payment_id,
+                razorpay_signature: response.razorpay_signature,
+                planId: planId
+              })
+            });
+            
+            const verifyData = await verifyRes.json();
+            if (!verifyRes.ok || verifyData.error) {
+              throw new Error(verifyData.error || 'Failed to verify payment');
+            }
+
+            // 6. On verify success
+            await CloudDB.syncPlanFromServer(); // update local cache from source of truth
+            if (Toast) Toast.show(`You're now on the ${planDetails.label} plan!`, 'success');
+            
+            // Refresh UI if needed (Pill, etc.)
+            window.dispatchEvent(new CustomEvent('plan-changed'));
+            close();
+
+          } catch (verifyErr) {
+            console.error('Verify error:', verifyErr);
+            if (Toast) Toast.show('Payment verify failed. Contact support if charged.', 'error');
+            close();
+          }
+        },
+        modal: {
+          ondismiss: function() {
+            if (Toast) Toast.show('Payment cancelled', 'info');
+            if (confirmBtn) {
+              confirmBtn.disabled = false;
+              confirmBtn.textContent = 'Confirm';
+            }
+          }
+        }
+      };
+      
+      const rzp = new Razorpay(options);
+      rzp.on('payment.failed', function (response){
+        console.error('Payment Failed:', response.error);
+        if (Toast) Toast.show('Payment failed: ' + response.error.description, 'error');
+        if (confirmBtn) {
+          confirmBtn.disabled = false;
+          confirmBtn.textContent = 'Confirm';
+        }
+      });
+      rzp.open();
+
+    } catch (e) {
+      console.error('Payment initiation error:', e);
+      if (Toast) Toast.show('Could not start payment. Please try again.', 'error');
+      if (confirmBtn) {
+        confirmBtn.disabled = false;
+        confirmBtn.textContent = 'Confirm';
+      }
+    }
   }
 
   function open() {

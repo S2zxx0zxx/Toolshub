@@ -307,6 +307,35 @@ export const CloudDB = (() => {
     }
   }
 
+  async function syncPlanFromServer() {
+    const uid = _uid();
+    if (!uid || !db || !fbFirestoreModule) {
+      LocalSettings.setCurrentPlan('free');
+      return;
+    }
+    
+    try {
+      const userRef = fbFirestoreModule.doc(db, 'users', uid);
+      const snap = await fbFirestoreModule.getDoc(userRef);
+      if (snap.exists()) {
+        const data = snap.data();
+        const sub = data.subscription;
+        if (sub && sub.status === 'active' && sub.expiresAt > Date.now()) {
+          LocalSettings.setCurrentPlan(sub.planId);
+        } else {
+          LocalSettings.setCurrentPlan('free');
+        }
+      } else {
+        LocalSettings.setCurrentPlan('free');
+      }
+    } catch (e) {
+      console.warn("Failed to sync plan from server:", e);
+      // Keep existing cache on network failure, or degrade to free?
+      // Better to keep cache if offline, but don't blindly grant access.
+      // We rely on rules for real security, so keeping cache is fine for UX.
+    }
+  }
+
   return {
     subscribeConversations,
     loadChatMessages,
@@ -320,6 +349,7 @@ export const CloudDB = (() => {
     joinProWaitlist,
     exportUserData,
     clearAllConversations,
-    deleteUserAccount
+    deleteUserAccount,
+    syncPlanFromServer
   };
 })();
