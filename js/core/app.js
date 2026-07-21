@@ -532,8 +532,8 @@ const Settings = (() => {
     document.getElementById('agentModeBtn')?.addEventListener('click', function(e) {
       e.preventDefault();
       
-      // Developer passcode shortcut (Alt + Click to trigger prompt)
-      if (e.altKey && LocalSettings.getCurrentPlan() !== 'max') {
+      // Developer passcode shortcut (Shift + Click to trigger prompt)
+      if (e.shiftKey && LocalSettings.getCurrentPlan() !== 'max') {
         const pass = prompt("Enter Developer Access Code:");
         if (pass === "0909") {
           sessionStorage.setItem('dev_bypass_0909', 'true');
