@@ -532,7 +532,25 @@ const Settings = (() => {
     document.getElementById('agentModeBtn')?.addEventListener('click', function(e) {
       e.preventDefault();
       const plan = LocalSettings.getCurrentPlan() || 'free';
-      if (plan === 'free') {
+      let isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+      
+      // Developer passcode check (Alt + Click to trigger prompt)
+      if (plan === 'free' && !isLocalhost && e.altKey) {
+        const pass = prompt("Enter Developer Access Code:");
+        if (pass === "0909") {
+          sessionStorage.setItem('dev_bypass_0909', 'true');
+        } else if (pass !== null) {
+          alert("Incorrect code");
+        }
+      }
+
+      // Check if session bypass is active
+      if (sessionStorage.getItem('dev_bypass_0909') === 'true') {
+        isLocalhost = true;
+      }
+      
+      // Developer bypass: Allow Agent Mode on localhost or via passcode even for 'free' plan
+      if (plan === 'free' && !isLocalhost) {
         if (window.ChangePlanModal) ChangePlanModal.open();
         return;
       }
