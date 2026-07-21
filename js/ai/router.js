@@ -22,8 +22,33 @@ export const AIRouter = (() => {
     
     // Check if query is business/agency specific and populate RAG context
     PromptManager.setRagContext(null);
-    const ragPattern = /(services|pricing|client|agency|cost|portfolio)/i;
-    if (ragPattern.test(text)) {
+    // ADVANCED HINGLISH TRIGGER FOR RAG:
+    // We use categorized regex patterns to detect if the user's query requires knowledge base retrieval.
+    // This handles Hinglish spelling variations, slang, and highly specific domain terms (SEO, Ads, etc).
+    // False positives are acceptable, as an extra RAG lookup gracefully contributes nothing extra.
+    const RAG_CATEGORIES = {
+      // 1. Pricing, Cost & Budget (with Hinglish slang and variations)
+      pricing: /\b(price|pricing|cost|costing|rate|rates|charge|charges|fee|fees|kharcha|karcha|kharch|keemat|kimat|qimat|paisa|paise|budget|bajat|quote|quotation|bill|estimate|kitne ka)\b/i,
+      
+      // 2. Core Offerings & Services
+      services: /\b(service|services|offer|offering|offerings|kaam|kya karte|portfolio|kaam karte|banate ho|kya kya hai|kya provide|provide)\b/i,
+      
+      // 3. Domain Specific Terms (Direct matches from DigiRise Knowledge Base)
+      domain: /\b(seo|website|web design|web development|ecommerce|e-commerce|shopify|woocommerce|smm|social media|meta ads|google ads|fb ads|facebook ads|instagram|reels|marketing|branding|brand kit)\b/i,
+      
+      // 4. Agency Identity, Trust & Process
+      identity: /\b(agency|company|digirise|firm|team|roi|guarantee|results|process|refund|shuru|start|onboarding)\b/i,
+      
+      // 5. Clients & Proof of Work
+      proof: /\b(client|clients|customer|customers|case study|case studies|work sample|work samples|kaam dikhao|project dikhao|past work|examples|example|result dikhao)\b/i,
+      
+      // 6. Packages & Plans
+      packages: /\b(package|packages|plan|plans|starter|growth|authority|scale|premium|tier)\b/i
+    };
+
+    const needsRag = Object.values(RAG_CATEGORIES).some(pattern => pattern.test(text));
+    
+    if (needsRag) {
       try {
         const ragResult = await ragService.queryRAG(text);
         if (ragResult && ragResult.results && ragResult.results.length > 0) {
