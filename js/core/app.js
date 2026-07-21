@@ -899,36 +899,42 @@ document.addEventListener('DOMContentLoaded', async () => {
   PersonaPicker.init();
   ChangePlanModal.init();
 
-  // Set initial subscription state in Settings
-  const initialPlanId = LocalSettings.getCurrentPlan() || 'free';
-  const planObj = PLANS.find(p => p.id === initialPlanId) || PLANS[0];
-  
-  // Update Topbar Pill
-  const topbarPlanPill = document.getElementById('topbarPlanPill');
-  const aiStatusIndicator = document.getElementById('aiStatusIndicator');
-  if (topbarPlanPill && aiStatusIndicator) {
-    if (initialPlanId === 'free') {
-      topbarPlanPill.style.display = 'none';
-      aiStatusIndicator.style.display = 'inline-flex';
-    } else {
-      topbarPlanPill.textContent = planObj.label.toUpperCase();
-      topbarPlanPill.style.display = 'inline-block';
-      aiStatusIndicator.style.display = 'none';
-      topbarPlanPill.onclick = () => { if (window.ChangePlanModal) window.ChangePlanModal.open(); };
+  // Function to update the plan UI
+  function updatePlanUI() {
+    const currentPlanId = LocalSettings.getCurrentPlan() || 'free';
+    const planObj = PLANS.find(p => p.id === currentPlanId) || PLANS[0];
+    
+    // Update Topbar Pill
+    const topbarPlanPill = document.getElementById('topbarPlanPill');
+    const aiStatusIndicator = document.getElementById('aiStatusIndicator');
+    if (topbarPlanPill && aiStatusIndicator) {
+      if (currentPlanId === 'free') {
+        topbarPlanPill.style.display = 'none';
+        aiStatusIndicator.style.display = 'inline-flex';
+      } else {
+        topbarPlanPill.textContent = planObj.label.toUpperCase();
+        topbarPlanPill.style.display = 'inline-block';
+        aiStatusIndicator.style.display = 'none';
+        topbarPlanPill.onclick = () => { if (window.ChangePlanModal) window.ChangePlanModal.open(); };
+      }
+    }
+    const subName = document.getElementById('subPlanName');
+    const subStatus = document.getElementById('subPlanStatus');
+    const subPeriod = document.getElementById('subPlanPeriod');
+    
+    if (subName) subName.textContent = planObj.label;
+    if (subStatus) {
+      subStatus.textContent = 'active';
+      subStatus.className = 'settings-sub-status-text is-active';
+    }
+    if (subPeriod) {
+      subPeriod.textContent = currentPlanId === 'free' ? 'Forever free' : `Renews: ${planObj.priceLabel}${planObj.periodLabel}`;
     }
   }
-  const subName = document.getElementById('subPlanName');
-  const subStatus = document.getElementById('subPlanStatus');
-  const subPeriod = document.getElementById('subPlanPeriod');
-  
-  if (subName) subName.textContent = planObj.label;
-  if (subStatus) {
-    subStatus.textContent = 'active';
-    subStatus.className = 'settings-sub-status-text is-active';
-  }
-  if (subPeriod) {
-    subPeriod.textContent = initialPlanId === 'free' ? 'Forever free' : `Renews: ${planObj.priceLabel}${planObj.periodLabel}`;
-  }
+
+  // Initial update and event listener
+  updatePlanUI();
+  window.addEventListener('plan-changed', updatePlanUI);
 
   // Set initial persona subtitle in Settings
   const initialPersonaId = LocalSettings.getPersona();

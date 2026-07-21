@@ -33,9 +33,11 @@ export async function handlePaymentRequest(request, env, corsHeaders) {
   const url = new URL(request.url);
   const path = url.pathname;
 
+  let rawBody = '';
   let body = {};
   try {
-    body = await request.json();
+    rawBody = await request.text();
+    body = JSON.parse(rawBody);
   } catch (e) {
     if (request.method === 'POST') {
       return new Response('Invalid JSON body', { status: 400, headers: corsHeaders });
@@ -133,8 +135,6 @@ export async function handlePaymentRequest(request, env, corsHeaders) {
   if (path === '/api/payment/webhook') {
     const signature = request.headers.get('X-Razorpay-Signature');
     if (!signature) return new Response('Missing signature', { status: 400 });
-
-    const rawBody = await request.clone().text(); // Need raw body for HMAC
 
     try {
       const generatedSignature = await hmacSha256(env.RAZORPAY_WEBHOOK_SECRET, rawBody);
