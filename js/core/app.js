@@ -514,16 +514,25 @@ const Settings = (() => {
     document.getElementById('upgradeSheetCloseBtn')?.addEventListener('click', closeUpgradeSheet);
 
     // ---- Sidebar Enhancements ----
-    document.getElementById('sidebarUpgradeBtn')?.addEventListener('click', () => ChangePlanModal.open());
+    // BUG-09 FIX: sidebarUpgradeBtn element does not exist in HTML.
+    // Upgrade Plan button uses id="billingUpgradeBtn" (wired above on the previous line).
+    // Dead listener removed.
     document.getElementById('quicknavChatBtn')?.addEventListener('click', () => {
-      document.getElementById('homeLogoBtn')?.click();
+      Router.navigate('chat');
+      if (window.matchMedia('(max-width: 860px)').matches) {
+        Sidebar.close();
+      }
     });
     document.getElementById('quicknavToolsBtn')?.addEventListener('click', () => {
       // BottomSheet is an ES module import — never use window.BottomSheet
       if (BottomSheet?.openToolSheet) BottomSheet.openToolSheet();
     });
     document.getElementById('quicknavHistoryBtn')?.addEventListener('click', () => {
-      document.getElementById('chatHistoryGroups')?.scrollIntoView({ behavior: 'smooth' });
+      const sidebarScroll = document.querySelector('.sidebar-scroll');
+      const historyEl = document.getElementById('chatHistoryGroups');
+      if (sidebarScroll && historyEl) {
+        sidebarScroll.scrollTo({ top: historyEl.offsetTop, behavior: 'smooth' });
+      }
     });
     document.getElementById('quicknavSettingsBtn')?.addEventListener('click', open);
 

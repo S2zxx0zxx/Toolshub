@@ -68,6 +68,7 @@
   /* ---------- TYPOGRAPHY ---------- */
   --font-display: 'Fraunces', Georgia, serif;        /* logo, headings, greeting */
   --font-body:    'Inter', -apple-system, system-ui, sans-serif; /* everything else */
+  --font-mono:    'Menlo', 'Consolas', 'Courier New', monospace;
 
   --fs-xs:   12px;
   --fs-sm:   13px;

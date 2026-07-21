@@ -445,3 +445,20 @@
   transition: width var(--dur-base) var(--ease);
 }
 
+/* ---- SIDEBAR BILLING UPGRADE BUTTON ---- */
+.settings-manage-billing-btn {
+  background: var(--accent-soft);
+  color: var(--accent);
+  border: 1px solid var(--accent);
+  border-radius: var(--r-full);
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  padding: 4px 12px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background var(--dur-fast) var(--ease);
+}
+.settings-manage-billing-btn:hover {
+  background: var(--accent);
+  color: var(--accent-text-on);
+}

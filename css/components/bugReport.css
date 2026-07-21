@@ -1,0 +1,57 @@
+/* ============================================
+   TOOLSHUB — BUG REPORT SHEET
+   Styles for #reportBugSheetOverlay
+   ============================================ */
+
+#reportBugSheetOverlay .sheet-body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+  padding: var(--sp-5);
+}
+
+.bug-report-label {
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  color: var(--text-primary);
+  display: block;
+  margin-bottom: var(--sp-2);
+}
+
+#reportBugTextarea {
+  width: 100%;
+  min-height: 140px;
+  resize: vertical;
+  background: var(--bg-surface-2);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--r-md);
+  padding: var(--sp-3) var(--sp-4);
+  font-size: var(--fs-sm);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  line-height: 1.6;
+  outline: none;
+  transition: border-color var(--dur-fast) var(--ease);
+}
+#reportBugTextarea:focus {
+  border-color: var(--accent);
+}
+#reportBugTextarea::placeholder {
+  color: var(--text-muted);
+}
+
+#reportBugCounter {
+  text-align: right;
+  color: var(--text-muted);
+  font-size: var(--fs-xs);
+  margin-top: -var(--sp-1);
+}
+
+#reportBugSendBtn {
+  width: 100%;
+  margin-top: var(--sp-2);
+}
+#reportBugSendBtn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
