@@ -642,6 +642,62 @@ const Settings = (() => {
       }
     });
 
+    document.querySelector('.mode-pill-btn[data-mode="agent"]')?.addEventListener('click', function() {
+      document.querySelectorAll('.mode-pill-btn').forEach(b => {
+        b.classList.remove('is-active');
+        b.setAttribute('aria-pressed', 'false');
+      });
+      this.classList.add('is-active');
+      this.setAttribute('aria-pressed', 'true');
+      Chat.setAgentMode(true);
+      
+      const list = document.getElementById('msgList');
+      if (list && list.children.length === 0) {
+        document.getElementById('emptyState').style.display = 'none';
+        list.style.display = 'none';
+        
+        const hasSeenIntro = LocalSettings.getHasSeenAgentIntro();
+        if (!hasSeenIntro) {
+          const introEl = document.getElementById('agentIntroState');
+          if (introEl) introEl.style.display = 'flex';
+          
+          // Render categories for the intro screen
+          const categoriesContainer = document.getElementById('agentIntroCategories');
+          if (categoriesContainer && typeof getToolCategoryMap === 'function') {
+            const categories = Object.keys(getToolCategoryMap());
+            categoriesContainer.innerHTML = categories.map(cat => 
+              `<div style="background:var(--bg-surface-2); padding:6px 12px; border-radius:12px; font-size:12px; font-weight:500; border:1px solid var(--border-subtle); color:var(--text-2);">${cat}</div>`
+            ).join('');
+          }
+        } else {
+          const agentReadyEl = document.getElementById('agentReadyState');
+          if (agentReadyEl) {
+            agentReadyEl.style.display = 'flex';
+            // Render dynamic suggestion chips (Issue 7)
+            const chipsContainer = document.getElementById('agentReadyChips');
+            if (chipsContainer && typeof getSuggestionChips === 'function') {
+              const chips = getSuggestionChips(3);
+              chipsContainer.innerHTML = chips.map(prompt => `
+                <div class="chip chip-sm" style="background:var(--bg-surface-2); border:1px solid var(--border-med); color:var(--text-1); cursor:pointer;" 
+                     data-prompt="${prompt.replace(/"/g, '&quot;')}">
+                  ${prompt}
+                </div>
+              `).join('');
+              
+              chipsContainer.querySelectorAll('.chip').forEach(chip => {
+                chip.addEventListener('click', () => {
+                  document.dispatchEvent(new CustomEvent('suggestion-click', { detail: { prompt: chip.dataset.prompt } }));
+                });
+              });
+            }
+          }
+        }
+      }
+      
+      document.getElementById('chatBody')?.classList.add('agent-active');
+      document.getElementById('inputTextarea')?.focus();
+    });
+
     // ---- Logout button ----
     document.getElementById('logoutRow')?.addEventListener('click', confirmLogout);
     document.getElementById('upgradeSheetOverlay')?.addEventListener('click', e => {
