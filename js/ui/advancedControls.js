@@ -17,29 +17,41 @@ export const AdvancedControls = (() => {
   }
 
   function render() {
-    // Update Persona trail text
-    const currentPersonaId = LocalSettings.getPersona();
-    const persona = PERSONAS.find(p => p.id === currentPersonaId) || PERSONAS[0];
-    const personaTrail = document.getElementById('advancedControlsPersonaTrail');
-    if (personaTrail && personaTrail.childNodes[0]) {
-      personaTrail.childNodes[0].textContent = persona.label;
-    }
-
-    // Agent Mode toggle state
-    // Check if agent mode is gated or freely available: it is not currently gated in app.js.
-    const agentToggle = document.getElementById('advancedControlsAgentToggle');
-    if (agentToggle && Chat.isAgentModeOn) {
-      if (Chat.isAgentModeOn()) {
-        agentToggle.classList.add('is-active');
-      } else {
-        agentToggle.classList.remove('is-active');
+    try {
+      // Update Persona trail text
+      const currentPersonaId = LocalSettings.getPersona();
+      const persona = PERSONAS.find(p => p.id === currentPersonaId) || PERSONAS[0];
+      const personaTrail = document.getElementById('advancedControlsPersonaTrail');
+      if (personaTrail && personaTrail.childNodes[0]) {
+        personaTrail.childNodes[0].textContent = persona.label;
       }
+
+      // Agent Mode toggle state
+      const agentToggle = document.getElementById('advancedControlsAgentToggle');
+      if (agentToggle && typeof Chat !== 'undefined' && Chat && Chat.isAgentModeOn) {
+        if (Chat.isAgentModeOn()) {
+          agentToggle.classList.add('is-active');
+        } else {
+          agentToggle.classList.remove('is-active');
+        }
+      }
+    } catch (err) {
+      console.error("AdvancedControls render error:", err);
+      throw err;
     }
   }
 
   function open() {
-    render();
-    openOverlay(document.getElementById('advancedControlsOverlay'));
+    try {
+      render();
+      const el = document.getElementById('advancedControlsOverlay');
+      if (!el) throw new Error("Overlay element not found in DOM.");
+      openOverlay(el);
+    } catch (err) {
+      console.error("AdvancedControls open error:", err);
+      if (window.Toast) window.Toast.show("Error opening Advanced Controls: " + err.message);
+      else alert("Error: " + err.message);
+    }
   }
 
   function close() {

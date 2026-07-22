@@ -612,7 +612,9 @@ const Settings = (() => {
 
     // Wire newly exposed features from BottomSheet
     document.addEventListener('open-advanced-controls', () => {
+      if (window.Toast) Toast.show("Triggering Advanced Controls open...");
       if (AdvancedControls) AdvancedControls.open();
+      else if (window.Toast) Toast.show("Error: AdvancedControls is undefined");
     });
     document.addEventListener('open-connectors-sheet', () => {
       if (ConnectorsSheet) ConnectorsSheet.open();
