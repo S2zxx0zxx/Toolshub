@@ -47,6 +47,23 @@ export function getAllToolSchemas() {
       }
     },
 
+    // --- TYPE C: Artifact Generators ---
+    {
+      type: "function",
+      function: {
+        name: "generate_website",
+        description: "Generate a complete, single-page website with inline CSS and JS. Ensure high quality design and responsiveness.",
+        parameters: {
+          type: "object",
+          properties: {
+            title: { type: "string", description: "The title of the website" },
+            html_content: { type: "string", description: "The full HTML content including inline <style> and <script> tags. Do not use external files." }
+          },
+          required: ["title", "html_content"]
+        }
+      }
+    },
+
     // --- TYPE B: Content Tools ---
     {
       type: "function",

@@ -547,6 +547,10 @@ const Settings = (() => {
           document.querySelectorAll('.mode-pill-btn[data-mode="chat"]').forEach(b => b.classList.add('is-active'));
           document.querySelectorAll('.mode-pill-btn[data-mode="agent"]').forEach(b => b.classList.remove('is-active'));
         } else {
+          if (!BottomSheet.userCanAccess('monthly')) {
+            if (ChangePlanModal) ChangePlanModal.open();
+            return;
+          }
           Chat.setAgentMode(true);
           document.querySelectorAll('.mode-pill-btn[data-mode="chat"]').forEach(b => b.classList.remove('is-active'));
           document.querySelectorAll('.mode-pill-btn[data-mode="agent"]').forEach(b => b.classList.add('is-active'));
@@ -1041,6 +1045,18 @@ document.addEventListener('DOMContentLoaded', async () => {
         topbarPlanPill.textContent = planObj.label.toUpperCase();
         aiStatusIndicator.style.display = 'none';
         topbarPlanPill.onclick = () => { if (ChangePlanModal) ChangePlanModal.open(); };
+      }
+    }
+
+    // Update Agent Mode badge
+    const agentModeBadge = document.getElementById('agentModeTierBadge');
+    if (agentModeBadge) {
+      if (!BottomSheet.userCanAccess('monthly')) {
+        agentModeBadge.style.display = 'inline-block';
+        agentModeBadge.textContent = 'PRO'; // Map 'monthly' to PRO label visually
+      } else {
+        agentModeBadge.style.display = 'none';
+        agentModeBadge.textContent = '';
       }
     }
     const subName = document.getElementById('subPlanName');

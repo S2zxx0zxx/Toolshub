@@ -264,8 +264,41 @@ export const ToolSelector = (() => {
     title.textContent = 'Choose a category';
   }
 
+  function clearActiveTool() {
+    activeToolId = null;
+    
+    // Reset chip label and icon
+    const chipLabel = document.getElementById('toolChipLabel');
+    const chipIcon  = document.querySelector('#toolChip .chip-icon');
+    if (chipLabel) chipLabel.textContent = 'Tools';
+    if (chipIcon)  chipIcon.outerHTML = `<svg class="chip-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>`;
+
+    // Reset placeholder
+    const textarea = document.getElementById('inputTextarea');
+    if (textarea) textarea.placeholder = 'Message ToolsHub...';
+
+    // Restore normal chat chrome
+    const utilityPanel = document.getElementById('utilityPanel');
+    const inputZone    = document.querySelector('.input-zone');
+    const emptyState   = document.getElementById('emptyState');
+    const msgList      = document.getElementById('msgList');
+    
+    if (utilityPanel) utilityPanel.style.display = 'none';
+    if (inputZone)    inputZone.style.display    = '';
+    if (emptyState && msgList && msgList.innerHTML.trim() === '') {
+      emptyState.style.display = 'flex';
+    }
+    
+    const promptCards = document.getElementById('promptCards');
+    if (promptCards) promptCards.innerHTML = '';
+  }
+
   // ---------- SELECT TOOL: updates chip, placeholder, and routes to correct UI ----------
   function selectTool(toolId, opts) {
+    if (!toolId) {
+      clearActiveTool();
+      return;
+    }
     const found = findTool(toolId);
     if (!found) return;
     activeToolId = toolId;
@@ -394,6 +427,7 @@ export const ToolSelector = (() => {
     renderToolLevel,
     backToCategoryLevel,
     renderPromptCards,
+    clearActiveTool,
     // called by Manage Tools screen to persist + refresh selector
     setEnabledCategories(ids) {
       if (LocalSettings) LocalSettings.setEnabledCategories(ids);

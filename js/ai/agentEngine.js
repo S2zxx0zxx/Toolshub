@@ -16,6 +16,11 @@ When the user asks you to perform a task, use the provided tools to gather data,
 - Once you have successfully fulfilled the user's request using the tools, provide a final, direct answer in plain text with NO tool_calls.
 - If a tool triggers a UI panel, just acknowledge it to the user.
 - Remember to answer naturally and follow your persona guidelines in the final response.
+
+CRITICAL REQUIREMENT for generate_website tool:
+You must NOT write a complex website in one giant shot. You MUST use a 2-step process:
+Step 1: Write a <thinking> block to plan the website structure, colors, layout, and functionality. Do not call the tool in this step.
+Step 2: Emit the generate_website tool call with the planned content.
 `;
 
 const MAX_STEPS_DEFAULT = 8;
@@ -94,6 +99,19 @@ export async function executeAgentTask(userMessage, conversationHistory, options
             parsedParams = JSON.parse(toolCall.function.arguments || '{}');
           } catch (e) {
             console.warn(`Failed to parse arguments for tool ${toolId}`);
+          }
+
+          if (toolId === 'generate_website') {
+            return {
+              success: true,
+              message: "I have generated the website for you.",
+              artifact: {
+                type: 'artifact',
+                kind: 'website',
+                title: parsedParams.title || 'Generated Website',
+                content: parsedParams.html_content || ''
+              }
+            };
           }
           
           let toolResponseText = "";

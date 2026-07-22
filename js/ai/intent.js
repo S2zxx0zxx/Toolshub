@@ -1,5 +1,6 @@
 import { aiApi } from '../services/aiApi.js';
 import { PromptManager } from './prompt.js';
+import { getAllToolSchemas } from './toolSchemas.js';
 
 export const IntentEngine = (() => {
   
@@ -80,18 +81,20 @@ export const IntentEngine = (() => {
 
     // Phase 2: AI Classification (Fallback)
     // We construct a specific prompt asking Groq to classify the intent as JSON.
+    const allTools = getAllToolSchemas();
+    const toolsListStr = allTools.map(t => `- "${t.function.name}": ${t.function.description.split('\n')[0]}`).join('\n');
+    const toolNamesStr = allTools.map(t => `"${t.function.name}"`).join(' | ');
+
     const intentPrompt = `
 You are an Intent Classification engine.
 Analyze the user's input and determine if they require a tool execution.
 Available Tools:
-- "weather": Fetch current weather for a city. Requires param: { "city": string }
-- "search": Search the web for recent info. Requires param: { "query": string }
-- "calculator": Perform math. Requires param: { "expression": string }
+${toolsListStr}
 
 Output STRICTLY valid JSON only, no markdown formatting.
 Format:
 {
-  "intent": "general_chat" | "weather" | "search" | "calculator",
+  "intent": "general_chat" | ${toolNamesStr},
   "requiresTool": boolean,
   "tool": string | null,
   "confidence": number (0.0 to 1.0),

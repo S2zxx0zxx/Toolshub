@@ -32,6 +32,10 @@ export async function resolvePlan(request, env) {
     planId = userDoc.plan;
   }
 
+  if (userDoc?.devAccessExpiresAt && userDoc.devAccessExpiresAt > now) {
+    planId = 'yearly';
+  }
+
   if (!PLAN_MAX_STEPS.hasOwnProperty(planId)) planId = 'free';
 
   return {

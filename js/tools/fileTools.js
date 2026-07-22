@@ -239,11 +239,15 @@ export const FileTools = (() => {
 
     document.getElementById('ut-ip-gen').addEventListener('click', async () => {
       if (!images.length) return;
-      if (!window.jspdf) {
-        alert('jsPDF library not loaded. Check your internet connection.'); return;
-      }
       const prog = document.getElementById('ut-ip-prog');
+      if (!window.jspdf) {
+        prog.innerHTML = `<span style="color:var(--danger);font-size:var(--fs-sm);">jsPDF library not loaded. Check your internet connection.</span>`;
+        prog.style.display = '';
+        return;
+      }
+      
       prog.style.display = '';
+      prog.innerHTML = 'Converting, please wait…';
       document.getElementById('ut-ip-act').style.display = 'none';
 
       try {
@@ -337,12 +341,15 @@ export const FileTools = (() => {
 
     document.getElementById('ut-pm-merge').addEventListener('click', async () => {
       if (pdfs.length < 2) return;
-      if (!window.PDFLib) {
-        alert('pdf-lib not loaded. Check your internet connection.'); return;
-      }
       const prog = document.getElementById('ut-pm-prog');
+      if (!window.PDFLib) {
+        prog.innerHTML = `<span style="color:var(--danger);font-size:var(--fs-sm);">PDF-lib not loaded. Check your internet connection.</span>`;
+        prog.style.display = '';
+        return;
+      }
+
       prog.style.display = '';
-      document.getElementById('ut-pm-act').style.display = 'none';
+      prog.innerHTML = 'Merging PDFs, please wait…';
 
       try {
         const { PDFDocument } = PDFLib;
@@ -429,8 +436,11 @@ export const FileTools = (() => {
 
     document.getElementById('ut-ps-go').addEventListener('click', async () => {
       if (!currentFile) return;
+      const prog = document.getElementById('ut-ps-prog');
       if (!window.PDFLib) {
-        alert('pdf-lib not loaded. Check your internet connection.'); return;
+        prog.innerHTML = `<span style="color:var(--danger);font-size:var(--fs-sm);">pdf-lib not loaded. Check your internet connection.</span>`;
+        prog.style.display = '';
+        return;
       }
 
       const rangeStr = document.getElementById('ut-ps-range').value.trim();

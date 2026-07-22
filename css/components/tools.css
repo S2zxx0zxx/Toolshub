@@ -110,6 +110,12 @@
   background: var(--bg-surface);
   border: 1px solid var(--border-subtle);
   text-align: center;
+  transition: transform var(--dur-fast) var(--ease), border-color var(--dur-fast) var(--ease), box-shadow var(--dur-fast) var(--ease);
+}
+.utility-stat-card:hover {
+  transform: translateY(-2px);
+  border-color: var(--border-med);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
 }
 .utility-stat-value {
   font-size: var(--fs-xl);
@@ -256,19 +262,23 @@
 .utility-file-item {
   display: flex;
   align-items: center;
-  gap: var(--sp-3);
-  padding: var(--sp-3) var(--sp-4);
+  padding: var(--sp-3);
   border-radius: var(--r-md);
   background: var(--bg-surface-2);
   border: 1px solid var(--border-subtle);
-  font-size: var(--fs-sm);
-  color: var(--text-secondary);
+  gap: var(--sp-3);
+  transition: border-color var(--dur-fast) var(--ease), background var(--dur-fast) var(--ease);
+}
+.utility-file-item:hover {
+  border-color: var(--border-med);
+  background: var(--bg-surface);
 }
 .utility-file-item-name {
   flex: 1;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  color: var(--text-secondary);
 }
 .utility-file-size {
   color: var(--text-muted);

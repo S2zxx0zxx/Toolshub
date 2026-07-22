@@ -57,6 +57,10 @@ export const ConnectorsSheet = (() => {
           extraHtml = `
             <div style="margin-top: var(--sp-3); font-size: var(--fs-xs);">
               <input type="password" id="githubTokenInput" placeholder="Personal Access Token (classic or fine-grained)" class="project-new-input" style="width: 100%; margin-bottom: var(--sp-2);">
+              <div style="color: var(--warning); font-size: var(--fs-xs); margin-bottom: var(--sp-2); display: flex; align-items: center; gap: 4px;">
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+                Token is stored securely in memory and clears on page refresh.
+              </div>
               <button id="githubConnectBtn" class="btn btn-primary" style="padding: 4px 12px; font-size: var(--fs-xs);">Connect GitHub</button>
             </div>
           `;

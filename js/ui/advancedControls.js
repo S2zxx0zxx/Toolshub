@@ -100,9 +100,17 @@ export const AdvancedControls = (() => {
         const btn = document.getElementById('agentModeBtn');
         if (btn) btn.click();
         
-        // update toggle locally immediately
-        const toggle = document.getElementById('advancedControlsAgentToggle');
-        if (toggle) toggle.classList.toggle('is-active');
+        // update toggle locally based on actual state, not blindly
+        setTimeout(() => {
+          const toggle = document.getElementById('advancedControlsAgentToggle');
+          if (toggle && Chat && Chat.isAgentModeOn) {
+            if (Chat.isAgentModeOn()) {
+              toggle.classList.add('is-active');
+            } else {
+              toggle.classList.remove('is-active');
+            }
+          }
+        }, 50);
       });
     }
 

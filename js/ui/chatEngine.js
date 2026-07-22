@@ -46,6 +46,8 @@ export const Chat = (() => {
       projectId: LocalSettings.getActiveProject() || null,
     };
     LocalSettings.setActiveChatId(currentChat.id);
+    document.getElementById('msgList').innerHTML = '';
+
     renderEmptyState();
     document.getElementById('chatTitle').textContent = 'New chat';
     window.dispatchEvent(new CustomEvent('refresh-greeting'));
@@ -65,7 +67,11 @@ export const Chat = (() => {
     LocalSettings.setActiveChatId(chatId);
     document.getElementById('chatTitle').textContent = currentChat.title;
 
-    if (currentChat.toolId) ToolSelector.selectTool(currentChat.toolId, { silent: true });
+    if (currentChat.toolId) {
+      ToolSelector.selectTool(currentChat.toolId, { silent: true });
+    } else {
+      ToolSelector.clearActiveTool();
+    }
 
     renderEmptyState();
     
@@ -182,6 +188,16 @@ export const Chat = (() => {
           </div>
           ${stepsHtml}
           ${m.text ? `<div class="msg-bubble markdown-body" style="${bubbleStyle}">${renderMarkdown(m.text)}</div>` : ''}
+          ${m.artifact ? `
+            <div class="artifact-card" style="margin-top:var(--sp-2); padding:var(--sp-3); border:1px solid var(--border-med); border-radius:var(--radius-md); background:var(--bg-surface-2); cursor:pointer; display:flex; align-items:center; gap:var(--sp-2);">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:20px;height:20px;color:var(--primary);"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+              <div style="flex:1; overflow:hidden;">
+                <div style="font-weight:600; color:var(--text-1); white-space:nowrap; text-overflow:ellipsis; overflow:hidden;">${escapeHtml(m.artifact.title)}</div>
+                <div style="font-size:var(--fs-xs); color:var(--text-muted);">Website Generated - Click to view</div>
+              </div>
+              <textarea class="artifact-raw-content" style="display:none;">${escapeHtml(m.artifact.content)}</textarea>
+            </div>
+          ` : ''}
           <div class="msg-actions">
             <button class="msg-action-btn" data-action="copy" title="Copy">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
@@ -206,6 +222,18 @@ export const Chat = (() => {
         const text = btn.closest('.msg').querySelector('.msg-bubble').textContent;
         navigator.clipboard?.writeText(text);
         Toast.show('Copied!');
+      };
+    });
+
+    document.querySelectorAll('.artifact-card').forEach(card => {
+      card.onclick = () => {
+        const content = card.querySelector('.artifact-raw-content').value;
+        const modal = document.getElementById('artifactModal');
+        const iframe = document.getElementById('artifactIframe');
+        if (modal && iframe) {
+          iframe.srcdoc = content;
+          modal.style.display = 'flex';
+        }
       };
     });
 
@@ -385,6 +413,7 @@ export const Chat = (() => {
         }
         
         agentMsg.text = finalText;
+        agentMsg.artifact = response.artifact;
         currentChat.updatedAt = Date.now();
         renderMessages();
         CloudDB.saveMessage(currentChat.id, agentMsg).catch(console.warn);

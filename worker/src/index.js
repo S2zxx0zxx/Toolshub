@@ -2,6 +2,7 @@ import { handlePaymentRequest } from './payments.js';
 import { resolvePlan } from './planResolver.js';
 import { checkAndIncrementDailyUsage } from './usageTracker.js';
 import { FirebaseAdmin } from './firebaseAdmin.js';
+import { MODEL_CATALOG_TIERS, rankOf } from './modelAccess.js';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*', // Fixed: wildcard to prevent CORS blocks
@@ -131,6 +132,11 @@ export default {
       return new Response('Too Many Requests. Please slow down.', { status: 429, headers: corsHeaders });
     }
 
+    if (url.pathname === '/api/dev-access/redeem') {
+      const { handleDevAccessRedeem } = await import('./devAccess.js');
+      return await handleDevAccessRedeem(request, env, corsHeaders);
+    }
+
     let callerPlan;
     try {
       callerPlan = await resolvePlan(request, env);
@@ -255,6 +261,19 @@ export default {
     }
     if (targetModel === 'llama3-8b-8192' || targetModel === 'llama-3.1-8b-instant') {
       targetModel = 'llama-3.1-8b-instant';
+    }
+
+    // Enforce model access tier
+    const requiredTier = MODEL_CATALOG_TIERS[targetModel] || 'free';
+    if (rankOf(requiredTier) > rankOf(callerPlan.planId)) {
+      return new Response(JSON.stringify({ 
+        error: 'model_tier_required', 
+        requiredTier: requiredTier, 
+        yourTier: callerPlan.planId 
+      }), {
+        status: 403,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+      });
     }
 
     const isCompoundModel = targetModel === 'groq/compound' || targetModel === 'groq/compound-mini';

@@ -537,5 +537,5 @@ export const BottomSheet = (() => {
     restoreModelChip();
   }
 
-  return { init, openAddSheet, closeAddSheet, openToolSheet, closeToolSheet, openModelSheet, closeModelSheet, openReportBugSheet, closeReportBugSheet, updateReportBugCounter };
+  return { init, openAddSheet, closeAddSheet, openToolSheet, closeToolSheet, openModelSheet, closeModelSheet, openReportBugSheet, closeReportBugSheet, updateReportBugCounter, userCanAccess };
 })();

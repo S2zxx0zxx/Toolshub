@@ -148,4 +148,29 @@ export class FirebaseAdmin {
     }
     return flat;
   }
+
+  async updateDevAccess(uid, expiresAt) {
+    const token = await this.getAccessToken();
+    
+    const firestoreDoc = {
+      fields: {
+        devAccessExpiresAt: {
+          integerValue: expiresAt.toString()
+        }
+      }
+    };
+
+    const res = await fetch(`https://firestore.googleapis.com/v1/projects/${this.projectId}/databases/(default)/documents/users/${uid}?updateMask.fieldPaths=devAccessExpiresAt`, {
+      method: 'PATCH',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(firestoreDoc)
+    });
+    
+    const data = await res.json();
+    if (data.error) throw new Error(data.error.message);
+    return data;
+  }
 }

@@ -31,13 +31,13 @@ export const AIRouter = (() => {
       pricing: /\b(price|pricing|cost|costing|rate|rates|charge|charges|fee|fees|kharcha|karcha|kharch|keemat|kimat|qimat|paisa|paise|budget|bajat|quote|quotation|bill|estimate|kitne ka)\b/i,
       
       // 2. Core Offerings & Services
-      services: /\b(service|services|offer|offering|offerings|kaam|kya karte|portfolio|kaam karte|banate ho|kya kya hai|kya provide|provide)\b/i,
+      services: /\b(services|offerings|kya karte ho|kaam karte ho|banate ho|kya kya hai|kya provide|provide karte)\b/i,
       
       // 3. Domain Specific Terms (Direct matches from DigiRise Knowledge Base)
       domain: /\b(seo|website|web design|web development|ecommerce|e-commerce|shopify|woocommerce|smm|social media|meta ads|google ads|fb ads|facebook ads|instagram|reels|marketing|branding|brand kit)\b/i,
       
       // 4. Agency Identity, Trust & Process
-      identity: /\b(agency|company|digirise|firm|team|roi|guarantee|results|process|refund|shuru|start|onboarding)\b/i,
+      identity: /\b(digirise|company process|agency process|roi|guarantee|refund|shuru kaise|onboarding)\b/i,
       
       // 5. Clients & Proof of Work
       proof: /\b(client|clients|customer|customers|case study|case studies|work sample|work samples|kaam dikhao|project dikhao|past work|examples|example|result dikhao)\b/i,

@@ -167,5 +167,55 @@ export const Sidebar = (() => {
     renderHistory();
   }
 
-  return { init, open, close, toggle, renderHistory, renderProjects, setChats };
+  async function handleDeveloperUnlock(code) {
+    if (!code) code = prompt('Enter developer access code:');
+    if (!code) return;
+    
+    try {
+      const user = CloudDB.getCurrentUser();
+      if (!user) {
+        alert('You must be logged in to redeem a code.');
+        return;
+      }
+      const res = await fetch('https://toolshub-api-worker.theliquidlounge-co.workers.dev/api/dev-access/redeem', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + (await user.getIdToken())
+        },
+        body: JSON.stringify({ uid: user.uid, code })
+      });
+      const data = await res.json();
+      if (data.success) {
+        alert('Developer access granted. Reloading app...');
+        window.location.reload();
+      } else {
+        alert('Error: ' + (data.error || 'Invalid code'));
+      }
+    } catch (e) {
+      console.error(e);
+      alert('Network error while redeeming code.');
+    }
+  }
+
+  // Bind a secret click handler to the avatar for dev unlock (5 clicks)
+  let avatarClickCount = 0;
+  let avatarClickTimer;
+  document.addEventListener('DOMContentLoaded', () => {
+    const avatar = document.getElementById('sidebarAvatar');
+    if (avatar) {
+      avatar.addEventListener('click', () => {
+        avatarClickCount++;
+        clearTimeout(avatarClickTimer);
+        if (avatarClickCount >= 5) {
+          avatarClickCount = 0;
+          handleDeveloperUnlock();
+        } else {
+          avatarClickTimer = setTimeout(() => { avatarClickCount = 0; }, 1000);
+        }
+      });
+    }
+  });
+
+  return { init, open, close, toggle, renderHistory, renderProjects, setChats, handleDeveloperUnlock };
 })();

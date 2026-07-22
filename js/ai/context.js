@@ -3,7 +3,7 @@ import { Auth } from '../services/auth.js';
 
 export const ContextManager = (() => {
   
-  const MAX_HISTORY_MESSAGES = 20;
+  const MAX_HISTORY_MESSAGES = 40;
 
   /**
    * Build the AI context window.
@@ -40,6 +40,9 @@ export const ContextManager = (() => {
     // Filter out error messages from context to avoid AI confusion, limit to MAX
     let history = messages.filter(m => !m.isError);
     if (history.length > MAX_HISTORY_MESSAGES) {
+      // TODO: Proper rolling-summarization should replace this hard cutoff in a future pass
+      // so we don't lose context from the dropped messages abruptly.
+      context.push({ role: 'system', content: '[Earlier context truncated: older messages were dropped. Maintain the established persona/context.]' });
       history = history.slice(-MAX_HISTORY_MESSAGES);
     }
     

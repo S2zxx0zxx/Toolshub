@@ -189,10 +189,14 @@ export const LocalSettings = (() => {
 
     // ---------- GITHUB ----------
     getGithubToken() {
-      return _safeGet(KEYS.GITHUB_TOKEN, null);
+      return window.__github_token_in_memory || null;
     },
     setGithubToken(token) {
-      _safeSet(KEYS.GITHUB_TOKEN, token);
+      if (token === null) {
+        delete window.__github_token_in_memory;
+      } else {
+        window.__github_token_in_memory = token;
+      }
     },
     getGithubRepo() {
       return _safeGet(KEYS.GITHUB_REPO, null);
