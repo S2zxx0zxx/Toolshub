@@ -1,4 +1,4 @@
-const CACHE_NAME = 'toolshub-cache-v39';
+const CACHE_NAME = 'toolshub-cache-v40';
 const urlsToCache = [
   './',
   './index.html',
@@ -39,6 +39,8 @@ const urlsToCache = [
   './js/tools/fileTools.js',
   './js/tools/permissions.js',
   './js/tools/executor.js',
+  './js/tools/githubTools.js',
+  './js/tools/connectorsRegistry.js',
   // === JS UI ===
   './js/ui/sidebar.js',
   './js/ui/bottomsheet.js',
