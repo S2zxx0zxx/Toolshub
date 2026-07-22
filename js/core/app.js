@@ -7,7 +7,7 @@
 import { LocalSettings } from '../services/localSettings.js';
 import { Toast } from '../ui/toast.js';
 import { Sidebar } from '../ui/sidebar.js';
-import { BottomSheet } from '../ui/bottomsheet.js';
+import { BottomSheet } from '../ui/bottomsheet.js?v=2';
 import { Chat } from '../ui/chatEngine.js';
 import { ToolSelector } from '../tools/registry.js';
 import { PersonaPicker } from '../ui/personaPicker.js';

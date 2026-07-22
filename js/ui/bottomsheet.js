@@ -8,7 +8,7 @@ import { LocalSettings } from '../services/localSettings.js';
 import { rankOf } from '../config/planVocabulary.js';
 import { ToolSelector } from '../tools/registry.js';
 import { UtilityTools } from '../tools/utilityTools.js';
-import { FileTools } from '../tools/fileTools.js';
+import { FileTools } from '../tools/fileTools.js?v=2';
 import { Toast } from './toast.js';
 import { Chat } from './chatEngine.js';
 import { Sidebar } from './sidebar.js';
