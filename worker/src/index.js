@@ -61,7 +61,7 @@ export default withSentry((env) => {
     const clientIp = request.headers.get('cf-connecting-ip') || 'unknown';
     
     // Check if it's a payment request
-    const url = new URL(request.url);
+
     if (url.pathname.startsWith('/api/payment/')) {
       Sentry.addBreadcrumb({ category: 'payment', message: 'Processing payment webhook', level: 'info' });
       if (!(await checkPaymentRateLimit(clientIp, env))) {
