@@ -22,6 +22,22 @@ import { initFirebase, auth, db, fbAuthModule, fbFirestoreModule } from '../serv
 import { aiApi } from '../services/aiApi.js';
 import { OverlayManager } from '../services/overlayManager.js';
 
+// --- SENTRY INITIALIZATION ---
+if (window.Sentry) {
+  Sentry.init({
+    dsn: "PASTE_YOUR_FRONTEND_DSN_HERE", // <- I will paste the real frontend DSN here
+    environment: window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? 'development' : 'production',
+    beforeSend(event) {
+      // PRIVACY SCRUBBING: Prevent any sensitive user data (like chat history, payment details, PII) 
+      // from being sent to Sentry with the error event.
+      if (event.request && event.request.data) {
+        event.request.data = '[REDACTED FOR PRIVACY]';
+      }
+      return event;
+    }
+  });
+}
+
 // Pre-load Agent Mode modules (Phase 1)
 import { getToolCategoryMap } from '../ai/toolSchemas.js';
 import '../ai/agentToolBridge.js';

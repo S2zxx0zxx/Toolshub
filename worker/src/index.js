@@ -1,3 +1,5 @@
+import { withSentry } from '@sentry/cloudflare';
+import * as Sentry from '@sentry/cloudflare';
 import { handlePaymentRequest } from './payments.js';
 import { resolvePlan } from './planResolver.js';
 import { checkAndIncrementDailyUsage } from './usageTracker.js';
@@ -55,7 +57,21 @@ async function callGitHubModels(modelId, payload, env) {
   };
 }
 
-export default {
+export default withSentry((env) => {
+  if (!env.SENTRY_DSN) {
+    console.warn("SENTRY_DSN is not set. Sentry error tracking is disabled.");
+  }
+  return {
+    dsn: env.SENTRY_DSN,
+    beforeSend(event) {
+      // Privacy: Redact request bodies which may contain chat histories, PII, or tokens
+      if (event.request && event.request.data) {
+        event.request.data = '[REDACTED FOR PRIVACY]';
+      }
+      return event;
+    }
+  };
+}, {
   async fetch(request, env, ctx) {
 
 
@@ -78,6 +94,7 @@ export default {
     // Check if it's a payment request
     const url = new URL(request.url);
     if (url.pathname.startsWith('/api/payment/')) {
+      Sentry.addBreadcrumb({ category: 'payment', message: 'Processing payment webhook', level: 'info' });
       if (!(await checkPaymentRateLimit(clientIp, env))) {
         return new Response('Too Many Requests. Please slow down.', { status: 429, headers: corsHeaders });
       }
@@ -231,6 +248,8 @@ export default {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' }
       });
     }
+
+    Sentry.addBreadcrumb({ category: 'model', message: `Routing request for model ${targetModel}`, level: 'info' });
 
     const isCompoundModel = targetModel === 'groq/compound' || targetModel === 'groq/compound-mini';
 
@@ -388,6 +407,7 @@ export default {
   },
   
   async scheduled(event, env, ctx) {
+    Sentry.addBreadcrumb({ category: 'cron', message: 'Running statusMonitor cron', level: 'info' });
     await statusMonitor.scheduled(event, env, ctx);
   }
-};
+});
