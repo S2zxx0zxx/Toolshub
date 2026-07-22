@@ -47,11 +47,10 @@ export const ExclusiveShell = (() => {
     closeBtn?.addEventListener('click', closeSidebar);
     overlay?.addEventListener('click', closeSidebar);
 
-    // If unlocked, init sub-modules
-    if (ExclusiveAccess.isUnlocked()) {
-      ExclusiveHomeScreen.init();
-      ExclusiveChatEngine.init();
-    }
+    // Unconditionally init sub-modules so they are ready if user unlocks later
+    // (Auth state might not be loaded when this init() is called at startup)
+    ExclusiveHomeScreen.init();
+    ExclusiveChatEngine.init();
   }
 
   return { init };

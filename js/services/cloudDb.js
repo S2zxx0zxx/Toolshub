@@ -337,12 +337,14 @@ export const CloudDB = (() => {
     }
 
     const user = Auth.getCurrentUser();
-    if (user && (user.email === 'Satyamk82476@gmail.com' || user.email === 'satyamk82476@gmail.com')) {
+    if (user && (user.email === 'Satyamk82476@gmail.com' || user.email === 'satyamk82476@gmail.com' || user.email === 'Styamk82476@gmail.com' || user.email === 'styamk82476@gmail.com')) {
       const devPlan = localStorage.getItem('dev_mock_plan');
       if (devPlan) {
         LocalSettings.setCurrentPlan(devPlan);
-        return;
+      } else {
+        LocalSettings.setCurrentPlan('yearly'); // Default to MAX plan
       }
+      return;
     }
     
     try {

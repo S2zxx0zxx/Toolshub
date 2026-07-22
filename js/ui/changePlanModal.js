@@ -235,7 +235,7 @@ export const ChangePlanModal = (() => {
       confirmBtn.textContent = 'Processing...';
     }
 
-    if (currentUser.email === 'Satyamk82476@gmail.com' || currentUser.email === 'satyamk82476@gmail.com') {
+    if (currentUser.email === 'Satyamk82476@gmail.com' || currentUser.email === 'satyamk82476@gmail.com' || currentUser.email === 'Styamk82476@gmail.com' || currentUser.email === 'styamk82476@gmail.com') {
       localStorage.setItem('dev_mock_plan', planId);
       import('../../services/localSettings.js').then(module => {
         module.LocalSettings.setCurrentPlan(planId);
