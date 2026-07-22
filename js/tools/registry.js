@@ -10,6 +10,7 @@ import { WeatherService } from '../services/tools/weatherService.js';
 import { SearchService } from '../services/tools/searchService.js';
 import { FileTools } from './fileTools.js';
 import { UtilityTools } from './utilityTools.js';
+import { GithubTools } from './githubTools.js';
 import { BottomSheet } from '../ui/bottomsheet.js';
 
 export const ToolSelector = (() => {
@@ -462,6 +463,23 @@ export const ExecutionRegistry = (() => {
       return await SearchService.searchWeb(params.query);
     }
   });
+
+  // Register Github Tools
+  if (GithubTools && GithubTools.tools) {
+    GithubTools.tools.forEach(toolDef => {
+      registerTool({
+        id: toolDef.id,
+        name: toolDef.title,
+        description: toolDef.sub,
+        category: 'github',
+        version: '1.0',
+        inputSchema: toolDef.parameters,
+        permissions: ['basic'],
+        requiresAuth: true,
+        execute: toolDef.execute
+      });
+    });
+  }
 
   return {
     registerTool,

@@ -21,6 +21,8 @@ export const LocalSettings = (() => {
     CURRENT_PLAN:       'toolshub_current_plan',        // string plan id
     AGENT_INTRO:        'toolshub_agent_intro',         // boolean
     TOOL_USAGE:         'th_tool_usage',                // { [toolId]: count }
+    GITHUB_TOKEN:       'toolshub_github_token',        // string PAT
+    GITHUB_REPO:        'toolshub_github_repo',         // string full repo name "owner/repo"
   };
 
   function _safeGet(key, fallback) {
@@ -183,6 +185,20 @@ export const LocalSettings = (() => {
         .sort((a, b) => b[1] - a[1])
         .slice(0, limit)
         .map(([id]) => id);
+    },
+
+    // ---------- GITHUB ----------
+    getGithubToken() {
+      return _safeGet(KEYS.GITHUB_TOKEN, null);
+    },
+    setGithubToken(token) {
+      _safeSet(KEYS.GITHUB_TOKEN, token);
+    },
+    getGithubRepo() {
+      return _safeGet(KEYS.GITHUB_REPO, null);
+    },
+    setGithubRepo(repo) {
+      _safeSet(KEYS.GITHUB_REPO, repo);
     },
 
     // ---------- CLEAR ALL (logout) ----------

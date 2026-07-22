@@ -2,7 +2,7 @@
 import { ToolSelector, ExecutionRegistry } from '../tools/registry.js';
 
 export function getAllToolSchemas() {
-  return [
+  const schemas = [
     // --- TYPE A: Executable Tools ---
     {
       type: "function",
@@ -371,6 +371,24 @@ export function getAllToolSchemas() {
       }
     }
   ];
+
+  // Dynamically append tools from ExecutionRegistry
+  const execTools = ExecutionRegistry.getAllTools();
+  for (const t of execTools) {
+    // Avoid duplicates if already hardcoded above
+    if (!schemas.some(s => s.function.name === t.id)) {
+      schemas.push({
+        type: "function",
+        function: {
+          name: t.id,
+          description: t.description,
+          parameters: t.inputSchema || { type: "object", properties: {} }
+        }
+      });
+    }
+  }
+
+  return schemas;
 }
 
 export function getToolSchemaById(toolId) {
