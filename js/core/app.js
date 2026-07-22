@@ -25,7 +25,7 @@ import { OverlayManager } from '../services/overlayManager.js';
 // --- SENTRY INITIALIZATION ---
 if (window.Sentry) {
   Sentry.init({
-    dsn: "PASTE_YOUR_FRONTEND_DSN_HERE", // <- I will paste the real frontend DSN here
+    dsn: "https://253e510c9fbf0ef71a1195c5861f71fe@o4511731858538496.ingest.us.sentry.io/4511778992422912", // <- I will paste the real frontend DSN here
     environment: window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? 'development' : 'production',
     beforeSend(event) {
       // PRIVACY SCRUBBING: Prevent any sensitive user data (like chat history, payment details, PII) 
