@@ -1,27 +1,13 @@
 import { CONNECTORS } from '../tools/connectorsRegistry.js';
-
+import { OverlayManager } from '../services/overlayManager.js';
 export const ConnectorsSheet = (() => {
 
   function openOverlay(overlayEl) {
-    if (!overlayEl) return;
-    overlayEl.style.display = 'flex';
-    // Trigger reflow
-    void overlayEl.offsetWidth;
-    const sheet = overlayEl.querySelector('.sheet');
-    if (sheet) sheet.classList.add('open');
+    OverlayManager.open(overlayEl);
   }
 
   function closeOverlay(overlayEl) {
-    if (!overlayEl) return;
-    const sheet = overlayEl.querySelector('.sheet');
-    if (sheet) {
-      sheet.classList.remove('open');
-      setTimeout(() => {
-        overlayEl.style.display = 'none';
-      }, 300);
-    } else {
-      overlayEl.style.display = 'none';
-    }
+    OverlayManager.close(overlayEl);
   }
 
   function render() {

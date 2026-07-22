@@ -4,28 +4,16 @@ import { PersonaPicker } from './personaPicker.js';
 import { Chat } from './chatEngine.js';
 import { LocalSettings } from '../services/localSettings.js';
 import { PERSONAS } from '../config/personas.js';
+import { OverlayManager } from '../services/overlayManager.js';
 
 export const AdvancedControls = (() => {
 
   function openOverlay(overlayEl) {
-    if (!overlayEl) return;
-    overlayEl.style.display = 'flex';
-    void overlayEl.offsetWidth;
-    const sheet = overlayEl.querySelector('.sheet');
-    if (sheet) sheet.classList.add('open');
+    OverlayManager.open(overlayEl);
   }
 
   function closeOverlay(overlayEl) {
-    if (!overlayEl) return;
-    const sheet = overlayEl.querySelector('.sheet');
-    if (sheet) {
-      sheet.classList.remove('open');
-      setTimeout(() => {
-        overlayEl.style.display = 'none';
-      }, 300);
-    } else {
-      overlayEl.style.display = 'none';
-    }
+    OverlayManager.close(overlayEl);
   }
 
   function render() {
@@ -34,7 +22,7 @@ export const AdvancedControls = (() => {
     const persona = PERSONAS.find(p => p.id === currentPersonaId) || PERSONAS[0];
     const personaTrail = document.getElementById('advancedControlsPersonaTrail');
     if (personaTrail && personaTrail.childNodes[0]) {
-      personaTrail.childNodes[0].textContent = persona.name;
+      personaTrail.childNodes[0].textContent = persona.label;
     }
 
     // Agent Mode toggle state
