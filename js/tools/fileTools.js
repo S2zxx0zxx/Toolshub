@@ -494,7 +494,6 @@ export const FileTools = (() => {
 
       if (!indices.length) { alert('Invalid page range. Pages start from 1.'); return; }
 
-      const prog = document.getElementById('ut-ps-prog');
       prog.style.display = '';
 
       try {
