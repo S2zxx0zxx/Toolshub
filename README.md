@@ -26,57 +26,159 @@ ToolsHub operates on a strictly decoupled **Frontend (Vanilla HTML/CSS/JS SPA) +
 
 ```mermaid
 graph TD
-    %% FRONTEND LAYER
-    subgraph Frontend [📱 Client: Vanilla JS SPA]
-        UI[UI / DOM]
-        ChatEngine[Chat Engine]
-        AIRouter[AI Router & Personas]
-        SentryFE[Sentry SDK - Error Tracking]
+    %% ==========================================
+    %% 🖥️ CLIENT-SIDE: VANILLA JS SPA ARCHITECTURE
+    %% ==========================================
+    subgraph Client_Tier [📱 Layer 1: Client Browser & UI]
+        direction TB
+        
+        subgraph UI_Components [Dom & Rendering]
+            ChatDOM[💬 Chat DOM & Markdown]
+            Sidebar[🗂️ Sidebar & History]
+            Overlays[⚙️ Modals & Controls]
+        end
+        
+        subgraph Core_Engines [Client-Side Logic]
+            AppCore{app.js - State Manager}
+            ChatEngine((chatEngine.js))
+            Router((router.js))
+        end
+        
+        subgraph Services [Local Services & API]
+            AuthClient[🔐 auth.js]
+            CloudDB[☁️ cloudDb.js]
+            Settings[⚙️ localSettings.js]
+        end
+        
+        subgraph AI_Intelligence [AI / Agent Pre-Processing]
+            IntentEngine[🧠 intent.js]
+            AgentEngine[🤖 agentEngine.js]
+            ToolReg[🛠️ registry.js]
+        end
+        
+        SentryFE((🐞 Sentry SDK))
+        
+        %% Internal Wiring Client
+        AppCore --> UI_Components
+        UI_Components --> ChatEngine
+        ChatEngine <--> Router
+        Router --> IntentEngine
+        IntentEngine --> ToolReg
+        AgentEngine --> ToolReg
+        AppCore --> AuthClient
+        AuthClient --> CloudDB
     end
 
-    %% EDGE LAYER
-    subgraph Edge_Network [⚡ Edge: Cloudflare Workers]
-        Worker[Main API Proxy /worker/src/index.js]
-        RateLimiter[(KV: RATE_LIMIT_KV)]
-        FallbackEngine[Model Fallback & Retry Logic]
-        SentryBE[Sentry SDK - Backend]
+    %% ==========================================
+    %% ⚡ EDGE-SIDE: CLOUDFLARE WORKERS
+    %% ==========================================
+    subgraph Edge_Tier [⚡ Layer 2: Cloudflare Edge Network]
+        direction TB
+        
+        subgraph Security_Perimeter [WAF & Security]
+            CF_WAF{Cloudflare WAF}
+            RateLimit[(KV: RATE_LIMIT_KV)]
+        end
+        
+        subgraph Worker_Core [/worker/src/index.js/]
+            ReqRouter{API Router}
+            AuthVerifier[JWT Verifier]
+            UsageMiddleware[Quota & Plan Check]
+            ModelAccess[Tier Enforcer]
+        end
+        
+        subgraph AI_Routing [Model Fallback Engine]
+            PrimaryCircuit[groq/llama-3.3-70b]
+            SecondaryCircuit[groq/llama-3.1-8b]
+            FailsafeCircuit[github/llama-3.3-70b]
+        end
+        
+        SentryBE((🐞 Sentry Backend))
+        
+        %% Internal Wiring Edge
+        CF_WAF --> ReqRouter
+        ReqRouter --> RateLimit
+        ReqRouter --> AuthVerifier
+        AuthVerifier --> UsageMiddleware
+        UsageMiddleware --> ModelAccess
+        ModelAccess --> PrimaryCircuit
+        ModelAccess -.-> |429 / 503 Fallback| SecondaryCircuit
+        SecondaryCircuit -.-> |Critical Failover| FailsafeCircuit
     end
 
-    %% EXTERNAL APIS
-    subgraph External_APIs [🌐 Secure External Providers]
-        Groq[Groq LLMs]
-        GithubModels[GitHub Models - Backup]
-        Tavily[Tavily Search API]
+    %% ==========================================
+    %% 🗄️ DATABASE & STORAGE: FIREBASE
+    %% ==========================================
+    subgraph Data_Tier [🗄️ Layer 3: Firebase Cloud]
+        direction LR
+        
+        subgraph Auth_Identity [Identity]
+            FB_Auth[Google Auth / Email]
+        end
+        
+        subgraph Firestore_Nodes [NoSQL Collections]
+            UsersCol[(users/{uid})]
+            UsageCol[(users/{uid}/usage)]
+            GlobalStats[(dailyUsageStats)]
+        end
+        
+        %% Internal Data Wiring
+        FB_Auth --> UsersCol
+        UsersCol --> UsageCol
     end
 
-    %% DATABASE LAYER
-    subgraph Database [🗄️ Storage: Firebase]
-        Firestore[(Firestore DB)]
-        UsageStats[dailyUsageStats - Atomic]
+    %% ==========================================
+    %% 🌐 EXTERNAL PROVIDERS & MONITORING
+    %% ==========================================
+    subgraph External_Tier [🌐 Layer 4: Third-Party APIs]
+        GroqAPI[⚡ Groq Inference]
+        GithubAPI[🐙 GitHub Models API]
+        TavilyAPI[🔍 Tavily Search API]
+        Razorpay[💸 Razorpay Gateway]
     end
-
-    %% INFRASTRUCTURE MONITORING
-    subgraph Monitoring [🩺 External Monitoring]
+    
+    subgraph Monitor_Tier [🩺 Reliability]
         UptimeRobot((UptimeRobot))
     end
 
-    %% FLOWS
-    UI -->|Interaction| ChatEngine
-    ChatEngine -->|Prompt| AIRouter
-    AIRouter -->|Payload| Worker
-    SentryFE -.->|Crashes| Sentry[Sentry Dashboard]
+    %% ==========================================
+    %% 🔗 INTER-LAYER CONNECTIONS (THE WIRING)
+    %% ==========================================
     
-    Worker -->|1. Check IP| RateLimiter
-    Worker -->|2. Verify Auth| Firestore
-    Worker -->|3. Route Request| FallbackEngine
-    Worker -->|4. Log Metrics| UsageStats
-    SentryBE -.->|Exceptions| Sentry
+    %% Client to Edge
+    Router ==>|REST /chat payload| CF_WAF
+    AgentEngine ==>|Tool Execution| CF_WAF
+    CloudDB <==>|Firebase SDK| Firestore_Nodes
+    SentryFE -.-> |Exception Data| External_Tier
+    SentryBE -.-> |Exception Data| External_Tier
     
-    FallbackEngine -->|Primary| Groq
-    FallbackEngine -.->|Failover| GithubModels
-    Worker -->|Search| Tavily
+    %% Edge to DB
+    AuthVerifier <==>|Admin SDK Token Check| FB_Auth
+    UsageMiddleware ==>|Atomic Increment| UsageCol
+    ReqRouter ==>|Background Task| GlobalStats
     
-    UptimeRobot -.->|Pings /api/health| Worker
+    %% Edge to APIs
+    PrimaryCircuit ==>|Streaming HTTP| GroqAPI
+    SecondaryCircuit ==>|Streaming HTTP| GroqAPI
+    FailsafeCircuit ==>|Streaming HTTP| GithubAPI
+    ReqRouter ==>|Search Query| TavilyAPI
+    
+    %% External to Client
+    Razorpay -.-> |Webhook/Client-side| AppCore
+    
+    %% Monitoring
+    UptimeRobot -.->|Pings /api/health| CF_WAF
+    
+    %% Styling
+    classDef client fill:#1e1e24,stroke:#3b82f6,stroke-width:2px,color:#fff;
+    classDef edge fill:#1e1e24,stroke:#f59e0b,stroke-width:2px,color:#fff;
+    classDef data fill:#1e1e24,stroke:#10b981,stroke-width:2px,color:#fff;
+    classDef external fill:#1e1e24,stroke:#ec4899,stroke-width:2px,color:#fff;
+    
+    class UI_Components,Core_Engines,Services,AI_Intelligence client;
+    class Security_Perimeter,Worker_Core,AI_Routing edge;
+    class Auth_Identity,Firestore_Nodes data;
+    class External_Tier,Monitor_Tier external;
 ```
 
 ---
