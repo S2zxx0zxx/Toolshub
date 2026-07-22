@@ -165,6 +165,23 @@ export const Sidebar = (() => {
     document.getElementById('hamburgerBtn')?.addEventListener('click', open);
     renderProjects();
     renderHistory();
+
+    // Bind a secret click handler to the avatar for dev unlock (5 clicks)
+    const avatar = document.getElementById('sidebarAvatar');
+    if (avatar) {
+      let avatarClickCount = 0;
+      let avatarClickTimer;
+      avatar.addEventListener('click', () => {
+        avatarClickCount++;
+        clearTimeout(avatarClickTimer);
+        if (avatarClickCount >= 5) {
+          avatarClickCount = 0;
+          handleDeveloperUnlock();
+        } else {
+          avatarClickTimer = setTimeout(() => { avatarClickCount = 0; }, 1000);
+        }
+      });
+    }
   }
 
   async function handleDeveloperUnlock(code) {
@@ -197,25 +214,6 @@ export const Sidebar = (() => {
       alert('Network error while redeeming code.');
     }
   }
-
-  // Bind a secret click handler to the avatar for dev unlock (5 clicks)
-  let avatarClickCount = 0;
-  let avatarClickTimer;
-  document.addEventListener('DOMContentLoaded', () => {
-    const avatar = document.getElementById('sidebarAvatar');
-    if (avatar) {
-      avatar.addEventListener('click', () => {
-        avatarClickCount++;
-        clearTimeout(avatarClickTimer);
-        if (avatarClickCount >= 5) {
-          avatarClickCount = 0;
-          handleDeveloperUnlock();
-        } else {
-          avatarClickTimer = setTimeout(() => { avatarClickCount = 0; }, 1000);
-        }
-      });
-    }
-  });
 
   return { init, open, close, toggle, renderHistory, renderProjects, setChats, handleDeveloperUnlock };
 })();
