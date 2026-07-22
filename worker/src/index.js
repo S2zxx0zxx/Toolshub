@@ -3,6 +3,7 @@ import { resolvePlan } from './planResolver.js';
 import { checkAndIncrementDailyUsage } from './usageTracker.js';
 import { FirebaseAdmin } from './firebaseAdmin.js';
 import { MODEL_CATALOG_TIERS, rankOf } from './modelAccess.js';
+import * as statusMonitor from './statusMonitor.js';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*', // Fixed: wildcard to prevent CORS blocks
@@ -430,4 +431,8 @@ export default {
       return new Response('Internal Server Error: Error processing AI response.', { status: 500, headers: corsHeaders });
     }
   },
+  
+  async scheduled(event, env, ctx) {
+    await statusMonitor.scheduled(event, env, ctx);
+  }
 };

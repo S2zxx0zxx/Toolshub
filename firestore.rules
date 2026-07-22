@@ -26,5 +26,15 @@ service cloud.firestore {
     match /proWaitlist/{userId} {
       allow read, write: if request.auth != null && request.auth.uid == userId;
     }
+
+    match /systemStatus/{modelId} {
+      allow read: if true;
+      allow write: if false; // Only the Cloudflare Worker (admin) can write status
+    }
+
+    match /statusIncidents/{incidentId} {
+      allow read: if true;
+      allow write: if false; // Only the Cloudflare Worker (admin) can write incidents
+    }
   }
 }

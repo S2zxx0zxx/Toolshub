@@ -170,7 +170,64 @@ export class FirebaseAdmin {
     });
     
     const data = await res.json();
-    if (data.error) throw new Error(data.error.message);
+    if (!res.ok) {
+      throw new Error(`updateDevAccess failed: ${JSON.stringify(data)}`);
+    }
+    return data;
+  }
+
+  async getDocument(documentPath) {
+    const token = await this.getAccessToken();
+    const res = await fetch(`https://firestore.googleapis.com/v1/projects/${this.projectId}/databases/(default)/documents/${documentPath}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
+    
+    if (!res.ok) {
+      if (res.status === 404) return null;
+      const data = await res.json();
+      throw new Error(`getDocument failed: ${JSON.stringify(data)}`);
+    }
+    return await res.json();
+  }
+
+  async updateDocument(documentPath, firestoreDoc) {
+    const token = await this.getAccessToken();
+    
+    // We use PATCH to update or create
+    const res = await fetch(`https://firestore.googleapis.com/v1/projects/${this.projectId}/databases/(default)/documents/${documentPath}`, {
+      method: 'PATCH',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(firestoreDoc)
+    });
+    
+    const data = await res.json();
+    if (!res.ok) {
+      throw new Error(`updateDocument failed: ${JSON.stringify(data)}`);
+    }
+    return data;
+  }
+
+  async runQuery(query) {
+    const token = await this.getAccessToken();
+    const res = await fetch(`https://firestore.googleapis.com/v1/projects/${this.projectId}/databases/(default)/documents:runQuery`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(query)
+    });
+    
+    const data = await res.json();
+    if (!res.ok) {
+      throw new Error(`runQuery failed: ${JSON.stringify(data)}`);
+    }
     return data;
   }
 }

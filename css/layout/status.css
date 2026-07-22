@@ -1,0 +1,216 @@
+/* ============================================
+   TOOLSHUB — STATUS SCREEN
+   ============================================ */
+
+.screen-status {
+  padding: 0;
+  overflow-y: auto;
+  background: var(--bg-app);
+}
+
+/* Visibility Rules */
+#app:not([data-screen="status"]) .screen-status { display: none !important; }
+#app[data-screen="status"] .screen-status { display: block; }
+#app[data-screen="status"] .main-col > .screen-home,
+#app[data-screen="status"] .main-col > .screen-chat,
+#app[data-screen="status"] .main-col > .screen-settings { display: none !important; }
+
+.status-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 48px 24px;
+}
+
+.status-header {
+  margin-bottom: 48px;
+}
+
+.status-title {
+  font-size: 32px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 24px;
+  letter-spacing: -0.5px;
+}
+
+.status-banner {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 20px 24px;
+  border-radius: var(--r-md);
+  font-size: 18px;
+  font-weight: 500;
+}
+
+.status-icon {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+}
+
+.status-operational {
+  background: rgba(76, 175, 109, 0.1);
+  color: var(--success);
+  border: 1px solid rgba(76, 175, 109, 0.2);
+}
+
+.status-operational .status-icon {
+  background: var(--success);
+  box-shadow: 0 0 12px rgba(76, 175, 109, 0.4);
+}
+
+.status-degraded {
+  background: rgba(217, 164, 65, 0.1);
+  color: var(--warning);
+  border: 1px solid rgba(217, 164, 65, 0.2);
+}
+
+.status-degraded .status-icon {
+  background: var(--warning);
+  box-shadow: 0 0 12px rgba(217, 164, 65, 0.4);
+}
+
+.status-outage {
+  background: rgba(224, 93, 93, 0.1);
+  color: var(--danger);
+  border: 1px solid rgba(224, 93, 93, 0.2);
+}
+
+.status-outage .status-icon {
+  background: var(--danger);
+  box-shadow: 0 0 12px rgba(224, 93, 93, 0.4);
+}
+
+.status-services {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  margin-bottom: 64px;
+}
+
+.service-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--r-lg);
+  padding: 24px;
+}
+
+.service-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.service-name {
+  font-size: 18px;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.service-tag {
+  font-size: 13px;
+  color: var(--text-secondary); /* Fixed from --text-tertiary */
+  font-weight: 400;
+  margin-left: 8px;
+}
+
+.service-state {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.text-operational { color: var(--success); }
+.text-degraded { color: var(--warning); }
+.text-outage { color: var(--danger); }
+.text-nodata { color: var(--text-muted); }
+.text-investigating { color: var(--warning); }
+.text-resolved { color: var(--success); }
+
+.service-uptime-strip {
+  display: flex;
+  gap: 4px;
+  height: 32px;
+  margin-bottom: 12px;
+}
+
+.status-bar {
+  flex: 1;
+  border-radius: 2px;
+  transition: opacity 0.2s;
+}
+
+.status-bar:hover {
+  opacity: 0.8;
+}
+
+.bar-operational { background: var(--success); }
+.bar-degraded { background: var(--warning); }
+.bar-outage { background: var(--danger); }
+.bar-nodata { background: var(--border-med); }
+
+.service-uptime-footer {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.status-incidents {
+  border-top: 1px solid var(--border-subtle);
+  padding-top: 48px;
+}
+
+.incidents-heading {
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 32px;
+}
+
+.incident-group {
+  margin-bottom: 40px;
+}
+
+.incident-date {
+  font-size: 18px;
+  font-weight: 500;
+  color: var(--text-primary);
+  margin-bottom: 16px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.incident-card {
+  margin-bottom: 24px;
+}
+
+.incident-title {
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--text-primary);
+  margin-bottom: 12px;
+}
+
+.incident-updates {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.incident-update {
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--text-secondary);
+}
+
+.update-status {
+  font-weight: 500;
+}
+
+.update-time {
+  color: var(--text-muted);
+  font-size: 13px;
+  margin-left: 8px;
+}

@@ -164,6 +164,9 @@ export const Sidebar = (() => {
     document.getElementById('sidebarOverlay')?.addEventListener('click', close);
     document.getElementById('sidebarCloseBtn')?.addEventListener('click', close);
     document.getElementById('hamburgerBtn')?.addEventListener('click', open);
+    document.getElementById('openStatusBtn')?.addEventListener('click', () => {
+      import('../core/router.js').then(m => m.Router.navigate('status'));
+    });
     renderProjects();
     renderHistory();
 

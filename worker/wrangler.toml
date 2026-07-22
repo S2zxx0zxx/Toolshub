@@ -10,3 +10,6 @@ index_name = "toolshub-knowledge"
 
 [ai]
 binding = "AI"
+
+[triggers]
+crons = ["*/5 * * * *"]

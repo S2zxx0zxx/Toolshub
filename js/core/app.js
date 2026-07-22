@@ -36,6 +36,7 @@ import { HomeScreen } from '../ui/homeScreen.js';
 
 // Phase 0: Exclusive Access Bootstrap
 import { ExclusiveShell } from '../exclusive/ui/exclusiveShell.js';
+import { StatusScreen } from '../ui/statusScreen.js';
 
 const APP_VERSION = '1.0.0';
 const APP_VERSION_DATE = '20 July 2026';
@@ -999,6 +1000,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   Settings.init();
   PersonaPicker.init();
   HomeScreen.init();
+  StatusScreen.init();
 
   async function renderUsageBlock() {
     const valueEls = document.querySelectorAll('.settings-usage-value');

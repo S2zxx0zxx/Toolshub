@@ -17,7 +17,7 @@ export const Router = (() => {
     if (exclusiveShell) exclusiveShell.style.display = isExclusive ? 'flex' : 'none';
     if (mainCol) mainCol.style.display = isExclusive ? 'none' : '';
 
-    if (screen === 'settings' && window.matchMedia('(max-width: 860px)').matches) {
+    if ((screen === 'settings' || screen === 'status') && window.matchMedia('(max-width: 860px)').matches) {
       Sidebar.close();
     }
     Events.publish('NAVIGATED', screen);

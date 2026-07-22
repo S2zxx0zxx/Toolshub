@@ -25,7 +25,8 @@
 <link rel="stylesheet" href="./css/layout/chat.css?v=42">
 <link rel="stylesheet" href="./css/components/bottomsheet.css?v=42">
 <link rel="stylesheet" href="./css/components/tools.css?v=42">
-<link rel="stylesheet" href="./css/layout/screens-extra.css?v=42">
+  <link rel="stylesheet" href="./css/layout/screens-extra.css?v=42">
+  <link rel="stylesheet" href="./css/layout/status.css?v=1">
 <link rel="stylesheet" href="./css/components/inline-extracted.css?v=42">
   <link rel="stylesheet" href="./css/components/chatHistory.css?v=42">
   <link rel="stylesheet" href="./css/components/bugReport.css?v=42">
@@ -175,6 +176,10 @@
         <button id="sidebarLoginBtn" class="extracted-inline-5">Login to save history</button>
         <button id="devLoginBtn" style="display: none; background: rgba(168, 85, 247, 0.15); color: #a855f7; border: 1px solid rgba(168, 85, 247, 0.3); border-radius: 4px; font-size: 11px; padding: 4px 8px; margin-top: 4px; cursor: pointer; transition: all 0.2s;">Developer Access</button>
       </div>
+      <button id="openStatusBtn" aria-label="System Status" class="btn-icon" style="position: relative;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
+        <span id="sidebarStatusDot" style="position: absolute; top: 4px; right: 4px; width: 6px; height: 6px; border-radius: 50%; background: var(--color-text-tertiary);"></span>
+      </button>
       <button id="openSettingsBtn" aria-label="Settings" class="btn-icon">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 11-2.83-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 112.83 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
       </button>
@@ -504,6 +509,9 @@
 
       </div><!-- /.home-content -->
     </div><!-- /#screenHome -->
+
+    <!-- ===== STATUS SCREEN ===== -->
+    <div id="screenStatus" class="screen screen-status"></div>
 
     <!-- ===== CHAT SCREEN ===== -->
     <div id="screenChat" class="screen screen-chat is-active">

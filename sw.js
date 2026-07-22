@@ -1,4 +1,4 @@
-const CACHE_NAME = 'toolshub-cache-v47';
+const CACHE_NAME = 'toolshub-cache-v48';
 const urlsToCache = [
   './',
   './index.html',
@@ -17,6 +17,7 @@ const urlsToCache = [
   './css/components/bottomsheet.css',
   './css/components/tools.css',
   './css/layout/screens-extra.css',
+  './css/layout/status.css',
   './css/components/inline-extracted.css',
   './css/components/chatHistory.css',
   './css/components/bugReport.css',
@@ -56,6 +57,7 @@ const urlsToCache = [
   './js/ui/personaPicker.js',
   './js/ui/advancedControls.js',
   './js/ui/connectorsSheet.js',
+  './js/ui/statusScreen.js',
   // === JS AI ===
   './js/ai/prompt.js',
   './js/ai/context.js',
