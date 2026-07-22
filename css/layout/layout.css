@@ -186,9 +186,4 @@ svg { display: block; }
 @media (min-width: 861px) {
   .sidebar-overlay { display: none; }
   .hamburger-btn { display: none; } /* sidebar always visible on desktop */
-  
-  /* Home screen should span full width on desktop without sidebar */
-  #app[data-screen="home"] { grid-template-columns: 1fr; }
-  #app[data-screen="home"] .sidebar { display: none; }
 }
-
