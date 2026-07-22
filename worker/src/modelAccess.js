@@ -11,3 +11,8 @@ export function rankOf(tier) {
   const ranks = { 'free': 0, 'monthly': 1, '6month': 2, 'yearly': 3 };
   return ranks[tier] || 0;
 }
+
+export const ENDPOINTS = {
+  GITHUB_MODELS: 'https://models.github.ai/inference/chat/completions',
+  GROQ: 'https://api.groq.com/openai/v1/chat/completions'
+};

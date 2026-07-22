@@ -1,11 +1,11 @@
 import { FirebaseAdmin } from './firebaseAdmin.js';
-import { MODEL_CATALOG_TIERS } from './modelAccess.js';
+import { MODEL_CATALOG_TIERS, ENDPOINTS } from './modelAccess.js';
 
 async function probeModel(modelId, env) {
   const isGithubModel = modelId === 'gpt-4o-mini';
   const url = isGithubModel 
-    ? 'https://models.inference.ai.azure.com/chat/completions'
-    : 'https://api.groq.com/openai/v1/chat/completions';
+    ? ENDPOINTS.GITHUB_MODELS
+    : ENDPOINTS.GROQ;
     
   const token = isGithubModel ? env.GITHUB_MODELS_TOKEN : env.GROQ_API_KEY;
   if (!token) return { success: false, reason: 'missing_token' };

@@ -185,8 +185,8 @@ export const CloudDB = (() => {
       if (snap.exists()) {
         const data = snap.data();
         return { 
-          count: data.requestsToday || 0,
-          tokens: data.tokensUsed || 0
+          count: data.count || 0,
+          tokens: 0 // Tokens are not currently tracked server-side by usageTracker.js
         };
       }
       return { count: 0, tokens: 0 };

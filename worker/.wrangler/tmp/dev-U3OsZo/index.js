@@ -15893,7 +15893,7 @@ function rankOf(tier) {
   const ranks = { "free": 0, "monthly": 1, "6month": 2, "yearly": 3 };
   return ranks[tier] || 0;
 }
-var MODEL_CATALOG_TIERS;
+var MODEL_CATALOG_TIERS, ENDPOINTS;
 var init_modelAccess = __esm({
   "src/modelAccess.js"() {
     init_checked_fetch();
@@ -15908,6 +15908,10 @@ var init_modelAccess = __esm({
       "groq/compound-mini": "yearly"
     };
     __name(rankOf, "rankOf");
+    ENDPOINTS = {
+      GITHUB_MODELS: "https://models.github.ai/inference/chat/completions",
+      GROQ: "https://api.groq.com/openai/v1/chat/completions"
+    };
   }
 });
 
@@ -15939,7 +15943,7 @@ async function callGitHubModels(modelId, payload, env) {
     ...payload,
     model: modelId
   };
-  const ghResponse = await fetch("https://models.github.ai/inference/chat/completions", {
+  const ghResponse = await fetch(ENDPOINTS.GITHUB_MODELS, {
     method: "POST",
     headers: {
       "Accept": "application/vnd.github+json",
@@ -16310,6 +16314,25 @@ async function handleDevAccessRedeem(request, env, corsHeaders2) {
     }
     const { FirebaseAdmin: FirebaseAdmin2 } = await Promise.resolve().then(() => (init_firebaseAdmin(), firebaseAdmin_exports));
     const fbAdmin = new FirebaseAdmin2(env.FIREBASE_SERVICE_ACCOUNT);
+    const authHeader = request.headers.get("Authorization") || "";
+    if (!authHeader.startsWith("Bearer ")) {
+      return new Response(JSON.stringify({ error: "Missing token" }), { status: 401, headers: { "Content-Type": "application/json", ...corsHeaders2 } });
+    }
+    const token = authHeader.split(" ")[1];
+    let tokenUid;
+    try {
+      tokenUid = await fbAdmin.verifyIdToken(token);
+    } catch (e) {
+      return new Response(JSON.stringify({ error: "Invalid token" }), { status: 401, headers: { "Content-Type": "application/json", ...corsHeaders2 } });
+    }
+    if (tokenUid !== body.uid) {
+      return new Response(JSON.stringify({ error: "Token UID mismatch" }), { status: 403, headers: { "Content-Type": "application/json", ...corsHeaders2 } });
+    }
+    const userDoc = await fbAdmin.getUserDoc(tokenUid);
+    const ALLOWED_DEVELOPERS = ["satyamk82476@gmail.com", "styamk82476@gmail.com"];
+    if (!userDoc || !userDoc.email || !ALLOWED_DEVELOPERS.includes(userDoc.email.toLowerCase())) {
+      return new Response(JSON.stringify({ error: "Not an authorized developer account" }), { status: 403, headers: { "Content-Type": "application/json", ...corsHeaders2 } });
+    }
     const expiresAt = Date.now() + 24 * 60 * 60 * 1e3;
     await fbAdmin.updateDevAccess(body.uid, expiresAt);
     return new Response(JSON.stringify({ success: true, devAccessExpiresAt: expiresAt }), {
@@ -16636,7 +16659,7 @@ init_firebaseAdmin();
 init_modelAccess();
 async function probeModel(modelId, env) {
   const isGithubModel = modelId === "gpt-4o-mini";
-  const url = isGithubModel ? "https://models.inference.ai.azure.com/chat/completions" : "https://api.groq.com/openai/v1/chat/completions";
+  const url = isGithubModel ? ENDPOINTS.GITHUB_MODELS : ENDPOINTS.GROQ;
   const token = isGithubModel ? env.GITHUB_MODELS_TOKEN : env.GROQ_API_KEY;
   if (!token)
     return { success: false, reason: "missing_token" };

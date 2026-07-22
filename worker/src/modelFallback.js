@@ -1,4 +1,4 @@
-import { MODEL_CATALOG_TIERS, rankOf } from './modelAccess.js';
+import { MODEL_CATALOG_TIERS, rankOf, ENDPOINTS } from './modelAccess.js';
 import * as Sentry from '@sentry/cloudflare';
 
 // Helper to delay
@@ -37,7 +37,7 @@ async function callGitHubModels(modelId, payload, env) {
     ...payload, 
     model: modelId 
   };
-  const ghResponse = await fetch('https://models.github.ai/inference/chat/completions', {
+  const ghResponse = await fetch(ENDPOINTS.GITHUB_MODELS, {
     method: 'POST',
     headers: {
       'Accept': 'application/vnd.github+json',
