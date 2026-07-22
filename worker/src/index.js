@@ -8,6 +8,9 @@ import { FirebaseAdmin } from './firebaseAdmin.js';
 import { MODEL_CATALOG_TIERS, rankOf } from './modelAccess.js';
 import { callModelWithFallback } from './modelFallback.js';
 import * as statusMonitor from './statusMonitor.js';
+import { routeRequest } from './agents/orchestrator.js';
+import { runCoderAgent } from './agents/coder.js';
+import { runCreatorAgent } from './agents/creator.js';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*', // Fixed: wildcard to prevent CORS blocks
@@ -57,6 +60,17 @@ export default withSentry((env) => {
     if (request.method === 'GET' && url.pathname === '/api/admin/usage-stats') {
       const { handleAdminUsageStats } = await import('./adminStats.js');
       return await handleAdminUsageStats(request, env, corsHeaders);
+    }
+
+    // 1.7 Agent 2 (Ops Maintainer) Health Report Endpoint
+    if (request.method === 'GET' && url.pathname === '/api/admin/agent-health') {
+      // Basic security check
+      if (env.ADMIN_UID && request.headers.get('Authorization') !== `Bearer ${env.ADMIN_UID}`) {
+        return new Response('Unauthorized', { status: 401, headers: corsHeaders });
+      }
+      const { runOpsAgent } = await import('./agents/ops.js');
+      const report = await runOpsAgent(env);
+      return new Response(report, { status: 200, headers: { ...corsHeaders, 'Content-Type': 'text/plain' } });
     }
 
     // 2. Enforce HTTP Method
@@ -210,6 +224,48 @@ export default withSentry((env) => {
     }
     if (targetModel === 'llama3-8b-8192' || targetModel === 'llama-3.1-8b-instant') {
       targetModel = 'llama-3.1-8b-instant';
+    }
+
+    // Agent 1: Orchestrator Hook
+    let targetAgent = 'chat';
+    if (mode !== 'agent') {
+      targetAgent = await routeRequest(messages, env, callerPlan.planId);
+      Sentry.addBreadcrumb({ category: 'orchestrator', message: `Orchestrator routed request to: ${targetAgent}`, level: 'info' });
+      
+      // Phase B Branching
+      if (targetAgent === 'creator') {
+        const creatorResponse = await runCreatorAgent(messages, env);
+        // Inject CORS headers into the response
+        const newHeaders = new Headers(creatorResponse.headers);
+        for (const [key, value] of Object.entries(corsHeaders)) {
+          newHeaders.set(key, value);
+        }
+        return new Response(creatorResponse.body, { status: creatorResponse.status, headers: newHeaders });
+      }
+
+      if (targetAgent === 'coder') {
+        const payloadOpts = { temperature: 0.2, stream: !!stream };
+        const coderResult = await runCoderAgent(messages, env, callerPlan.planId, payloadOpts);
+        
+        // Let it fall through to the standard response formatter below by overriding variables
+        if (!coderResult.ok) {
+           return new Response('Internal Server Error: Coder Agent Failed.', { status: 500, headers: corsHeaders });
+        }
+        targetModel = 'gpt-4o-mini'; // Override for logging/formatting
+        // We will skip the normal model call and jump straight to formatting
+        const responseHeaders = new Headers(coderResult.response.headers);
+        responseHeaders.delete('content-encoding');
+        responseHeaders.delete('content-length');
+        responseHeaders.delete('transfer-encoding');
+        for (const [key, value] of Object.entries(corsHeaders)) {
+          responseHeaders.set(key, value);
+        }
+        if (!stream) {
+          const data = await coderResult.response.json();
+          return new Response(JSON.stringify(data), { status: 200, headers: responseHeaders });
+        }
+        return new Response(coderResult.response.body, { status: 200, headers: responseHeaders });
+      }
     }
 
     // Enforce model access tier

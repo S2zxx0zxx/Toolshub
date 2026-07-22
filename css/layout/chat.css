@@ -311,3 +311,5 @@
   display: flex; align-items: center; justify-content: space-between;
 }
 .input-actions-left, .input-actions-right { display: flex; align-items: center; gap: var(--sp-2); }
+. m e s s a g e - c o n t e n t   i m g   {   m a x - w i d t h :   1 0 0 % ;   b o r d e r - r a d i u s :   1 2 p x ;   m a r g i n - t o p :   1 0 p x ;   }  
+ 
