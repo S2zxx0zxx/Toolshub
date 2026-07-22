@@ -3,6 +3,7 @@ import * as Sentry from '@sentry/cloudflare';
 import { handlePaymentRequest } from './payments.js';
 import { resolvePlan } from './planResolver.js';
 import { checkAndIncrementDailyUsage } from './usageTracker.js';
+import { recordUsageStat } from './usageStats.js';
 import { FirebaseAdmin } from './firebaseAdmin.js';
 import { MODEL_CATALOG_TIERS, rankOf } from './modelAccess.js';
 import { callModelWithFallback } from './modelFallback.js';
@@ -50,6 +51,12 @@ export default withSentry((env) => {
     // 1.5 Public Health Check Endpoint (For UptimeRobot)
     if (request.method === 'GET' && (url.pathname === '/health' || url.pathname === '/api/health')) {
       return new Response('OK', { status: 200, headers: corsHeaders });
+    }
+
+    // 1.6 Admin Usage Stats Endpoint (Internal View)
+    if (request.method === 'GET' && url.pathname === '/api/admin/usage-stats') {
+      const { handleAdminUsageStats } = await import('./adminStats.js');
+      return await handleAdminUsageStats(request, env, corsHeaders);
     }
 
     // 2. Enforce HTTP Method
@@ -217,6 +224,10 @@ export default withSentry((env) => {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' }
       });
     }
+
+    // Record non-identifying aggregate usage stat (errors are swallowed inside)
+    const toolCategory = body.toolCategory || (mode === 'agent' ? 'agent' : 'chat');
+    env.ctx.waitUntil(recordUsageStat(fbAdmin, targetModel, toolCategory, env));
 
     Sentry.addBreadcrumb({ category: 'model', message: `Routing request for model ${targetModel}`, level: 'info' });
 

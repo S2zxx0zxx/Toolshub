@@ -36,5 +36,9 @@ service cloud.firestore {
       allow read: if true;
       allow write: if false; // Only the Cloudflare Worker (admin) can write incidents
     }
+    match /dailyUsageStats/{date} {
+      allow read: if false;  // server/admin-view only — do not make this publicly readable, it's aggregate but still internal
+      allow write: if false; // Worker (Admin SDK) only
+    }
   }
 }
