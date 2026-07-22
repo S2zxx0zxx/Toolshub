@@ -183,6 +183,14 @@ export const Sidebar = (() => {
         }
       });
     }
+
+    const devLoginBtn = document.getElementById('devLoginBtn');
+    if (devLoginBtn) {
+      devLoginBtn.addEventListener('click', (e) => {
+        e.stopPropagation(); // prevent triggering the 5-click footer listener
+        handleDeveloperUnlock();
+      });
+    }
   }
 
   async function handleDeveloperUnlock(code) {

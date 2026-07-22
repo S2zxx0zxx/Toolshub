@@ -1220,6 +1220,14 @@ document.addEventListener('DOMContentLoaded', async () => {
       if (settingsAvatarEl) settingsAvatarEl.textContent = initial;
       if (settingsEmailEl) settingsEmailEl.textContent = user.email;
       if (sidebarLoginBtn) sidebarLoginBtn.style.display = 'none';
+      const devLoginBtn = document.getElementById('devLoginBtn');
+      if (devLoginBtn) {
+        if (user.email && user.email.toLowerCase() === 'satyamk82476@gmail.com') {
+          devLoginBtn.style.display = 'inline-block';
+        } else {
+          devLoginBtn.style.display = 'none';
+        }
+      }
       const logoutRow = document.getElementById('logoutRow');
       if (logoutRow) logoutRow.style.display = 'flex';
       
@@ -1279,6 +1287,8 @@ document.addEventListener('DOMContentLoaded', async () => {
       if (sidebarLoginBtn) sidebarLoginBtn.style.display = 'inline-block';
       if (settingsAvatarEl) settingsAvatarEl.textContent = 'G';
       if (settingsEmailEl) settingsEmailEl.textContent = 'Guest User';
+      const devLoginBtn = document.getElementById('devLoginBtn');
+      if (devLoginBtn) devLoginBtn.style.display = 'none';
 
       const logoutRow = document.getElementById('logoutRow');
       if (logoutRow) logoutRow.style.display = 'none';
