@@ -57,7 +57,7 @@
 
   <!-- GitHub Style Top Progress Bar (Only shows on reload) -->
   <div id="github-loader" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 3px; z-index: 9999999; background: transparent;">
-    <div id="gh-progress-bar" style="width: 100%; height: 100%; background: var(--primary, #a855f7); transform-origin: left; transform: scaleX(0); animation: gh-progress 3s cubic-bezier(0.1, 0.8, 0.3, 1) forwards;"></div>
+    <div id="gh-progress-bar" style="width: 100%; height: 100%; background: var(--accent); transform-origin: left; transform: scaleX(0); animation: gh-progress 3s var(--ease) forwards;"></div>
     <style>
       @keyframes gh-progress {
         0% { transform: scaleX(0); }
@@ -67,40 +67,34 @@
       }
       html[data-is-reload="true"] #github-loader { display: block; }
       html[data-is-reload="true"] #global-loader > div { display: none !important; }
+      html[data-is-reload="true"] #global-loader > span { display: none !important; }
+      html[data-is-reload="true"] #global-loader { background: transparent !important; pointer-events: none; }
     </style>
   </div>
 
-  <div id="global-loader" style="position: fixed; inset: 0; background: #ffffff; z-index: 999999; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: opacity 0.2s ease, visibility 0.2s ease; font-family: monospace, 'Courier New', Courier; overflow: hidden; perspective: 800px;">
+  <div id="global-loader" style="position: fixed; inset: 0; background: var(--bg-app); z-index: 999999; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: opacity var(--dur-slow) var(--ease), visibility var(--dur-slow) var(--ease);">
     
-    <!-- 3D Cyber Core Loader -->
-    <div style="position: relative; width: 80px; height: 80px; margin-bottom: 50px; transform-style: preserve-3d; animation: cyber-spin 6s linear infinite;">
-      <div style="position: absolute; inset: 0; border: 3px solid rgba(34, 197, 94, 0.2); border-top-color: #22c55e; border-bottom-color: #22c55e; border-radius: 50%; transform: rotateX(70deg) rotateZ(0deg); animation: ring1 3s linear infinite;"></div>
-      <div style="position: absolute; inset: 0; border: 3px solid rgba(168, 85, 247, 0.2); border-left-color: #a855f7; border-right-color: #a855f7; border-radius: 50%; transform: rotateY(70deg) rotateZ(0deg); animation: ring2 4s linear infinite;"></div>
-      <div style="position: absolute; inset: -10px; border: 1px dashed rgba(0, 0, 0, 0.15); border-radius: 50%; transform: rotateX(45deg) rotateY(45deg); animation: ring3 5s linear infinite;"></div>
-      <div style="position: absolute; top: 50%; left: 50%; width: 16px; height: 16px; background: #22c55e; border-radius: 50%; transform: translate(-50%, -50%); box-shadow: 0 0 15px rgba(34, 197, 94, 0.5), 0 0 30px rgba(34, 197, 94, 0.5), 0 0 50px rgba(168, 85, 247, 0.5); animation: core-pulse 1.2s ease-in-out infinite alternate;"></div>
-    </div>
-
-    <!-- Hacker Terminal Text Sequence -->
-    <div style="color: #0f172a; font-size: 13px; font-weight: 500; letter-spacing: 0.5px; width: 320px; text-align: left; line-height: 1.8;">
-      <div style="opacity: 0; animation: fade-line 0.1s forwards 0.1s;">[SYS] Boot sequence initiated...</div>
-      <div style="opacity: 0; animation: fade-line 0.1s forwards 0.3s;">[NET] Resolving secure connection...</div>
-      <div style="opacity: 0; animation: fade-line 0.1s forwards 0.5s;">[AUTH] Validating user credentials... <span style="color:#16a34a; font-weight: 700;">OK</span></div>
-      <div style="opacity: 0; animation: fade-line 0.1s forwards 0.7s; color: #7e22ce; font-weight: 600;">[AI] Activating neural models...</div>
-      <div style="display: flex; align-items: center; margin-top: 14px; font-weight: 700; font-size: 15px; width: 0; overflow: hidden; border-right: 2px solid #0f172a; white-space: nowrap; animation: gl-typing 1s steps(25, end) forwards 0.9s, gl-blink 0.75s step-end infinite;">
-        >_ Setting up environment...
+    <div style="display: flex; flex-direction: column; align-items: center; gap: var(--sp-4); animation: gl-fade-in var(--dur-slow) var(--ease) forwards;">
+      <img src="./assets/icon-48x48.png?v=3" alt="ToolsHub Logo" style="width: 56px; height: 56px; border-radius: var(--r-md); box-shadow: var(--sh-md);">
+      <h1 style="margin: 0; font-family: var(--font-display); font-size: var(--fs-xl); font-weight: 500; letter-spacing: -0.02em; color: var(--text-primary);">ToolsHub</h1>
+      <div style="margin-top: var(--sp-2); width: 120px; height: 2px; background: var(--bg-surface-3); border-radius: var(--r-full); position: relative; overflow: hidden;">
+        <div style="position: absolute; top: 0; bottom: 0; left: 0; width: 40%; background: var(--accent); border-radius: var(--r-full); animation: gl-shimmer 1.5s var(--ease) infinite;"></div>
       </div>
     </div>
+    
+    <span style="position: absolute; bottom: var(--sp-8); font-family: var(--font-body); font-size: var(--fs-sm); color: var(--text-muted); opacity: 0; animation: gl-fade-in var(--dur-slow) var(--ease) forwards 0.2s;">
+      A Product By Digirise India
+    </span>
 
     <style>
-      @keyframes cyber-spin { 100% { transform: rotateY(360deg) rotateX(360deg); } }
-      @keyframes ring1 { 100% { transform: rotateX(70deg) rotateZ(360deg); } }
-      @keyframes ring2 { 100% { transform: rotateY(70deg) rotateZ(360deg); } }
-      @keyframes ring3 { 100% { transform: rotateX(45deg) rotateY(45deg) rotateZ(360deg); } }
-      @keyframes core-pulse { 0% { transform: translate(-50%, -50%) scale(0.8); opacity: 0.8; } 100% { transform: translate(-50%, -50%) scale(1.4); opacity: 1; } }
-      
-      @keyframes fade-line { to { opacity: 1; } }
-      @keyframes gl-typing { to { width: 250px; } }
-      @keyframes gl-blink { from, to { border-color: transparent; } 50% { border-color: #0f172a; } }
+      @keyframes gl-fade-in {
+        from { opacity: 0; transform: translateY(8px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+      @keyframes gl-shimmer {
+        0% { transform: translateX(-100%); }
+        100% { transform: translateX(250%); }
+      }
     </style>
   </div>
 <div id="app" data-screen="home">
