@@ -32,6 +32,7 @@ import { getSuggestionChips } from '../config/suggestionPool.js';
 // Advanced Controls & Connectors (v2)
 import { AdvancedControls } from '../ui/advancedControls.js';
 import { ConnectorsSheet } from '../ui/connectorsSheet.js';
+import { HomeScreen } from '../ui/homeScreen.js';
 
 const APP_VERSION = '1.0.0';
 const APP_VERSION_DATE = '20 July 2026';
@@ -493,6 +494,8 @@ const Settings = (() => {
     // ---- Billing row (Pattern B) ----
     document.getElementById('billingRow')?.addEventListener('click', openBilling);
     document.getElementById('billingBackBtn')?.addEventListener('click', () => closeSubScreen('screenBilling'));
+    // Listen for openBilling event from HomeScreen (avoids circular import)
+    window.addEventListener('toolshub:open-billing', openBilling);
 
     // ---- API Keys row (Pattern B) ----
     document.getElementById('apiKeysRow')?.addEventListener('click', () => Toast.show('Coming soon'));
@@ -887,7 +890,7 @@ const Settings = (() => {
     updateManageToolsSubtitle();
   }
 
-  return { init, open, close, toggleTheme };
+  return { init, open, close, toggleTheme, openBilling };
 })();
 
 /* ---------- PWA LOGIC ---------- */
@@ -992,6 +995,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   Chat.init();
   Settings.init();
   PersonaPicker.init();
+  HomeScreen.init();
 
   async function renderUsageBlock() {
     const valueEls = document.querySelectorAll('.settings-usage-value');

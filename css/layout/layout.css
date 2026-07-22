@@ -66,6 +66,12 @@ svg { display: block; }
 .screen { display: none; height: 100%; flex-direction: column; min-height: 0; overflow: hidden; }
 .screen.is-active { display: flex; }
 
+/* --- Home screen visibility rules --- */
+#app[data-screen="chat"] .main-col > .screen-home { display: none; }
+#app[data-screen="settings"] .main-col > .screen-home { display: none; }
+#app[data-screen="home"] .main-col > .screen-chat { display: none; }
+#app[data-screen="home"] .main-col > .screen-settings { display: none; }
+
 #app[data-screen="settings"] .main-col > .screen-chat { display: none; }
 #app[data-screen="chat"] .main-col > .screen-settings { display: none; }
 

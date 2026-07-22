@@ -2,7 +2,7 @@ import { Events } from './events.js';
 import { Sidebar } from '../ui/sidebar.js';
 
 export const Router = (() => {
-  let currentScreen = 'chat';
+  let currentScreen = 'home';
   let activeSubScreens = new Set();
 
   function navigate(screen) {

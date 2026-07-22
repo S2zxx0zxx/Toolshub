@@ -12,6 +12,7 @@ import { Toast } from './toast.js';
 import { AIRouter } from '../ai/router.js';
 import { executeAgentTask } from '../ai/agentEngine.js';
 import { OverlayManager } from '../services/overlayManager.js';
+import { Router } from '../core/router.js';
 
 export const Chat = (() => {
   let currentChat = null; // { id, title, toolId, messages, createdAt, updatedAt }
@@ -651,7 +652,7 @@ export const Chat = (() => {
     });
 
     document.getElementById('homeLogoBtn')?.addEventListener('click', () => {
-      newChat();
+      Router.navigate('home');
       if (window.matchMedia('(max-width: 860px)').matches) Sidebar.close();
     });
 

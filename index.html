@@ -30,6 +30,7 @@
   <link rel="stylesheet" href="./css/components/chatHistory.css?v=42">
   <link rel="stylesheet" href="./css/components/bugReport.css?v=42">
   <link rel="stylesheet" href="./css/components/advancedControls.css?v=42">
+  <link rel="stylesheet" href="./css/layout/home.css?v=43">
 
   <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 </head>
@@ -96,7 +97,7 @@
       @keyframes gl-blink { from, to { border-color: transparent; } 50% { border-color: #0f172a; } }
     </style>
   </div>
-<div id="app" data-screen="chat">
+<div id="app" data-screen="home">
 
   <!-- ============ SIDEBAR ============ -->
   <div id="sidebarOverlay" class="sidebar-overlay"></div>
@@ -175,8 +176,323 @@
       </svg>
     </div>
 
+    <!-- ===== HOME SCREEN ===== -->
+    <div id="screenHome" class="screen screen-home is-active">
+
+      <!-- ---- HOME TOPBAR ---- -->
+      <div class="home-topbar">
+        <button class="home-topbar-logo" id="homeTopbarLogo">
+          <img src="./assets/icon-48x48.png?v=3" alt="ToolsHub Logo">
+          ToolsHub
+        </button>
+        <div class="home-topbar-actions">
+          <button id="hamburgerBtnHome" aria-label="Open menu" class="btn-icon hamburger-btn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+          </button>
+          <button class="btn btn-primary" style="height:36px; padding: 0 var(--sp-4); font-size: var(--fs-sm);" data-home-cta="chat">Open ToolsHub</button>
+        </div>
+      </div>
+
+      <!-- ---- HOME SCROLL BODY ---- -->
+      <div class="home-content">
+
+        <!-- === SECTION 1: HERO === -->
+        <section class="home-hero">
+          <div class="home-hero-blob"></div>
+          <div class="home-hero-inner">
+            <div class="home-hero-badge">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2 L14.5 9.5 L22 12 L14.5 14.5 L12 22 L9.5 14.5 L2 12 L9.5 9.5 Z"/></svg>
+              One workspace &middot; Every tool
+            </div>
+            <h1 class="home-hero-headline">
+              Your entire toolkit,<br><em>finally in one place.</em>
+            </h1>
+            <p class="home-hero-sub">
+              Write, research, calculate, create. ToolsHub brings together everything you reach for &mdash; smarter, faster, together.
+            </p>
+            <div class="home-hero-ctas">
+              <button class="btn btn-primary" data-home-cta="chat">Open ToolsHub</button>
+              <button class="btn btn-ghost" id="homeGhostCta">See what&rsquo;s inside &darr;</button>
+            </div>
+          </div>
+        </section>
+
+        <!-- === SECTION 2: LIVE INPUT MOCKUP === -->
+        <section class="home-input-section reveal">
+          <div class="home-input-label">Try it right now &mdash; no sign-in needed</div>
+          <form id="homeMockForm" class="home-input-wrap">
+            <textarea
+              id="homeMockInput"
+              class="home-input-field"
+              rows="2"
+              placeholder="Ask me anything..."
+            ></textarea>
+            <div class="home-input-bar">
+              <span class="home-input-hint">Press Enter to chat</span>
+              <button type="submit" id="homeMockSubmit" class="home-input-submit">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+                Ask ToolsHub
+              </button>
+            </div>
+          </form>
+        </section>
+
+        <!-- === SECTION 3: CAPABILITY GRID === -->
+        <section class="home-section reveal" id="homeSection3">
+          <div class="home-section-header">
+            <div class="home-section-eyebrow">Capabilities</div>
+            <h2 class="home-section-title">Built for every kind of task</h2>
+            <p class="home-section-sub">One workspace. Multiple intelligent modes that adapt to what you need.</p>
+          </div>
+          <div class="home-capability-grid">
+            <div class="home-cap-cell">
+              <div class="home-cap-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg></div>
+              <div class="home-cap-title">Fast Responses</div>
+              <div class="home-cap-sub">Get instant answers without waiting. Optimised for speed.</div>
+            </div>
+            <div class="home-cap-cell">
+              <div class="home-cap-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 00-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0020 4.77 5.07 5.07 0 0019.91 1S18.73.65 16 2.48a13.38 13.38 0 00-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 005 4.77a5.44 5.44 0 00-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 009 18.13V22"/></svg></div>
+              <div class="home-cap-title">Code &amp; Logic</div>
+              <div class="home-cap-sub">Debug, explain, and write code across any language or framework.</div>
+            </div>
+            <div class="home-cap-cell">
+              <div class="home-cap-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></div>
+              <div class="home-cap-title">Creative Writing</div>
+              <div class="home-cap-sub">Captions, blogs, scripts, emails &mdash; original copy on demand.</div>
+            </div>
+            <div class="home-cap-cell">
+              <div class="home-cap-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></div>
+              <div class="home-cap-title">Deep Research</div>
+              <div class="home-cap-sub">Multi-step web research condensed into a single clear answer.</div>
+            </div>
+            <div class="home-cap-cell">
+              <div class="home-cap-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2 L14.5 9.5 L22 12 L14.5 14.5 L12 22 L9.5 14.5 L2 12 L9.5 9.5 Z"/></svg></div>
+              <div class="home-cap-title">Smart Reasoning</div>
+              <div class="home-cap-sub">Complex problems broken down into clear, step-by-step thinking.</div>
+            </div>
+            <div class="home-cap-cell">
+              <div class="home-cap-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div>
+              <div class="home-cap-title">Image Understanding</div>
+              <div class="home-cap-sub">Describe, analyse, or extract text from any image you share.</div>
+            </div>
+          </div>
+        </section>
+
+        <!-- === SECTION 4: FEATURE BENTO GRID === -->
+        <section class="home-section reveal" id="homeSection4">
+          <div class="home-section-header">
+            <div class="home-section-eyebrow">Features</div>
+            <h2 class="home-section-title">Everything you need, nothing you don&rsquo;t</h2>
+          </div>
+          <div class="home-feature-grid">
+
+            <!-- Card 1: Multi-Tool Workspace -->
+            <div class="home-feature-card">
+              <div class="home-feature-card-header">
+                <h3 class="home-feature-title">Multi-Tool Workspace</h3>
+              </div>
+              <p class="home-feature-desc">Social media, website audit, career tools, file utilities &mdash; all in a single tab. Switch tools in seconds, not apps.</p>
+              <div class="home-feature-mini">
+                <span class="home-mini-chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 2H7a5 5 0 00-5 5v10a5 5 0 005 5h10a5 5 0 005-5V7a5 5 0 00-5-5z"/><path d="M16 11.37A4 4 0 1112.63 8 4 4 0 0116 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>Social</span>
+                <span class="home-mini-chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 010 20 15.3 15.3 0 010-20z"/></svg>Web</span>
+                <span class="home-mini-chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/></svg>Career</span>
+                <span class="home-mini-chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V9z"/><polyline points="13 2 13 9 20 9"/></svg>Files</span>
+              </div>
+            </div>
+
+            <!-- Card 2: Analyze Any File -->
+            <div class="home-feature-card">
+              <div class="home-feature-card-header">
+                <h3 class="home-feature-title">Analyse Any File</h3>
+              </div>
+              <p class="home-feature-desc">Compress images, merge or split PDFs, convert formats. File tools run instantly, right in your browser.</p>
+              <div class="home-feature-mini" style="flex-direction: column; gap: var(--sp-2);">
+                <div class="home-mini-bar"><div class="home-mini-bar-fill" style="width: 80%;"></div></div>
+                <div style="font-size: 11px; color: var(--text-muted);">PDF · Image · Converter &mdash; processing locally</div>
+              </div>
+            </div>
+
+            <!-- Card 3: Agent Mode -->
+            <div class="home-feature-card">
+              <div class="home-feature-card-header">
+                <h3 class="home-feature-title">Agent Mode</h3>
+                <span class="home-feature-tag tag-pro">PRO</span>
+              </div>
+              <p class="home-feature-desc">Let ToolsHub plan and execute multi-step tasks on your behalf &mdash; automatically selecting the right tools for the job.</p>
+              <div class="home-feature-mini">
+                <div class="home-mini-toggle-row">
+                  <span>Agent Mode</span>
+                  <div class="home-mini-toggle"></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Card 4: Deep Research -->
+            <div class="home-feature-card">
+              <div class="home-feature-card-header">
+                <h3 class="home-feature-title">Deep Research</h3>
+                <span class="home-feature-tag tag-pro">PRO</span>
+              </div>
+              <p class="home-feature-desc">Runs multiple searches, synthesises results, and delivers a sourced answer. No tab-switching, no copy-paste grind.</p>
+              <div class="home-feature-mini">
+                <div class="home-mini-globe">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 010 20 15.3 15.3 0 010-20z"/></svg>
+                  Searching &amp; synthesising across the web&hellip;
+                </div>
+              </div>
+            </div>
+
+            <!-- Card 5: Team Collab -->
+            <div class="home-feature-card">
+              <div class="home-feature-card-header">
+                <h3 class="home-feature-title">Team Collaboration</h3>
+                <span class="home-feature-tag tag-soon">Coming Soon</span>
+              </div>
+              <p class="home-feature-desc">Share workspaces, co-create content, and keep your whole team on the same page &mdash; arriving later this year.</p>
+              <div class="home-feature-mini" style="opacity: 0.5;">
+                <span class="home-mini-chip">Shared workspace</span>
+                <span class="home-mini-chip">Live edits</span>
+              </div>
+            </div>
+
+            <!-- Card 6: Built for India / UAE / UK -->
+            <div class="home-feature-card">
+              <div class="home-feature-card-header">
+                <h3 class="home-feature-title">Built for India, UAE &amp; UK</h3>
+              </div>
+              <p class="home-feature-desc">Localised content formats, regional prompts, and a product shaped around how professionals in these markets actually work.</p>
+              <div class="home-feature-mini">
+                <div class="home-mini-flags">🇮🇳 🇦🇪 🇬🇧</div>
+              </div>
+            </div>
+
+          </div>
+        </section>
+
+        <!-- === SECTION 5: CATEGORY SHOWCASE === -->
+        <section class="home-section reveal">
+          <div class="home-section-header">
+            <div class="home-section-eyebrow">Categories</div>
+            <h2 class="home-section-title">Pick your starting point</h2>
+            <p class="home-section-sub">Browse by what you need to get done.</p>
+          </div>
+          <div class="home-category-scroll">
+            <div class="home-cat-card" data-nav-chat="social">
+              <div class="home-cat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 2H7a5 5 0 00-5 5v10a5 5 0 005 5h10a5 5 0 005-5V7a5 5 0 00-5-5z"/><path d="M16 11.37A4 4 0 1112.63 8 4 4 0 0116 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg></div>
+              <div class="home-cat-name">Social Media</div>
+              <div class="home-cat-count">6 tools</div>
+            </div>
+            <div class="home-cat-card" data-nav-chat="web">
+              <div class="home-cat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 010 20 15.3 15.3 0 010-20z"/></svg></div>
+              <div class="home-cat-name">Web &amp; App</div>
+              <div class="home-cat-count">4 tools</div>
+            </div>
+            <div class="home-cat-card" data-nav-chat="edu">
+              <div class="home-cat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c0 1.66 2.69 3 6 3s6-1.34 6-3v-5"/></svg></div>
+              <div class="home-cat-name">Education</div>
+              <div class="home-cat-count">2 tools</div>
+            </div>
+            <div class="home-cat-card" data-nav-chat="utilities">
+              <div class="home-cat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg></div>
+              <div class="home-cat-name">Quick Utilities</div>
+              <div class="home-cat-count">6 tools</div>
+            </div>
+            <div class="home-cat-card" data-nav-chat="career">
+              <div class="home-cat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/></svg></div>
+              <div class="home-cat-name">Career</div>
+              <div class="home-cat-count">5 tools</div>
+            </div>
+            <div class="home-cat-card" data-nav-chat="files">
+              <div class="home-cat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V9z"/><polyline points="13 2 13 9 20 9"/></svg></div>
+              <div class="home-cat-name">Files &amp; Images</div>
+              <div class="home-cat-count">5 tools</div>
+            </div>
+          </div>
+        </section>
+
+        <!-- === SECTION 6: VALUE COMPARISON === -->
+        <section class="home-section reveal">
+          <div class="home-section-header">
+            <div class="home-section-eyebrow">Value</div>
+            <h2 class="home-section-title">Stop juggling separate tools</h2>
+            <p class="home-section-sub">Everything you used to open in five different tabs, now in one.</p>
+          </div>
+          <div class="home-compare-wrap">
+            <div class="home-compare-left">
+              <div class="home-compare-left-title">Without ToolsHub</div>
+              <div class="home-compare-item">
+                <div class="home-compare-item-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 2H7a5 5 0 00-5 5v10a5 5 0 005 5h10a5 5 0 005-5V7a5 5 0 00-5-5z"/></svg></div>
+                Separate social media tool
+              </div>
+              <div class="home-compare-item">
+                <div class="home-compare-item-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
+                Separate resume builder
+              </div>
+              <div class="home-compare-item">
+                <div class="home-compare-item-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V9z"/></svg></div>
+                Separate PDF &amp; file tool
+              </div>
+              <div class="home-compare-item">
+                <div class="home-compare-item-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></div>
+                Separate research assistant
+              </div>
+            </div>
+            <div class="home-compare-vs">vs</div>
+            <div class="home-compare-right">
+              <h3 class="home-compare-right-title">Everything,<br>one workspace.</h3>
+              <ul class="home-compare-right-list">
+                <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>All tools, one login</li>
+                <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Chat &amp; tool history saved</li>
+                <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Works offline as a PWA</li>
+              </ul>
+              <button class="btn btn-primary" data-home-cta="plans">See Plans</button>
+            </div>
+          </div>
+        </section>
+
+        <!-- === SECTION 7: SOCIAL PROOF === -->
+        <section class="home-section reveal">
+          <div class="home-proof">
+            <div class="home-proof-avatars">
+              <!-- Generic initials avatars — replace with real user stats before launch -->
+              <div class="home-proof-avatar">R</div>
+              <div class="home-proof-avatar">A</div>
+              <div class="home-proof-avatar">P</div>
+              <div class="home-proof-avatar">S</div>
+              <div class="home-proof-avatar">K</div>
+              <!-- [REPLACE X] Update count before launch -->
+              <div class="home-proof-avatar more">+X</div>
+            </div>
+            <!-- [REPLACE X] Insert real active workspace count before launch -->
+            <p class="home-proof-text">Trusted by growing teams</p>
+            <p class="home-proof-sub">Creators, students, and professionals building with ToolsHub every day</p>
+          </div>
+        </section>
+
+        <!-- === SECTION 8: FINAL CTA BAND === -->
+        <section class="home-section reveal">
+          <div class="home-cta-band">
+            <h2 class="home-cta-band-title">Ready to work smarter?</h2>
+            <p class="home-cta-band-sub">Everything you need is already here &mdash; just hit Start.</p>
+            <button class="btn btn-primary" style="min-width: 200px;" data-home-cta="chat">Start Using ToolsHub</button>
+          </div>
+        </section>
+
+        <!-- === SECTION 9: FOOTER === -->
+        <footer class="home-footer">
+          <span class="home-footer-brand">A Product by DigiRise India</span>
+          <nav class="home-footer-links">
+            <a href="./privacy.html" class="home-footer-link">Privacy</a>
+            <a href="./terms.html" class="home-footer-link">Terms</a>
+            <a href="./refund-policy.html" class="home-footer-link">Refund Policy</a>
+          </nav>
+        </footer>
+
+      </div><!-- /.home-content -->
+    </div><!-- /#screenHome -->
+
     <!-- ===== CHAT SCREEN ===== -->
-    <div id="screenChat" class="screen screen-chat is-active">
+    <div id="screenChat" class="screen screen-chat">
 
       <div class="topbar">
         <div class="topbar-nav-row" style="padding-top: var(--sp-2);">
