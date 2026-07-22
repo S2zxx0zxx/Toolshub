@@ -6,6 +6,7 @@
 import { LocalSettings } from '../services/localSettings.js';
 import { Chat } from './chatEngine.js';
 import { CloudDB } from '../services/cloudDb.js';
+import { Auth } from '../services/auth.js';
 
 export const Sidebar = (() => {
 
