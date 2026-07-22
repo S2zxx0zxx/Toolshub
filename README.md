@@ -1,8 +1,8 @@
-# 🌌 ToolsHub: The Ultimate Developer & AI Agent Codex
+# 🌌 ToolsHub: Architectural Codex v4.0 (Production Hardened)
 
 > **MISSION DIRECTIVE:** This document is the ultimate source of truth for ToolsHub. It is specifically engineered to be ingested by AI agents and Senior Engineers. By reading this file, an AI must perfectly understand the entire architectural state, security boundaries, component responsibilities, data flows, and future roadmap without needing to scan individual source files. **Read carefully before executing any code changes.**
 
-![Architecture Version](https://img.shields.io/badge/Architecture-v34-6c63ff?style=flat-square)
+![Architecture Version](https://img.shields.io/badge/Architecture-v4.0-6c63ff?style=flat-square)
 ![Status](https://img.shields.io/badge/Status-Production_Ready-34a853?style=flat-square)
 ![Frontend](https://img.shields.io/badge/Frontend-Vanilla_JS_SPA-fbbc05?style=flat-square)
 ![Backend](https://img.shields.io/badge/Backend-Cloudflare_Workers-f38020?style=flat-square)
@@ -12,163 +12,148 @@
 
 ## 🛑 1. Core Architectural Laws (Zero Compromise)
 
-ToolsHub operates on a strictly decoupled **Frontend (Vanilla HTML/CSS/JS SPA) + Edge Backend (Cloudflare Workers) + Database (Firebase Firestore)** model. If you break these laws, you break the system.
+ToolsHub operates on a strictly decoupled **Frontend (Vanilla HTML/CSS/JS SPA) + Edge Backend (Cloudflare Workers) + Database (Firebase Firestore)** model. 
 
-1. **NO FRONTEND API KEYS:** The frontend (`/js/*`, `index.html`) is public. Never hardcode, fetch, or store provider API keys (Groq, Tavily, etc.) in the frontend source code. 
+1. **NO FRONTEND API KEYS:** The frontend (`/js/*`, `index.html`) is public. Never hardcode, fetch, or store provider API keys (Groq, Tavily, Sentry DSNs etc.) in the frontend source code. 
 2. **EDGE PROXY MANDATE:** All LLM and 3rd-party tool requests **must** route through the Cloudflare Worker (`/worker/src/index.js`). The worker holds the secrets (`env.GROQ_API_KEY`, `env.TAVILY_API_KEY`) and securely forwards the requests.
-3. **CORS FAIL-CLOSED:** The worker must enforce strict CORS.
-4. **STREAMING BY DEFAULT:** ToolsHub is built for real-time UX. All LLM responses stream natively from Groq → Cloudflare Worker (passthrough) → Frontend (`chatEngine.js`), parsing markdown on the fly.
-5. **VANILLA JS MODULARITY:** No React, No Vue. The frontend uses ES6 Modules (IIFE Pattern) for state encapsulation. Do not introduce massive frontend frameworks.
+3. **ATOMIC DATA MUTATION:** All aggregate usage metrics and counts must be updated via Firestore's atomic `increment()` via the Worker's Admin SDK to prevent race conditions.
+4. **STREAMING BY DEFAULT:** All LLM responses stream natively from Groq → Cloudflare Worker (passthrough) → Frontend (`chatEngine.js`), parsing markdown on the fly.
+5. **VANILLA JS MODULARITY:** No React, No Vue. The frontend uses ES6 Modules (IIFE Pattern) for state encapsulation.
 
 ---
 
-## 🏗️ 2. High-Level System Architecture
+## 🏗️ 2. High-Level System Architecture (Wireframe Topology)
 
 ```mermaid
 graph TD
-    subgraph Frontend [Vanilla JS SPA]
-        UI[User Interface]
-        ChatEngine[Chat Engine / UI Renderer]
-        AIRouter[AI Router & Intent Engine]
-        AgentEngine[Agent Engine - ReAct]
-        CloudDB_Client[Cloud DB Client]
-        Auth_Client[Firebase Auth]
+    %% FRONTEND LAYER
+    subgraph Frontend [📱 Client: Vanilla JS SPA]
+        UI[UI / DOM]
+        ChatEngine[Chat Engine]
+        AIRouter[AI Router & Personas]
+        SentryFE[Sentry SDK - Error Tracking]
     end
 
-    subgraph Edge_Network [Cloudflare Edge Network]
-        Worker[Cloudflare Worker Proxy]
-        RateLimiter[Usage & Rate Limiting]
-        Worker_RAG[RAG & Knowledge Base Pipeline]
+    %% EDGE LAYER
+    subgraph Edge_Network [⚡ Edge: Cloudflare Workers]
+        Worker[Main API Proxy /worker/src/index.js]
+        RateLimiter[(KV: RATE_LIMIT_KV)]
+        FallbackEngine[Model Fallback & Retry Logic]
+        SentryBE[Sentry SDK - Backend]
     end
 
-    subgraph External_Services [Secure External APIs]
-        Groq[Groq AI Models]
-        GithubModels[GitHub Models Fallback]
-        Tavily[Tavily Web Search]
+    %% EXTERNAL APIS
+    subgraph External_APIs [🌐 Secure External Providers]
+        Groq[Groq LLMs]
+        GithubModels[GitHub Models - Backup]
+        Tavily[Tavily Search API]
     end
 
-    subgraph Database [Firebase Cloud]
+    %% DATABASE LAYER
+    subgraph Database [🗄️ Storage: Firebase]
         Firestore[(Firestore DB)]
+        UsageStats[dailyUsageStats - Atomic]
     end
 
-    UI -->|Events| ChatEngine
-    ChatEngine -->|User Prompt| AIRouter
-    AIRouter -->|Token & Payload| Worker
-    AgentEngine -.->|Autonomous Tool Calls| Worker
-    Auth_Client -->|Validates User| CloudDB_Client
-    CloudDB_Client -->|Syncs Plans/Usage| Firestore
+    %% INFRASTRUCTURE MONITORING
+    subgraph Monitoring [🩺 External Monitoring]
+        UptimeRobot((UptimeRobot))
+    end
 
-    Worker -->|Validates Token & Deducts Usage| Firestore
-    Worker -->|Streams Request| Groq
-    Worker -.->|Failover| GithubModels
-    Worker -->|Web Search Request| Tavily
-    Worker_RAG -.->|Ingests/Chunks| Firestore
+    %% FLOWS
+    UI -->|Interaction| ChatEngine
+    ChatEngine -->|Prompt| AIRouter
+    AIRouter -->|Payload| Worker
+    SentryFE -.->|Crashes| Sentry[Sentry Dashboard]
+    
+    Worker -->|1. Check IP| RateLimiter
+    Worker -->|2. Verify Auth| Firestore
+    Worker -->|3. Route Request| FallbackEngine
+    Worker -->|4. Log Metrics| UsageStats
+    SentryBE -.->|Exceptions| Sentry
+    
+    FallbackEngine -->|Primary| Groq
+    FallbackEngine -.->|Failover| GithubModels
+    Worker -->|Search| Tavily
+    
+    UptimeRobot -.->|Pings /api/health| Worker
 ```
 
 ---
 
-## 🧠 3. Deep Dive: Component Topology & File Manifest
+## 🧩 3. Component Deep Dive: The 3D Matrix
 
-### Frontend Application (`/js/`)
+### 🖥️ Layer 1: Frontend Application (`/js/`)
 The frontend uses the Immediately Invoked Function Expression (IIFE) pattern to create pseudo-classes and singletons.
 
-#### A. Core & Bootstrap (`js/core/`)
-- **`app.js`**: The main entry point. Binds UI event listeners (Sidebar, Settings, Auth Overlays). It initializes the application state, manages "Agent Mode" toggles, and syncs real-time usage data.
+| Component | Path | Responsibility / Wireframe Blueprint |
+| :--- | :--- | :--- |
+| **App Core** | `js/core/app.js` | Bootstrap, event listeners, Auth overlays, initialization state. |
+| **AI Router** | `js/ai/router.js` | Directs inputs to Tools (Search, Calculator) vs Chat vs Agents. |
+| **Intent Engine** | `js/ai/intent.js` | Regex & LLM-backed fast intent categorization (with Hinglish support). |
+| **Chat View** | `js/ui/chatEngine.js` | DOM mutation, auto-scroll, Markdown parsing (`marked.js`), typewriter stream rendering. |
+| **Personas** | `js/ui/personaPicker.js` | Filters available tools/categories based on selected user roles (Coding, Education, etc.). |
+| **Cloud DB** | `js/services/cloudDb.js` | Handles direct Firebase queries (User state, chat history). |
+| **Sentry (FE)** | `js/core/app.js` | Captures client-side exceptions with privacy filters (stripping PII/Chat content). |
 
-#### B. AI & Routing (`js/ai/`)
-- **`intent.js`**: The Brain. Takes user input and decides if a tool is needed. 
-  - **Phase 1 (Regex):** Ultra-fast regex matching.
-  - **Phase 2 (LLM Fallback):** If Regex fails, it builds a specific JSON-mode prompt and sends it to Groq to classify the intent (with built-in Hinglish detection logic).
-- **`router.js`**: Orchestrates the flow. Once `intent.js` decides the action, `router.js` invokes the specific tool or routes to the standard chat completion pipeline.
-- **`prompt.js`**: Manages the System Prompt. Injects dynamic context (current time, date, user preferences) before sending to the LLM.
-- **`agentEngine.js`**: Advanced execution environment for multi-step reasoning. Built to support ReAct (Reason-Act) autonomous workflows.
+### ⚡ Layer 2: Cloudflare Edge Backend (`/worker/`)
+The absolute gateway. All traffic must pass through this proxy.
 
-#### C. Tool Implementations (`js/services/tools/` & `js/tools/`)
-- **`registry.js` & `connectorsRegistry.js`**: The central dictionaries of available built-in tools and external integrations (Connectors). Connectors ship as honest empty-states pending backend implementations.
-- **`searchService.js`**: Executes Web Searches by proxying through the Cloudflare Worker to Tavily.
-
-#### D. State & Storage (`js/services/`)
-- **`cloudDb.js`**: Handles Firebase Firestore integration. Saves chat histories, tracks exact token usage & message caps securely (e.g., fetching `users/{uid}/usage/{today}` written by the Worker).
-- **`localSettings.js`**: Manages local browser state (Theme, Persona overrides).
-- **`firebase.js` / `auth.js`**: Modular Firebase v10 initialization and authentication.
-
-#### E. View Layer (`js/ui/`)
-- **`chatEngine.js`**: Manages the message DOM, auto-scrolling, Markdown parsing (via `marked.js`), handles the fake typewriter effect, and manages Persona Context injection.
-- **`sidebar.js`**: Renders chat history, grouped contextually (Today, Last 7 Days).
-- **`bottomsheet.js`**: Handles UI overlays for tools and LLM selection menus (badges `.mode-pill-tier` for unlocked models vs locked).
-- **`advancedControls.js`**: Hub for Agent Mode toggles, Model LLM Engines, Persona Pickers, and Connectors.
-- **`changePlanModal.js`**: Dynamic pricing modal handling tiered subscription plans (`plans.js`), striking through original prices for flagship plans, and triggering Razorpay payments.
-- **`personaPicker.js`**: Allows users to override the default system instruction behavior based on predefined "personas" (e.g., Coding Expert, Writing Assistant).
-
-### Edge Backend (`/worker/`)
-- **`src/index.js`**: Cloudflare Worker script.
-  - **Rate Limiting & Auth Validation:** Verifies Firebase JWT tokens. Limits usage (e.g., 15/day for Free users) by updating secure Firestore `usage/{today}` documents.
-  - **Groq/Tool Proxying:** Validates models, injects keys, streams responses.
+| Sub-system | Path | Mechanism |
+| :--- | :--- | :--- |
+| **API Gateway** | `src/index.js` | The main router. Handles `/chat`, `/search`, `/health`, and `/api/admin/usage-stats`. |
+| **Global Rate Limiter** | `src/index.js` | Uses **Cloudflare KV (`RATE_LIMIT_KV`)** to prevent IP abuse and DDoS globally. |
+| **Tier Validation** | `src/modelAccess.js` | Validates if the `callerPlan` has the rank required to access premium models. |
+| **Fallback Engine** | `src/modelFallback.js` | **Resilience Core:** Auto-retries 429/500 errors. Seamlessly falls back to secondary tiers (e.g. `llama-3.1-8b`) or GitHub Models if Groq fails. |
+| **Atomic Usage** | `src/usageStats.js` | Silently increments `dailyUsageStats/{date}` via Admin SDK for global analytics without blocking the request. |
+| **Admin Stats** | `src/adminStats.js` | Generates a 30-day internal HTML dashboard for aggregate usage monitoring. |
 
 ---
 
-## 🔄 4. Exact Data Flow: "A Message's Journey"
+## 🔄 4. Exact Data Flow: "A Message's Journey" (Hardened)
 
-```mermaid
-sequenceDiagram
-    participant User
-    participant Frontend
-    participant Intent
-    participant Worker
-    participant Groq_API
-    participant Firestore
-
-    User->>Frontend: Types Message & Sends
-    Frontend->>Frontend: Check Daily Message Limits
-    Frontend->>Intent: Evaluate (Regex / JSON Prompt)
-    Intent-->>Frontend: Required Tool (if any)
-    Frontend->>Frontend: Build Final Context Prompt
-    Frontend->>Worker: POST /chat (Bearer Token)
-    Worker->>Firestore: Validate Auth & Deduct 1 Usage
-    Worker->>Groq_API: Forward Request + API Key
-    Groq_API-->>Worker: Stream Content Chunks
-    Worker-->>Frontend: Forward Stream Chunks
-    Frontend->>User: Renders Markdown on the fly
-```
+1. **Client Action:** User types "Search latest news on AI" and sends.
+2. **Client Validation:** Frontend checks subscription caps locally.
+3. **Edge Ingestion:** Payload hits Cloudflare Worker `/worker/src/index.js`.
+4. **Security Check (KV):** Worker checks `RATE_LIMIT_KV` for the user's IP. Denies if abusive.
+5. **Auth & Limit Validation:** Worker checks `users/{uid}` in Firestore via Admin SDK.
+6. **Analytics Logging:** Worker fires a non-blocking background task to increment `dailyUsageStats` via atomic transforms.
+7. **Model Routing:** `modelFallback.js` attempts primary Groq model.
+   - *If Groq 429s/503s:* Engine catches the error, logs to Sentry, and routes to GitHub Models fallback seamlessly.
+8. **Streaming Delivery:** Stream is chunked back to the client.
+9. **UI Render:** `chatEngine.js` parses the chunked Markdown on the fly.
 
 ---
 
-## 🔮 5. Current State & Future Roadmap (For AI Agents)
+## 🛡 5. Security & Infrastructure Hardening
+
+Over the last evolution cycles, ToolsHub has graduated to a **Production-Ready** posture:
+
+- **Global Rate Limiting:** Migrated from in-memory Maps to durable **Cloudflare KV**. Serverless instance restarts no longer reset rate limits.
+- **Sentry Error Tracking:** Integrated heavily across both Frontend & Edge Worker. Failures alert instantly with exact stack traces, significantly reducing debug cycles.
+- **External Uptime Monitoring:** Bound to UptimeRobot targeting `/api/health`. Completely decoupled from Firebase status dependencies.
+- **Aggregated Analytics:** Zero PII usage tracking. We know *what* is used (Tools/Models) and *how much*, but never *by who*, maintaining strict privacy bounds.
+
+---
+
+## 🔮 6. Future Roadmap (For AI Agents)
 
 If you are an AI tasked with upgrading this system, you must know what has already been built vs what is upcoming.
 
 ### A. Advanced Agentic Workflows (Agent Mode)
-- **Current State:** The `agentEngine.js` has been implemented with an execution bridge and autonomous tool execution. A hidden developer bypass (Shift+Click on Agent Mode) exists for debugging.
-- **Future Plan:** Expand ReAct (Reason-Act) workflow stability, add more complex multi-step reasoning capabilities, and allow agents to parallelize tool calls.
+- **Current State:** ReAct (Reason-Act) workflow stability achieved.
+- **Future Plan:** Allow agents to parallelize tool calls natively and handle asynchronous sub-agent spawning.
 
 ### B. Connectors Architecture (External Data)
-- **Current State:** Connectors registry (`connectorsRegistry.js`) and UI overlays are built and shipped as honest empty-states pending backend implementations.
-- **Future Plan:** Implement OAuth flows in the Cloudflare Worker to fetch data from Notion, Slack, and Google Drive.
+- **Current State:** Connectors registry (`connectorsRegistry.js`) built and shipped as honest empty-states pending backend implementations.
+- **Future Plan:** Implement OAuth flows in the Cloudflare Worker to fetch private data from Notion, Slack, and Google Drive securely.
 
-### C. RAG (Retrieval-Augmented Generation) & Knowledge Base
-- **Current State:** A complete RAG pipeline is implemented. Features include a knowledge base ingestion pipeline with text chunking, duplicate detection, and ingest cache initialization. The worker supports RAG service logic and handles Hinglish intent detection properly to avoid trigger failures.
-- **Future Plan:** Expand the vector storage scale and add visual/multimodal document parsing.
+### C. RAG (Retrieval-Augmented Generation)
+- **Current State:** A complete RAG pipeline is implemented with chunking, duplicate detection, and Hinglish intent parsing.
+- **Future Plan:** Expand vector storage scale and add visual/multimodal document parsing.
 
-### D. Billing & Subscription Management
-- **Current State:** Fully integrated with **Razorpay**. `changePlanModal.js` handles tiered subscriptions, striking through original prices for flagship plans, and triggering Razorpay payments. The worker tracks daily usage limits in Firestore (`users/{uid}/usage/{today}`) to enforce plan caps strictly on the backend.
-
-### E. File Uploads & Vision
-- **Future Plan:** LLaVA/Vision models via Groq. Update `chatEngine.js` to accept Image inputs (Base64), routing to a Vision-capable model (`llama-3.2-11b-vision-preview`).
-
----
-
-## 🛡 6. Security Hardening & Fallback Providers
-
-ToolsHub implements automatic zero-frontend-change fallback mechanisms to ensure high availability when primary AI providers fail.
-
-### GitHub Models Fallback
-If the primary Groq API fails (network error, timeout, or non-2xx status), the Cloudflare Worker can automatically failover to GitHub Models.
-- **Supported Models**: Currently maps `llama-3.3-70b-versatile` to `Llama-3.3-70B-Instruct`. Other models degrade gracefully.
-- **Required Secret**: A Cloudflare secret `GITHUB_MODELS_TOKEN` is required.
-- **Command to set**: 
-  ```bash
-  npx wrangler secret put GITHUB_MODELS_TOKEN
-  ```
+### D. File Uploads & Vision
+- **Future Plan:** Integrate LLaVA/Vision models via Groq. Update `chatEngine.js` to accept Image inputs (Base64), routing to a Vision-capable endpoint (`llama-3.2-11b-vision-preview`).
 
 ---
 
@@ -180,7 +165,6 @@ If a deployment is requested, execute exactly this sequence:
 ```bash
 node -c worker/src/index.js
 node -c js/core/app.js
-node -c js/ai/intent.js
 ```
 
 **2. Backend Deployment:**
@@ -198,4 +182,4 @@ firebase deploy --only hosting
 ```
 
 ---
-*End of Codex. You are now initialized with absolute knowledge of ToolsHub.*
+*End of Codex. You are now initialized with absolute knowledge of the current state of ToolsHub.*
