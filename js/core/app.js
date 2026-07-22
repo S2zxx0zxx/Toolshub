@@ -34,6 +34,9 @@ import { AdvancedControls } from '../ui/advancedControls.js';
 import { ConnectorsSheet } from '../ui/connectorsSheet.js';
 import { HomeScreen } from '../ui/homeScreen.js';
 
+// Phase 0: Exclusive Access Bootstrap
+import { ExclusiveShell } from '../exclusive/ui/exclusiveShell.js';
+
 const APP_VERSION = '1.0.0';
 const APP_VERSION_DATE = '20 July 2026';
 
@@ -1342,4 +1345,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   // Bug 2: Handle Google redirect sign-in result (fires after user returns from Google OAuth page)
   // This is safe to call on every page load; it's a no-op when no redirect happened.
   Auth.handleRedirectResult().catch(e => console.warn('Redirect result error:', e));
+
+  // Initialize Exclusive Environment
+  ExclusiveShell.init();
 });

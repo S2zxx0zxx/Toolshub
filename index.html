@@ -31,6 +31,11 @@
   <link rel="stylesheet" href="./css/components/bugReport.css?v=42">
   <link rel="stylesheet" href="./css/components/advancedControls.css?v=42">
   <link rel="stylesheet" href="./css/layout/home.css?v=43">
+  <link rel="stylesheet" href="./css/exclusive/exclusive-tokens.css?v=1">
+  <link rel="stylesheet" href="./css/exclusive/exclusive-layout.css?v=1">
+  <link rel="stylesheet" href="./css/exclusive/exclusive-home.css?v=1">
+  <link rel="stylesheet" href="./css/exclusive/exclusive-chat.css?v=1">
+  <link rel="stylesheet" href="./css/exclusive/exclusive-mastertool.css?v=1">
 
   <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 </head>
@@ -136,6 +141,15 @@
       <button class="quicknav-item" data-nav="settings" id="quicknavSettingsBtn">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
         <span>Settings</span>
+      </button>
+    </div>
+
+    <!-- ===== EXCLUSIVE SWITCH — below quicknav ===== -->
+    <div class="sidebar-exclusive-row" id="exclusiveSwitchRow">
+      <button class="sidebar-exclusive-btn" id="exclusiveSwitchBtn" aria-label="Switch to ToolsHub Exclusive">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;flex-shrink:0;"><path d="M12 2L14.5 9.5L22 12L14.5 14.5L12 22L9.5 14.5L2 12L9.5 9.5Z"/></svg>
+        <span class="sidebar-exclusive-label">ToolsHub Exclusive</span>
+        <span class="pill-soon" style="margin-left:auto;flex-shrink:0;">Soon</span>
       </button>
     </div>
 
@@ -969,6 +983,64 @@
     </div><!-- /screenSettings -->
 
   </div><!-- /main-col -->
+
+  <!-- ===== EXCLUSIVE SHELL — sibling of .main-col, hidden until unlocked ===== -->
+  <div id="exclusiveShell" class="exclusive-shell" data-shell="exclusive" style="display:none;">
+
+    <!-- Exclusive's own sidebar -->
+    <aside class="exclusive-sidebar" id="exclusiveSidebar">
+      <div class="exclusive-sidebar-header">
+        <div class="exclusive-sidebar-logo">
+          <img src="./assets/icon-48x48.png?v=3" alt="ToolsHub Exclusive" style="width:22px;height:22px;border-radius:4px;object-fit:contain;">
+          <span>Exclusive</span>
+        </div>
+        <button class="exclusive-sidebar-close btn-icon" id="exclusiveSidebarCloseBtn" aria-label="Close exclusive sidebar">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+
+      <button class="exclusive-back-btn" id="exclusiveBackBtn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+        Back to ToolsHub
+      </button>
+
+      <button class="exclusive-newchat-btn" id="exclusiveNewChatBtn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        New Exclusive Chat
+      </button>
+
+      <div class="exclusive-sidebar-scroll scroll-y">
+        <div id="exclusiveChatHistory" class="exclusive-history-list">
+          <!-- populated by exclusiveChatEngine.js -->
+        </div>
+      </div>
+
+      <div class="exclusive-sidebar-footer">
+        <div class="exclusive-plan-badge">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;"><path d="M12 2L14.5 9.5L22 12L14.5 14.5L12 22L9.5 14.5L2 12L9.5 9.5Z"/></svg>
+          ToolsHub Exclusive
+        </div>
+      </div>
+    </aside>
+
+    <!-- Exclusive hamburger (mobile) -->
+    <div class="exclusive-sidebar-overlay" id="exclusiveSidebarOverlay"></div>
+
+    <!-- Exclusive main column -->
+    <div class="exclusive-main-col">
+
+      <!-- Exclusive Home Screen -->
+      <div id="screenExclusiveHome" class="exclusive-screen is-active"></div>
+
+      <!-- Exclusive Chat Screen -->
+      <div id="screenExclusiveChat" class="exclusive-screen"></div>
+
+      <!-- Exclusive Dashboard Screen -->
+      <div id="screenExclusiveDashboard" class="exclusive-screen"></div>
+
+    </div><!-- /exclusive-main-col -->
+  </div><!-- /exclusiveShell -->
+
 </div><!-- /app -->
 
 <!-- ============ TOAST ============ -->

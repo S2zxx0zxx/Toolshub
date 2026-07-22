@@ -1,0 +1,96 @@
+/* ============================================
+   TOOLSHUB EXCLUSIVE — MASTER TOOL & PICKER
+   UI for the Master Tool toggle and the manual
+   model picker chip in the chat input bar.
+   ============================================ */
+
+/* ──────────────── MANUAL MODEL PICKER CHIP ──────────────── */
+.ex-model-picker {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: var(--r-full);
+  background: var(--bg-surface-2);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-secondary);
+  font-size: 11px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--dur-fast) var(--ease);
+}
+.ex-model-picker:hover {
+  background: var(--bg-surface-3);
+  color: var(--text-primary);
+  border-color: var(--border-med);
+}
+.ex-model-picker svg { width: 12px; height: 12px; }
+
+/* When Master Tool is ON, disable manual picker */
+.ex-model-picker.is-disabled {
+  opacity: 0.4;
+  pointer-events: none;
+  filter: grayscale(1);
+}
+
+/* ──────────────── MASTER TOOL TOGGLE ──────────────── */
+.ex-mt-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  border-radius: var(--r-full);
+  background: var(--bg-app);
+  border: 1px solid var(--border-x, rgba(200,155,60,0.25));
+  color: #C89B3C;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--dur-fast) var(--ease);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Toggle OFF state */
+.ex-mt-toggle.is-off {
+  background: transparent;
+  border-color: var(--border-subtle);
+  color: var(--text-muted);
+}
+.ex-mt-toggle.is-off:hover {
+  border-color: rgba(200,155,60,0.4);
+  color: #C89B3C;
+}
+.ex-mt-toggle.is-off svg { opacity: 0.5; }
+
+/* Toggle ON state */
+.ex-mt-toggle.is-on {
+  background: linear-gradient(135deg, rgba(200,155,60,0.1), transparent);
+  box-shadow: 0 0 12px rgba(200,155,60,0.15);
+}
+.ex-mt-toggle.is-on:hover {
+  box-shadow: 0 0 16px rgba(200,155,60,0.25);
+}
+
+/* Toggle FUSING state (while fan-out is active) */
+.ex-mt-toggle.is-fusing {
+  pointer-events: none;
+  animation: ex-mt-pulse 1.5s infinite;
+}
+
+@keyframes ex-mt-pulse {
+  0%, 100% { box-shadow: 0 0 8px rgba(200,155,60,0.2); border-color: rgba(200,155,60,0.4); }
+  50% { box-shadow: 0 0 20px rgba(200,155,60,0.5); border-color: rgba(200,155,60,0.8); }
+}
+
+/* Icons */
+.ex-mt-icon-off { display: none; }
+.ex-mt-icon-on { display: none; }
+.ex-mt-icon-fusing { display: none; }
+
+.ex-mt-toggle.is-off .ex-mt-icon-off { display: block; }
+.ex-mt-toggle.is-on .ex-mt-icon-on { display: block; }
+.ex-mt-toggle.is-fusing .ex-mt-icon-fusing { display: block; }
+.ex-mt-toggle.is-fusing .ex-mt-icon-on { display: none; }
+
+.ex-mt-toggle svg { width: 14px; height: 14px; }

@@ -1,0 +1,32 @@
+/* ============================================
+   TOOLSHUB EXCLUSIVE — DESIGN TOKENS
+   Extends core variables.css. Applied only inside
+   [data-shell="exclusive"]. Never overrides Lite.
+   ============================================ */
+
+[data-shell="exclusive"] {
+  /* Exclusive's accent — warm gold, same brand family */
+  --accent-x:          #C89B3C;
+  --accent-x-hover:    #D4A843;
+  --accent-x-soft:     rgba(200, 155, 60, 0.12);
+  --accent-x-text-on:  #0a0a0a;
+
+  /* New shadow tier — glow only Exclusive uses */
+  --sh-glow:           0 0 28px rgba(200, 155, 60, 0.28);
+  --sh-glow-lg:        0 0 48px rgba(200, 155, 60, 0.20);
+
+  /* Exclusive border */
+  --border-x:          rgba(200, 155, 60, 0.22);
+  --border-x-med:      rgba(200, 155, 60, 0.40);
+
+  /* One radius step larger than Lite's --r-xl (20px) */
+  --r-2xl:             32px;
+
+  /* Exclusive sidebar width */
+  --sidebar-x-w:       240px;
+
+  /* Slower, more deliberate motion (vs Lite's snappy --dur-base) */
+  --dur-x-base:        320ms;
+  --dur-x-slow:        500ms;
+  --ease-x:            cubic-bezier(0.4, 0, 0.2, 1);
+}

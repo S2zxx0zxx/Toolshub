@@ -7,7 +7,16 @@ export const Router = (() => {
 
   function navigate(screen) {
     currentScreen = screen;
-    document.getElementById('app').dataset.screen = screen;
+    const app = document.getElementById('app');
+    app.dataset.screen = screen;
+
+    const isExclusive = screen.startsWith('exclusive-');
+    const exclusiveShell = document.getElementById('exclusiveShell');
+    const mainCol = document.querySelector('.main-col');
+
+    if (exclusiveShell) exclusiveShell.style.display = isExclusive ? 'flex' : 'none';
+    if (mainCol) mainCol.style.display = isExclusive ? 'none' : '';
+
     if (screen === 'settings' && window.matchMedia('(max-width: 860px)').matches) {
       Sidebar.close();
     }
@@ -42,3 +51,4 @@ export const Router = (() => {
     getCurrentScreen: () => currentScreen
   };
 })();
+
