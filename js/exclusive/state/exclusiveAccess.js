@@ -11,10 +11,8 @@ const EXCLUSIVE_KEY = 'toolshub_exclusive_addon';
 export const ExclusiveAccess = (() => {
 
   function isUnlocked() {
-    // Phase 1: Coming Soon — always false
-    // Uncomment when billing is wired:
-    // try { return localStorage.getItem(EXCLUSIVE_KEY) === 'true'; } catch { return false; }
-    return false;
+    // Temporarily returning true so you can preview the UI
+    return true;
   }
 
   function unlock() {
