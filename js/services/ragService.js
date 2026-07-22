@@ -1,6 +1,6 @@
+import { API_ENDPOINT } from '../config/api.js';
+
 export const ragService = (() => {
-  
-  const API_ENDPOINT = 'https://toolshub-api-worker.theliquidlounge-co.workers.dev';
 
   async function ingestToRAG(text, metadata = {}) {
     if (!text) throw new Error("Text is required for RAG ingestion.");

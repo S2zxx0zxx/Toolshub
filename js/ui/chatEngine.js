@@ -552,9 +552,6 @@ export const Chat = (() => {
     // Save generated message to Firestore/LocalStorage
     await CloudDB.saveMessage(currentChat.id, currentChat.messages[msgIndex]);
     
-    // Track usage (approximation for now, as tokenizer is backend-only typically)
-    const tokensCount = Math.floor(fullText.length / 4);
-    await CloudDB.trackUsage(tokensCount);
     renderMessages(); // re-render to attach action buttons on final state
   }
 

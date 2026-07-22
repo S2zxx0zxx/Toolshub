@@ -76,6 +76,7 @@ const urlsToCache = [
   './js/config/personas.js',
   './js/config/planVocabulary.js',
   './js/config/suggestionPool.js',
+  './js/config/api.js',
   // js/env.js removed — file is deprecated (contains only window.ENV = {}) and not imported anywhere
   // === JS TOOLS EXTRA ===
   './js/tools/connectorsRegistry.js',

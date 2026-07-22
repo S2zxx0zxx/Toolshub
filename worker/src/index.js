@@ -236,8 +236,11 @@ export default withSentry((env) => {
     }
 
     // Agent 1: Orchestrator Hook
+    // Skip for: mode='agent' (tool-calling loop) and mode='classify' (internal intent/fan-out classification calls).
+    // 'classify' calls are short, non-conversational JSON prompts from intent.js / modelDecisionEngine.js;
+    // running them through the Orchestrator risks silent misrouting to the creator/coder agent.
     let targetAgent = 'chat';
-    if (mode !== 'agent') {
+    if (mode !== 'agent' && mode !== 'classify') {
       targetAgent = await routeRequest(messages, env, callerPlan.planId);
       Sentry.addBreadcrumb({ category: 'orchestrator', message: `Orchestrator routed request to: ${targetAgent}`, level: 'info' });
       

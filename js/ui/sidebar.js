@@ -7,6 +7,7 @@ import { LocalSettings } from '../services/localSettings.js';
 import { Chat } from './chatEngine.js';
 import { CloudDB } from '../services/cloudDb.js';
 import { Auth } from '../services/auth.js';
+import { API_ENDPOINT } from '../config/api.js';
 
 export const Sidebar = (() => {
 
@@ -206,7 +207,7 @@ export const Sidebar = (() => {
         alert('You must be logged in to redeem a code.');
         return;
       }
-      const res = await fetch('https://toolshub-api-worker.theliquidlounge-co.workers.dev/api/dev-access/redeem', {
+      const res = await fetch(`${API_ENDPOINT}/api/dev-access/redeem`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

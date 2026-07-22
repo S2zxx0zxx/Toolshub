@@ -1,9 +1,8 @@
 import { LocalSettings } from './localSettings.js';
 import { Auth } from './auth.js';
+import { API_ENDPOINT } from '../config/api.js';
 
 export const aiApi = (() => {
-  // Always route to live Cloudflare Worker
-  const API_ENDPOINT = 'https://toolshub-api-worker.theliquidlounge-co.workers.dev';
 
   // Valid Groq model IDs — must match Groq API exactly
   const CHAT_MODEL = 'llama-3.3-70b-versatile';         // Best for general chat
@@ -130,6 +129,7 @@ export const aiApi = (() => {
   async function chatCompletionJson(messages) {
     const payload = {
       model: INTENT_MODEL, // Use fast model for intent classification
+      mode: 'classify',    // Instructs worker to skip Orchestrator routing for this internal call
       messages: messages,
       temperature: 0.1,
       response_format: { type: "json_object" }

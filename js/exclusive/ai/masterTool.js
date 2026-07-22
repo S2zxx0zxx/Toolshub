@@ -10,12 +10,14 @@ import { LocalSettings } from '../../services/localSettings.js';
 
 export const MasterTool = (() => {
 
-  // Option B: Hardcoded premium models for the fan-out
+  // Two genuinely distinct models for the fan-out.
+  // IMPORTANT: Both IDs must survive the worker's model-normalization pass in index.js unchanged.
+  // 'llama-3.1-70b-versatile' was previously the second model but the worker normalizes it to
+  // 'llama-3.3-70b-versatile', making both calls identical. 'gpt-4o-mini' routes to GitHub Models
+  // (a real second provider) and is tier '6month' — Exclusive users are 'yearly', so they qualify.
   const FANOUT_MODELS = [
-    'llama-3.3-70b-versatile',
-    'llama-3.1-70b-versatile'
-    // Intentionally keeping to 2 to ensure speed/stability, 
-    // but the system handles N models.
+    'llama-3.3-70b-versatile', // Groq
+    'gpt-4o-mini'              // GitHub Models (via callProvider in modelFallback.js)
   ];
 
   let isEnabled = true;

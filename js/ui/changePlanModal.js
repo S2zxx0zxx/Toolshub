@@ -4,6 +4,7 @@ import { Toast } from './toast.js';
 import { Auth } from '../services/auth.js';
 import { CloudDB } from '../services/cloudDb.js';
 import { OverlayManager } from '../services/overlayManager.js';
+import { API_ENDPOINT } from '../config/api.js';
 
 export const ChangePlanModal = (() => {
   let modalOverlay = null;
@@ -251,8 +252,8 @@ export const ChangePlanModal = (() => {
       const idToken = await currentUser.getIdToken();
       
       // 3. Call POST {WORKER_URL}/api/payment/create-order
-      const API_ENDPOINT = 'https://toolshub-api-worker.theliquidlounge-co.workers.dev/api/payment/create-order';
-      const orderRes = await fetch(API_ENDPOINT, {
+      const ORDER_ENDPOINT = `${API_ENDPOINT}/api/payment/create-order`;
+      const orderRes = await fetch(ORDER_ENDPOINT, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -284,7 +285,7 @@ export const ChangePlanModal = (() => {
           // 5. Verify Payment
           try {
             if (Toast) Toast.show('Verifying payment...', 'info');
-            const VERIFY_ENDPOINT = 'https://toolshub-api-worker.theliquidlounge-co.workers.dev/api/payment/verify';
+            const VERIFY_ENDPOINT = `${API_ENDPOINT}/api/payment/verify`;
             const verifyRes = await fetch(VERIFY_ENDPOINT, {
               method: 'POST',
               headers: {

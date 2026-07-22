@@ -17156,7 +17156,7 @@ var src_default = withSentry((env) => {
       targetModel = "llama-3.1-8b-instant";
     }
     let targetAgent = "chat";
-    if (mode !== "agent") {
+    if (mode !== "agent" && mode !== "classify") {
       targetAgent = await routeRequest(messages, env, callerPlan.planId);
       addBreadcrumb({ category: "orchestrator", message: `Orchestrator routed request to: ${targetAgent}`, level: "info" });
       if (targetAgent === "creator") {

@@ -1,6 +1,6 @@
+import { API_ENDPOINT } from '../../config/api.js';
+
 export const SearchService = (() => {
-  
-  const API_ENDPOINT = 'https://toolshub-api-worker.theliquidlounge-co.workers.dev';
 
   async function searchWeb(query) {
     if (!query) throw new Error("Search query is required.");

@@ -164,21 +164,15 @@ export const CloudDB = (() => {
     await fbFirestoreModule.deleteDoc(fbFirestoreModule.doc(db, `users/${uid}/conversations`, chatId));
   }
   
-  async function trackUsage(tokensCount) {
-    const uid = _uid();
-    if (!uid || !tokensCount || !db || !fbFirestoreModule) return;
-    try {
-      const today = new Date().toISOString().slice(0, 10);
-      const usageRef = fbFirestoreModule.doc(db, `users/${uid}/usage`, today);
-      await fbFirestoreModule.setDoc(usageRef, {
-        requestsToday: fbFirestoreModule.increment(1),
-        tokensUsed: fbFirestoreModule.increment(tokensCount),
-        lastRequest: fbFirestoreModule.serverTimestamp(),
-        updatedAt: fbFirestoreModule.serverTimestamp()
-      }, { merge: true });
-    } catch (e) {
-      console.warn("Failed to track usage:", e);
-    }
+  // DEPRECATED: trackUsage() — this function attempted to write to users/{uid}/usage/{today}
+  // from client-side code, but Firestore security rules explicitly block all client writes
+  // to that path (allow write: if false). The real usage tracking is done server-side by
+  // worker/src/usageTracker.js using the Firebase Admin SDK, which is the source of truth.
+  // Call sites in chatEngine.js have been removed. This no-op stub is kept to prevent
+  // 'not a function' errors from any stale reference.
+  async function trackUsage(_tokensCount) {
+    // No-op: client-side usage writes are intentionally blocked by Firestore rules.
+    // Usage tracking is handled exclusively by the Cloudflare Worker (usageTracker.js).
   }
 
   async function getTodayUsage() {
@@ -375,7 +369,7 @@ export const CloudDB = (() => {
     saveConversation,
     saveMessage,
     deleteConversation,
-    trackUsage,
+    // trackUsage — deprecated, no-op stub kept for safety; call sites removed
     logToolExecution,
     migrateLocalChats,
     isSubscribed,
