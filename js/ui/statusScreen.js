@@ -58,16 +58,9 @@ export const StatusScreen = (() => {
       let dataCount = 0;
 
       const barsHtml = days.map(d => {
-        let dState = (doc.uptimeDay && doc.uptimeDay[d]) ? doc.uptimeDay[d] : null;
+        const dState = (doc.uptimeDay && doc.uptimeDay[d]) ? doc.uptimeDay[d] : 'nodata';
         
-        // Visual backfill for empty past days to simulate history
-        if (!dState) {
-          const seed = d.charCodeAt(d.length - 1) + d.charCodeAt(d.length - 2) + model.id.length;
-          // Mostly operational, occasional degraded
-          dState = (seed % 17 === 0) ? 'degraded' : 'operational';
-        }
-
-        dataCount++;
+        if (dState !== 'nodata') dataCount++;
         if (dState === 'operational') uptimeCount++;
         
         return `<div class="status-bar bar-${dState}" title="${d}: ${dState}"></div>`;
@@ -114,16 +107,16 @@ export const StatusScreen = (() => {
     const dot = document.getElementById('sidebarStatusDot');
     if (!dot) return;
     if (state === 'operational') {
-      dot.style.background = 'var(--color-success)';
+      dot.style.background = 'var(--success)';
       dot.style.boxShadow = '0 0 8px rgba(34, 197, 94, 0.4)';
     } else if (state === 'degraded') {
-      dot.style.background = 'var(--color-warning)';
+      dot.style.background = 'var(--warning)';
       dot.style.boxShadow = '0 0 8px rgba(245, 158, 11, 0.4)';
     } else if (state === 'outage') {
-      dot.style.background = 'var(--color-danger)';
+      dot.style.background = 'var(--danger)';
       dot.style.boxShadow = '0 0 8px rgba(239, 68, 68, 0.4)';
     } else {
-      dot.style.background = 'var(--color-text-tertiary)';
+      dot.style.background = 'var(--text-muted)';
       dot.style.boxShadow = 'none';
     }
   }
@@ -133,7 +126,7 @@ export const StatusScreen = (() => {
     if (!container) return;
 
     if (incidents.length === 0) {
-      container.innerHTML = '<div style="color: var(--color-text-tertiary); padding: 16px 0;">No incidents to report.</div>';
+      container.innerHTML = '<div style="color: var(--text-muted); padding: 16px 0;">No incidents to report.</div>';
       return;
     }
 

@@ -100,7 +100,7 @@ export async function scheduled(event, env, ctx) {
     await admin.updateDocument(statusRef, updatedDoc);
     
     // Handle Incident
-    if (newState === 'outage' && oldState === 'operational') {
+    if (newState === 'outage' && (oldState === 'operational' || oldState === 'nodata')) {
       const incidentId = `${modelId.replace(/[^a-zA-Z0-9]/g, '_')}_${Date.now()}`;
       await admin.updateDocument(`statusIncidents/${incidentId}`, {
         fields: {
