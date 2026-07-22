@@ -1228,6 +1228,11 @@ document.addEventListener('DOMContentLoaded', async () => {
       // Sync plan from Firestore source of truth
       CloudDB.syncPlanFromServer().then(() => {
         window.dispatchEvent(new CustomEvent('plan-changed'));
+        const loader = document.getElementById('global-loader');
+        if (loader) {
+          loader.style.opacity = '0';
+          setTimeout(() => loader.remove(), 300);
+        }
       });
 
       // Migrate local chats if any
@@ -1256,6 +1261,11 @@ document.addEventListener('DOMContentLoaded', async () => {
       // Guest mode always gets free plan
       CloudDB.syncPlanFromServer().then(() => {
         window.dispatchEvent(new CustomEvent('plan-changed'));
+        const loader = document.getElementById('global-loader');
+        if (loader) {
+          loader.style.opacity = '0';
+          setTimeout(() => loader.remove(), 300);
+        }
       });
 
       // Load Guest chats

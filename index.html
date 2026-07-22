@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en" data-theme="dark">
 <head>
 <meta charset="UTF-8">
@@ -34,7 +34,19 @@
   <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 </head>
 <body>
-
+  <div id="global-loader" style="position: fixed; inset: 0; background: var(--bg, #111111); z-index: 999999; display: flex; align-items: center; justify-content: center; transition: opacity 0.3s ease;">
+    <svg viewBox="0 0 50 50" style="width: 40px; height: 40px; animation: gl-rotate 2s linear infinite;">
+      <circle cx="25" cy="25" r="20" fill="none" stroke="var(--primary, #a855f7)" stroke-width="4" style="stroke-linecap: round; animation: gl-dash 1.5s ease-in-out infinite;"></circle>
+    </svg>
+    <style>
+      @keyframes gl-rotate { 100% { transform: rotate(360deg); } }
+      @keyframes gl-dash {
+        0% { stroke-dasharray: 1, 150; stroke-dashoffset: 0; }
+        50% { stroke-dasharray: 90, 150; stroke-dashoffset: -35; }
+        100% { stroke-dasharray: 90, 150; stroke-dashoffset: -124; }
+      }
+    </style>
+  </div>
 <div id="app" data-screen="chat">
 
   <!-- ============ SIDEBAR ============ -->
