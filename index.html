@@ -34,6 +34,35 @@
   <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 </head>
 <body>
+  <script>
+    (function(){
+      try {
+        var isReload = false;
+        if (window.performance) {
+          var nav = performance.getEntriesByType("navigation");
+          if (nav.length > 0 && nav[0].type === "reload") isReload = true;
+          else if (performance.navigation && performance.navigation.type === 1) isReload = true;
+        }
+        if (isReload) document.documentElement.setAttribute('data-is-reload', 'true');
+      } catch(e){}
+    })();
+  </script>
+
+  <!-- GitHub Style Top Progress Bar (Only shows on reload) -->
+  <div id="github-loader" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 3px; z-index: 9999999; background: transparent;">
+    <div style="width: 100%; height: 100%; background: var(--primary, #a855f7); transform-origin: left; animation: gh-progress 2s cubic-bezier(0.1, 0.8, 0.3, 1) forwards;"></div>
+    <style>
+      @keyframes gh-progress {
+        0% { transform: scaleX(0); }
+        50% { transform: scaleX(0.6); }
+        99% { transform: scaleX(0.95); }
+        100% { transform: scaleX(1); }
+      }
+      html[data-is-reload="true"] #github-loader { display: block; }
+      html[data-is-reload="true"] #global-loader { display: none !important; }
+    </style>
+  </div>
+
   <div id="global-loader" style="position: fixed; inset: 0; background: #050505; z-index: 999999; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: opacity 0.5s ease, visibility 0.5s ease; font-family: monospace, 'Courier New', Courier; overflow: hidden; perspective: 800px;">
     
     <!-- 3D Cyber Core Loader -->
