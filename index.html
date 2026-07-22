@@ -34,17 +34,30 @@
   <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 </head>
 <body>
-  <div id="global-loader" style="position: fixed; inset: 0; background: var(--bg, #111111); z-index: 999999; display: flex; align-items: center; justify-content: center; transition: opacity 0.3s ease;">
-    <svg viewBox="0 0 50 50" style="width: 40px; height: 40px; animation: gl-rotate 2s linear infinite;">
-      <circle cx="25" cy="25" r="20" fill="none" stroke="var(--primary, #a855f7)" stroke-width="4" style="stroke-linecap: round; animation: gl-dash 1.5s ease-in-out infinite;"></circle>
-    </svg>
+  <div id="global-loader" style="position: fixed; inset: 0; background: #050505; z-index: 999999; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: opacity 0.4s ease, visibility 0.4s ease; font-family: monospace, 'Courier New', Courier;">
+    
+    <div style="color: #22c55e; font-size: 15px; letter-spacing: 2px; margin-bottom: 30px; display: flex; align-items: center; text-shadow: 0 0 8px rgba(34, 197, 94, 0.6);">
+      <span style="overflow: hidden; white-space: nowrap; border-right: 2px solid #22c55e; animation: gl-typing 1.5s steps(30, end) forwards, gl-blink 0.75s step-end infinite; max-width: fit-content; display: inline-block;">
+        >_ Setting up environment...
+      </span>
+    </div>
+
+    <div style="position: relative; width: 64px; height: 64px;">
+      <svg viewBox="0 0 100 100" style="position: absolute; inset: 0; width: 100%; height: 100%; animation: gl-spin 4s linear infinite;">
+        <circle cx="50" cy="50" r="45" fill="none" stroke="#22c55e" stroke-width="2" stroke-dasharray="10 15" opacity="0.4"></circle>
+      </svg>
+      <svg viewBox="0 0 100 100" style="position: absolute; inset: 0; width: 100%; height: 100%; animation: gl-spin-reverse 1.5s cubic-bezier(0.4, 0, 0.2, 1) infinite;">
+        <circle cx="50" cy="50" r="35" fill="none" stroke="var(--primary, #a855f7)" stroke-width="4" stroke-dasharray="60 180" stroke-linecap="round"></circle>
+      </svg>
+      <div style="position: absolute; top: 50%; left: 50%; width: 8px; height: 8px; background: #22c55e; border-radius: 50%; transform: translate(-50%, -50%); box-shadow: 0 0 10px #22c55e, 0 0 20px #22c55e; animation: gl-pulse 1.5s ease-in-out infinite;"></div>
+    </div>
+
     <style>
-      @keyframes gl-rotate { 100% { transform: rotate(360deg); } }
-      @keyframes gl-dash {
-        0% { stroke-dasharray: 1, 150; stroke-dashoffset: 0; }
-        50% { stroke-dasharray: 90, 150; stroke-dashoffset: -35; }
-        100% { stroke-dasharray: 90, 150; stroke-dashoffset: -124; }
-      }
+      @keyframes gl-typing { from { width: 0; } to { width: 280px; } }
+      @keyframes gl-blink { from, to { border-color: transparent; } 50% { border-color: #22c55e; } }
+      @keyframes gl-spin { 100% { transform: rotate(360deg); } }
+      @keyframes gl-spin-reverse { 100% { transform: rotate(-360deg); } }
+      @keyframes gl-pulse { 0%, 100% { opacity: 0.3; transform: translate(-50%, -50%) scale(0.8); } 50% { opacity: 1; transform: translate(-50%, -50%) scale(1.5); } }
     </style>
   </div>
 <div id="app" data-screen="chat">
