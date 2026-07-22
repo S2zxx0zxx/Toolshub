@@ -300,6 +300,7 @@ The absolute gateway. All traffic must pass through this proxy.
 - **Global Rate Limiting:** Cloudflare KV-backed. Serverless restarts don't reset limits.
 - **Orchestrator Mode Gate:** Internal `classify` calls and agent tool calls explicitly bypass the Orchestrator — prevents classification prompts from being silently misrouted to image-generation or code agents.
 - **Firestore Write Isolation:** `users/{uid}/usage/*` is `allow write: if false` in `firestore.rules`. Only the Worker's Admin SDK (via `usageTracker.js`) can write usage stats. Client attempts are blocked at the rules level.
+- **Strict Endpoint Authorization:** Dev-access unlock requires both a verified Firebase ID token and an explicitly allowlisted developer email (`satyamk82476@gmail.com`).
 - **Sentry Error Tracking:** Frontend + Edge Worker. Privacy filter strips request bodies before transmission.
 - **External Uptime Monitoring:** UptimeRobot → `/api/health` endpoint.
 - **Aggregated Analytics:** Zero PII. Tracks model/tool usage counts only, never user identity.
@@ -320,10 +321,13 @@ The absolute gateway. All traffic must pass through this proxy.
 | :--- | :--- |
 | `js/env.js` | Contained only `window.ENV = {}`. Never imported anywhere. Removed from SW cache and disk. |
 
-### Modified Files (Audit Batch 1 + Batch 2)
+### Modified Files (Audit Batch 1 + Batch 2 + Batch 3)
 | File | What Changed |
 | :--- | :--- |
-| `worker/src/modelAccess.js` | `llama-3.1-8b-instant` tier corrected: `'monthly'` → `'free'` (was silently 403-ing free users on every intent classification call). |
+| `worker/src/devAccess.js` | Added ID token verification + email allowlist check (fixed P1-4 privilege escalation). |
+| `worker/src/statusMonitor.js` | Status health probe for `gpt-4o-mini` now hits actual `models.github.ai` endpoint instead of legacy Azure one. |
+| `worker/src/modelFallback.js` | GitHub Models endpoint centralized via `ENDPOINTS` exported from `modelAccess.js`. |
+| `worker/src/modelAccess.js` | `llama-3.1-8b-instant` tier corrected: `'monthly'` → `'free'`. Now also exports `ENDPOINTS` constant. |
 | `js/ai/toolSchemas.js` | Added `github_list_files`, `github_read_file`, `github_search_code` schemas + registered in `getToolCategoryMap()`. |
 | `js/exclusive/ui/exclusiveShell.js` | `#exclusiveNewChatBtn` wired to `ExclusiveChatEngine.newChat()`. |
 | `js/exclusive/ui/exclusiveChatEngine.js` | `CloudDB.saveConversation()` enabled. `renderExclusiveChatHistory()` added — populates history sidebar from Firestore on init and after each save. |
@@ -333,13 +337,13 @@ The absolute gateway. All traffic must pass through this proxy.
 | `js/services/aiApi.js` | `chatCompletionJson` now sends `mode:'classify'`. Imports `API_ENDPOINT` from `js/config/api.js`. |
 | `worker/src/index.js` | Orchestrator gate updated: skips for `mode='agent'` AND `mode='classify'`. |
 | `js/ui/chatEngine.js` | Removed `CloudDB.trackUsage()` call — was being rejected by Firestore rules silently on every message. |
-| `js/services/cloudDb.js` | `trackUsage()` replaced with documented no-op stub + deprecation comment. Removed from exports. |
+| `js/services/cloudDb.js` | `getTodayUsage()` now correctly reads `data.count` from server (fixing UI showing 0 usage). `trackUsage()` deprecated. |
 | `js/exclusive/ai/masterTool.js` | `FANOUT_MODELS` fixed: `['llama-3.3-70b-versatile', 'gpt-4o-mini']` — two distinct providers. Previously both normalized to same Groq model. |
 | `js/services/ragService.js` | Imports `API_ENDPOINT` from `js/config/api.js` instead of inline literal. |
 | `js/services/tools/searchService.js` | Imports `API_ENDPOINT` from `js/config/api.js` instead of inline literal. |
 | `js/ui/sidebar.js` | Imports `API_ENDPOINT` from `js/config/api.js`. Dev-access URL uses template literal. |
 | `js/ui/changePlanModal.js` | Imports `API_ENDPOINT` from `js/config/api.js`. Payment + verify endpoints use template literals. |
-| `.env.example` | Corrected — removed misleading `WORKER_URL` entry, added pointer to `worker/.env.example`. |
+| `.env.example` | Clarified that `WORKER_URL` is used ONLY by offline `scripts/ingest.js`, not the frontend bundle. |
 
 ---
 
