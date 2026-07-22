@@ -13,3 +13,7 @@ binding = "AI"
 
 [triggers]
 crons = ["*/5 * * * *"]
+
+[[kv_namespaces]]
+binding = "RATE_LIMIT_KV"
+id = "1403df59c66c4732b25ec7580231b025" # <- I will run `wrangler kv:namespace create "RATE_LIMIT_KV"` and paste the real id here myself

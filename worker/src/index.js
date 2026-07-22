@@ -12,52 +12,7 @@ const corsHeaders = {
   'Access-Control-Max-Age': '86400',
 };
 
-// Simple rate limiter implementation using Map is NOT fully reliable across Cloudflare edge nodes,
-// but works as a basic deterrent within a single isolate.
-// Deterrent only — durable per-user quota is enforced via Firestore in planResolver.js/usageTracker.js.
-const ipRateLimits = new Map();
-const RATE_LIMIT_WINDOW_MS = 60000;
-const MAX_REQUESTS_PER_WINDOW = 30;
-
-function checkRateLimit(ip) {
-  const now = Date.now();
-  if (!ipRateLimits.has(ip)) {
-    ipRateLimits.set(ip, { count: 1, resetTime: now + RATE_LIMIT_WINDOW_MS });
-    return true;
-  }
-  const record = ipRateLimits.get(ip);
-  if (now > record.resetTime) {
-    ipRateLimits.set(ip, { count: 1, resetTime: now + RATE_LIMIT_WINDOW_MS });
-    return true;
-  }
-  if (record.count >= MAX_REQUESTS_PER_WINDOW) {
-    return false;
-  }
-  record.count++;
-  return true;
-}
-
-const paymentRateLimits = new Map();
-const PAYMENT_RATE_LIMIT_WINDOW_MS = 60000;
-const PAYMENT_MAX_REQUESTS_PER_WINDOW = 100; // Looser limit for payments
-
-function checkPaymentRateLimit(ip) {
-  const now = Date.now();
-  if (!paymentRateLimits.has(ip)) {
-    paymentRateLimits.set(ip, { count: 1, resetTime: now + PAYMENT_RATE_LIMIT_WINDOW_MS });
-    return true;
-  }
-  const record = paymentRateLimits.get(ip);
-  if (now > record.resetTime) {
-    paymentRateLimits.set(ip, { count: 1, resetTime: now + PAYMENT_RATE_LIMIT_WINDOW_MS });
-    return true;
-  }
-  if (record.count >= PAYMENT_MAX_REQUESTS_PER_WINDOW) {
-    return false;
-  }
-  record.count++;
-  return true;
-}
+import { checkRateLimit, checkPaymentRateLimit } from './rateLimiter.js';
 
 async function callGitHubModels(modelId, payload, env) {
   const ghPayload = { 
@@ -123,13 +78,13 @@ export default {
     // Check if it's a payment request
     const url = new URL(request.url);
     if (url.pathname.startsWith('/api/payment/')) {
-      if (!checkPaymentRateLimit(clientIp)) {
+      if (!(await checkPaymentRateLimit(clientIp, env))) {
         return new Response('Too Many Requests. Please slow down.', { status: 429, headers: corsHeaders });
       }
       return await handlePaymentRequest(request, env, corsHeaders);
     }
 
-    if (!checkRateLimit(clientIp)) {
+    if (!(await checkRateLimit(clientIp, env))) {
       return new Response('Too Many Requests. Please slow down.', { status: 429, headers: corsHeaders });
     }
 
