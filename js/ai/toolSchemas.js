@@ -386,6 +386,49 @@ export function getAllToolSchemas() {
         description: "Opens the GPA / Percentage Calculator utility for the user. Call this when the user wants grade calculations — you are only triggering the UI panel, not calculating GPA yourself.",
         parameters: { type: "object", properties: {} }
       }
+    },
+
+    // --- TYPE D: GitHub Connector Tools ---
+    {
+      type: "function",
+      function: {
+        name: "github_list_files",
+        description: "List all files in the connected GitHub repository. Use this when the user asks to browse, list, or explore files in their GitHub repo.",
+        parameters: {
+          type: "object",
+          properties: {
+            branch: { type: "string", description: "Optional branch name. Defaults to main/master." }
+          }
+        }
+      }
+    },
+    {
+      type: "function",
+      function: {
+        name: "github_read_file",
+        description: "Read the contents of a specific file from the connected GitHub repository. Use this when the user asks to open, view, or read a file from their repo.",
+        parameters: {
+          type: "object",
+          properties: {
+            path: { type: "string", description: "The file path in the repository (e.g. src/index.js)" }
+          },
+          required: ["path"]
+        }
+      }
+    },
+    {
+      type: "function",
+      function: {
+        name: "github_search_code",
+        description: "Search for code inside the connected GitHub repository. Use this when the user asks to find, search, or look for code patterns in their repo.",
+        parameters: {
+          type: "object",
+          properties: {
+            query: { type: "string", description: "The search query" }
+          },
+          required: ["query"]
+        }
+      }
     }
   ];
 
@@ -427,6 +470,11 @@ export function getToolCategoryMap() {
       map[t.id] = cat.id;
     }
   }
+
+  // Map GitHub Connector tools
+  map['github_list_files'] = 'github';
+  map['github_read_file'] = 'github';
+  map['github_search_code'] = 'github';
 
   return map;
 }

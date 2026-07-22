@@ -1,4 +1,4 @@
-const CACHE_NAME = 'toolshub-cache-v54';
+const CACHE_NAME = 'toolshub-cache-v55';
 const urlsToCache = [
   './',
   './index.html',
@@ -9,6 +9,7 @@ const urlsToCache = [
   // === CSS ===
   './css/core/variables.css',
   './css/layout/layout.css',
+  './css/layout/home.css',
   './css/components/components.css',
   './css/components/personaPicker.css',
   './css/components/changePlan.css',
@@ -50,6 +51,7 @@ const urlsToCache = [
   './js/tools/connectorsRegistry.js',
   // === JS UI ===
   './js/ui/sidebar.js',
+  './js/ui/homeScreen.js',
   './js/ui/bottomsheet.js',
   './js/ui/chatEngine.js',
   './js/ui/toast.js',
@@ -74,7 +76,7 @@ const urlsToCache = [
   './js/config/personas.js',
   './js/config/planVocabulary.js',
   './js/config/suggestionPool.js',
-  './js/env.js',
+  // js/env.js removed — file is deprecated (contains only window.ENV = {}) and not imported anywhere
   // === JS TOOLS EXTRA ===
   './js/tools/connectorsRegistry.js',
   // === JS AI EXTRA ===

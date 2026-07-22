@@ -45,6 +45,45 @@ export const ExclusiveChatEngine = (() => {
     renderEmptyState();
   }
 
+  // Renders the saved exclusive chat history into #exclusiveChatHistory
+  function renderExclusiveChatHistory(chats) {
+    const historyEl = document.getElementById('exclusiveChatHistory');
+    if (!historyEl) return;
+    if (!chats || chats.length === 0) {
+      historyEl.innerHTML = '<p class="exclusive-history-empty">No past chats yet.</p>';
+      return;
+    }
+    historyEl.innerHTML = chats.map(chat => `
+      <div class="exclusive-history-item" data-id="${chat.id}">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;flex-shrink:0;opacity:0.6">
+          <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+        </svg>
+        <span class="exclusive-history-title">${chat.title || 'Exclusive Chat'}</span>
+      </div>
+    `).join('');
+    // Wire click listeners to reload a past chat's messages
+    historyEl.querySelectorAll('.exclusive-history-item').forEach(item => {
+      item.addEventListener('click', () => {
+        const chatId = item.dataset.id;
+        const found = chats.find(c => c.id === chatId);
+        if (found) {
+          currentChat = found;
+          document.getElementById('exChatTitle').textContent = found.title || 'Exclusive Chat';
+          const list = document.getElementById('exMsgList');
+          document.getElementById('exEmptyState').style.display = 'none';
+          list.style.display = 'block';
+          list.innerHTML = (found.messages || []).map(m => `
+            <div class="ex-msg ex-msg-${m.role === 'user' ? 'user' : 'ai'}">
+              <div class="ex-msg-bubble">${m.role === 'user'
+                ? escapeHtml(m.text)
+                : formatMarkdown(m.text)}</div>
+            </div>
+          `).join('');
+        }
+      });
+    });
+  }
+
   // --- Master Tool Toggle UI ---
   function updateMasterToolUI() {
     const toggle = document.getElementById('exMasterToolToggle');
@@ -169,7 +208,10 @@ export const ExclusiveChatEngine = (() => {
       // Save to chat
       currentChat.messages.push({ role: 'assistant', text: fullAiResponse, ts: Date.now() });
       currentChat.updatedAt = Date.now();
-      // await CloudDB.saveConversation(currentChat); // Disabled until history wired
+      // Persist to Firestore / local storage and refresh the history sidebar
+      CloudDB.saveConversation(currentChat).then(() => {
+        CloudDB.subscribeConversations(renderExclusiveChatHistory);
+      }).catch(e => console.warn('Exclusive chat save failed:', e));
       
     } catch (e) {
       console.error(e);
@@ -294,6 +336,8 @@ export const ExclusiveChatEngine = (() => {
 
     newChat();
     updateMasterToolUI();
+    // Populate history sidebar with any previously saved Exclusive chats
+    CloudDB.subscribeConversations(renderExclusiveChatHistory);
   }
 
   return { init, newChat };

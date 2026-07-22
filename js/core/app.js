@@ -521,6 +521,11 @@ const Settings = (() => {
     document.getElementById('apiKeysRow')?.addEventListener('click', () => Toast.show('Coming soon'));
     document.getElementById('apiKeysBackBtn')?.addEventListener('click', () => closeSubScreen('screenApiKeys'));
     document.getElementById('apiKeysSaveBtn')?.addEventListener('click', saveApiKeys);
+    // Toggle password visibility for Groq API key field
+    document.getElementById('groqKeyToggle')?.addEventListener('click', () => {
+      const input = document.getElementById('groqApiKeyInput');
+      if (input) input.type = input.type === 'password' ? 'text' : 'password';
+    });
 
     // ---- Subscription & Upgrade ----
     document.getElementById('changePlanBtn')?.addEventListener('click', () => {
@@ -1227,6 +1232,40 @@ document.addEventListener('DOMContentLoaded', async () => {
     updateGreeting(Auth.getCurrentUser());
   });
 
+  // Shared loader teardown logic — called from both logged-in and guest auth branches.
+  // Extracted to prevent drift from the verbatim duplicate that previously existed in both.
+  function hideAppLoaders() {
+    const isReload = document.documentElement.getAttribute('data-is-reload') === 'true';
+
+    const loader = document.getElementById('global-loader');
+    if (loader) {
+      loader.style.opacity = '0';
+      setTimeout(() => loader.remove(), 200);
+    }
+
+    const ghLoader = document.getElementById('github-loader');
+    const ghBar = document.getElementById('gh-progress-bar');
+    if (ghLoader && ghBar) {
+      ghBar.style.animation = 'none';
+      ghBar.style.transition = 'transform 0.2s ease-out';
+      ghBar.style.transform = 'scaleX(1)';
+      setTimeout(() => {
+        ghLoader.style.opacity = '0';
+        setTimeout(() => ghLoader.remove(), 200);
+      }, 200);
+    } else if (ghLoader) {
+      ghLoader.style.opacity = '0';
+      setTimeout(() => ghLoader.remove(), 200);
+    }
+
+    if (isReload && document.documentElement.hasAttribute('data-is-reload')) {
+      document.documentElement.removeAttribute('data-is-reload');
+      setTimeout(() => {
+        if (typeof Toast !== 'undefined') Toast.show('Refresh successful');
+      }, 400);
+    }
+  }
+
   Auth.onAuthStateChanged(user => {
     updateGreeting(user);
     const avatarEl = document.querySelector('.sidebar-avatar');
@@ -1262,36 +1301,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       // Sync plan from Firestore source of truth
       CloudDB.syncPlanFromServer().then(() => {
         window.dispatchEvent(new CustomEvent('plan-changed'));
-        
-        const isReload = document.documentElement.getAttribute('data-is-reload') === 'true';
-        
-        const loader = document.getElementById('global-loader');
-        if (loader) {
-          loader.style.opacity = '0';
-          setTimeout(() => loader.remove(), 200);
-        }
-
-        const ghLoader = document.getElementById('github-loader');
-        const ghBar = document.getElementById('gh-progress-bar');
-        if (ghLoader && ghBar) {
-          ghBar.style.animation = 'none';
-          ghBar.style.transition = 'transform 0.2s ease-out';
-          ghBar.style.transform = 'scaleX(1)';
-          setTimeout(() => {
-            ghLoader.style.opacity = '0';
-            setTimeout(() => ghLoader.remove(), 200);
-          }, 200);
-        } else if (ghLoader) {
-          ghLoader.style.opacity = '0';
-          setTimeout(() => ghLoader.remove(), 200);
-        }
-
-        if (isReload && document.documentElement.hasAttribute('data-is-reload')) {
-          document.documentElement.removeAttribute('data-is-reload');
-          setTimeout(() => {
-            if (typeof Toast !== 'undefined') Toast.show('Refresh successful');
-          }, 400);
-        }
+        hideAppLoaders();
       });
 
       // Migrate local chats if any
@@ -1322,36 +1332,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       // Guest mode always gets free plan
       CloudDB.syncPlanFromServer().then(() => {
         window.dispatchEvent(new CustomEvent('plan-changed'));
-        
-        const isReload = document.documentElement.getAttribute('data-is-reload') === 'true';
-        
-        const loader = document.getElementById('global-loader');
-        if (loader) {
-          loader.style.opacity = '0';
-          setTimeout(() => loader.remove(), 200);
-        }
-
-        const ghLoader = document.getElementById('github-loader');
-        const ghBar = document.getElementById('gh-progress-bar');
-        if (ghLoader && ghBar) {
-          ghBar.style.animation = 'none';
-          ghBar.style.transition = 'transform 0.2s ease-out';
-          ghBar.style.transform = 'scaleX(1)';
-          setTimeout(() => {
-            ghLoader.style.opacity = '0';
-            setTimeout(() => ghLoader.remove(), 200);
-          }, 200);
-        } else if (ghLoader) {
-          ghLoader.style.opacity = '0';
-          setTimeout(() => ghLoader.remove(), 200);
-        }
-
-        if (isReload && document.documentElement.hasAttribute('data-is-reload')) {
-          document.documentElement.removeAttribute('data-is-reload');
-          setTimeout(() => {
-            if (typeof Toast !== 'undefined') Toast.show('Refresh successful');
-          }, 400);
-        }
+        hideAppLoaders();
       });
 
       // Load Guest chats

@@ -51,6 +51,12 @@ export const ExclusiveShell = (() => {
     // (Auth state might not be loaded when this init() is called at startup)
     ExclusiveHomeScreen.init();
     ExclusiveChatEngine.init();
+
+    // Wire the New Exclusive Chat button in the sidebar
+    const newChatBtn = document.getElementById('exclusiveNewChatBtn');
+    if (newChatBtn) {
+      newChatBtn.addEventListener('click', () => ExclusiveChatEngine.newChat());
+    }
   }
 
   return { init };

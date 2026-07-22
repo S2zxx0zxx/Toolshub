@@ -165,9 +165,9 @@
     </div>
 
     <div class="sidebar-footer">
-      <div id="sidebarAvatar" class="sidebar-avatar">G</div>
+      <div class="sidebar-avatar">G</div>
       <div class="sidebar-user extracted-inline-3">
-        <div id="sidebarUserName" class="sidebar-user-name extracted-inline-4">Guest</div>
+        <div class="sidebar-user-name extracted-inline-4">Guest</div>
         <button id="sidebarLoginBtn" class="extracted-inline-5">Login to save history</button>
         <button id="devLoginBtn" style="display: none; background: rgba(168, 85, 247, 0.15); color: #a855f7; border: 1px solid rgba(168, 85, 247, 0.3); border-radius: 4px; font-size: 11px; padding: 4px 8px; margin-top: 4px; cursor: pointer; transition: all 0.2s;">Developer Access</button>
       </div>
@@ -680,7 +680,7 @@
             </div>
           </div>
 
-          <div class="settings-usage-block" id="usageBlock">
+          <div class="settings-usage-block">
             <div class="settings-usage-row">
               <div class="settings-usage-label">Messages Used</div>
               <div class="settings-usage-value">0 / 15</div>
@@ -832,13 +832,13 @@
               </div>
             </div>
 
-            <div class="settings-usage-block" id="settingsUsageBlock">
+            <div class="settings-usage-block">
               <div class="settings-usage-row">
                 <span class="settings-usage-label">Messages today</span>
-                <span class="settings-usage-value" id="settingsUsageValue">-- / --</span>
+                <span class="settings-usage-value">-- / --</span>
               </div>
               <div class="settings-usage-bar">
-                <div class="settings-usage-bar-fill" id="settingsUsageBarFill" style="width: 0%;"></div>
+                <div class="settings-usage-bar-fill" style="width: 0%;"></div>
               </div>
             </div>
 
@@ -869,7 +869,7 @@
                 <div class="extracted-inline-28">
                   <label for="groqApiKeyInput" class="field-label">GROQ API KEY</label>
                   <input id="groqApiKeyInput" type="password" placeholder="gsk_..." autocomplete="off" class="field-input extracted-inline-29">
-                  <button type="button" id="groqKeyToggle" title="Show/hide key" onclick="const i=document.getElementById('groqApiKeyInput');i.type=i.type==='password'?'text':'password';" class="extracted-inline-30">ðŸ‘</button>
+                  <button type="button" id="groqKeyToggle" title="Show/hide key" class="extracted-inline-30">👁</button>
                 </div>
                 <span style="color: var(--text-muted); font-size: var(--fs-xs); display: block; margin-top: 4px;">If provided, chats will bypass the backend and call Groq directly (useful for local testing without emulators).</span>
               </div>

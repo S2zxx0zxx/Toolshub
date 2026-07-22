@@ -15901,7 +15901,8 @@ var init_modelAccess = __esm({
     init_modules_watch_stub();
     MODEL_CATALOG_TIERS = {
       "llama-3.3-70b-versatile": "free",
-      "llama-3.1-8b-instant": "monthly",
+      "llama-3.1-8b-instant": "free",
+      // Used for internal intent classification — must be free-tier
       "gpt-4o-mini": "6month",
       "groq/compound": "yearly",
       "groq/compound-mini": "yearly"

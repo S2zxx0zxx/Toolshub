@@ -1,7 +1,7 @@
 // MUST stay in sync — model list + tier mapping is duplicated client and server side for enforcement.
 export const MODEL_CATALOG_TIERS = {
   'llama-3.3-70b-versatile': 'free',
-  'llama-3.1-8b-instant': 'monthly',
+  'llama-3.1-8b-instant': 'free',     // Used for internal intent classification — must be free-tier
   'gpt-4o-mini': '6month',
   'groq/compound': 'yearly',
   'groq/compound-mini': 'yearly'
