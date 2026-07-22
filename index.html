@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en" data-theme="dark">
 <head>
 <meta charset="UTF-8">
@@ -16,20 +16,20 @@
 <script src="https://cdn.jsdelivr.net/npm/marked@11.1.1/marked.min.js" integrity="sha384-zbcZAIxlvJtNE3Dp5nxLXdXtXyxwOdnILY1TDPVmKFhl4r4nSUG1r8bcFXGVa4Te" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.6/purify.min.js" integrity="sha384-cwS6YdhLI7XS60eoDiC+egV0qHp8zI+Cms46R0nbn8JrmoAzV9uFL60etMZhAnSu" crossorigin="anonymous"></script>
 
-<link rel="stylesheet" href="./css/core/variables.css?v=41">
-<link rel="stylesheet" href="./css/layout/layout.css?v=41">
-<link rel="stylesheet" href="./css/components/components.css?v=41">
-<link rel="stylesheet" href="./css/components/personaPicker.css?v=41">
-<link rel="stylesheet" href="./css/components/changePlan.css?v=41">
-<link rel="stylesheet" href="./css/layout/sidebar.css?v=41">
-<link rel="stylesheet" href="./css/layout/chat.css?v=41">
-<link rel="stylesheet" href="./css/components/bottomsheet.css?v=41">
-<link rel="stylesheet" href="./css/components/tools.css?v=41">
-<link rel="stylesheet" href="./css/layout/screens-extra.css?v=41">
-<link rel="stylesheet" href="./css/components/inline-extracted.css?v=41">
-  <link rel="stylesheet" href="./css/components/chatHistory.css?v=41">
-  <link rel="stylesheet" href="./css/components/bugReport.css?v=41">
-  <link rel="stylesheet" href="./css/components/advancedControls.css?v=41">
+<link rel="stylesheet" href="./css/core/variables.css?v=42">
+<link rel="stylesheet" href="./css/layout/layout.css?v=42">
+<link rel="stylesheet" href="./css/components/components.css?v=42">
+<link rel="stylesheet" href="./css/components/personaPicker.css?v=42">
+<link rel="stylesheet" href="./css/components/changePlan.css?v=42">
+<link rel="stylesheet" href="./css/layout/sidebar.css?v=42">
+<link rel="stylesheet" href="./css/layout/chat.css?v=42">
+<link rel="stylesheet" href="./css/components/bottomsheet.css?v=42">
+<link rel="stylesheet" href="./css/components/tools.css?v=42">
+<link rel="stylesheet" href="./css/layout/screens-extra.css?v=42">
+<link rel="stylesheet" href="./css/components/inline-extracted.css?v=42">
+  <link rel="stylesheet" href="./css/components/chatHistory.css?v=42">
+  <link rel="stylesheet" href="./css/components/bugReport.css?v=42">
+  <link rel="stylesheet" href="./css/components/advancedControls.css?v=42">
 
   <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 </head>
@@ -169,7 +169,7 @@
             </svg>
             <div class="empty-greeting">Meet your Agent</div>
             <div style="color: var(--text-2); font-size: 14px; margin-bottom: 24px; text-align: center; max-width: 400px; line-height: 1.5;">
-              Give it a task. It'll pick the right tools, run them, and get it done — no manual switching.
+              Give it a task. It'll pick the right tools, run them, and get it done â€” no manual switching.
             </div>
             <div id="agentIntroCategories" style="display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; margin-bottom: 32px;">
               <!-- Populated by JS -->
@@ -192,7 +192,7 @@
           </div>
 
           <div id="msgList" class="msg-list extracted-inline-6"></div>
-          <!-- Utility/File tool inline panel — shown instead of emptyState for mode:'utility' tools -->
+          <!-- Utility/File tool inline panel â€” shown instead of emptyState for mode:'utility' tools -->
           <div id="utilityPanel" class="extracted-inline-7"></div>
         </div>
       </div>
@@ -301,13 +301,13 @@
 
           <div class="settings-group">
             <div class="settings-group-label">Account</div>
-            <!-- Profile row — now has id -->
+            <!-- Profile row â€” now has id -->
             <button id="profileRow" class="list-row">
               <div class="list-row-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
               <div class="list-row-body"><div class="list-row-title">Profile</div></div>
               <div class="list-row-trail"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="list-row-chevron"><polyline points="9 18 15 12 9 6"/></svg></div>
             </button>
-            <!-- Billing row — now has id -->
+            <!-- Billing row â€” now has id -->
             <button id="billingRow" class="list-row">
               <div class="list-row-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg></div>
               <div class="list-row-body"><div class="list-row-title">Billing</div></div>
@@ -429,7 +429,7 @@
               <div class="settings-group-label">Usage</div>
               <div class="list-row extracted-inline-19">
                 <div class="list-row-body"><div class="list-row-title">Messages this month</div><div class="list-row-subtitle">Resets on the 1st</div></div>
-                <div class="list-row-trail extracted-inline-20">—</div>
+                <div class="list-row-trail extracted-inline-20">â€”</div>
               </div>
               <div class="list-row extracted-inline-21">
                 <div class="list-row-body"><div class="list-row-title">Payment method</div></div>
@@ -474,7 +474,7 @@
                 <div class="extracted-inline-28">
                   <label for="groqApiKeyInput" class="field-label">GROQ API KEY</label>
                   <input id="groqApiKeyInput" type="password" placeholder="gsk_..." autocomplete="off" class="field-input extracted-inline-29">
-                  <button type="button" id="groqKeyToggle" title="Show/hide key" onclick="const i=document.getElementById('groqApiKeyInput');i.type=i.type==='password'?'text':'password';" class="extracted-inline-30">👁</button>
+                  <button type="button" id="groqKeyToggle" title="Show/hide key" onclick="const i=document.getElementById('groqApiKeyInput');i.type=i.type==='password'?'text':'password';" class="extracted-inline-30">ðŸ‘</button>
                 </div>
                 <span style="color: var(--text-muted); font-size: var(--fs-xs); display: block; margin-top: 4px;">If provided, chats will bypass the backend and call Groq directly (useful for local testing without emulators).</span>
               </div>
@@ -550,7 +550,7 @@
               <div class="list-row" style="cursor:default; display:flex;">
                 <div class="list-row-body">
                   <div class="list-row-title">ToolsHub by DigiRise India</div>
-                  <div class="list-row-subtitle" id="aboutVersionText">Loading…</div>
+                  <div class="list-row-subtitle" id="aboutVersionText">Loadingâ€¦</div>
                 </div>
               </div>
             </div>
@@ -619,19 +619,19 @@
         <div class="list-row-body"><div class="list-row-title">Web search</div></div>
         <div class="list-row-trail"><div id="webSearchToggle" class="toggle"></div></div>
       </button>
-      <!-- Add to project — now has id, trail text node for live update -->
+      <!-- Add to project â€” now has id, trail text node for live update -->
       <button id="addToProjectRow" class="list-row">
         <div class="list-row-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg></div>
         <div class="list-row-body"><div class="list-row-title">Add to project</div></div>
         <div id="addToProjectTrail" class="list-row-trail">None <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="list-row-chevron"><polyline points="9 18 15 12 9 6"/></svg></div>
       </button>
-      <!-- Tool access — now has id, trail text node for live update -->
+      <!-- Tool access â€” now has id, trail text node for live update -->
       <button id="toolAccessRow" class="list-row">
         <div class="list-row-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.77z"/></svg></div>
         <div class="list-row-body"><div class="list-row-title">Tool access</div></div>
         <div id="toolAccessTrail" class="list-row-trail">Auto <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="list-row-chevron"><polyline points="9 18 15 12 9 6"/></svg></div>
       </button>
-      <!-- Connectors — now has id -->
+      <!-- Connectors â€” now has id -->
       <button id="connectorsRow" class="list-row">
         <div class="list-row-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 010 20 15.3 15.3 0 010-20z"/></svg></div>
         <div class="list-row-body"><div class="list-row-title">Connectors</div></div>
@@ -684,7 +684,7 @@
     </div>
     <div class="sheet-body">
       <div class="upgrade-plan-name">Pro Plan</div>
-      <div class="upgrade-plan-price">Coming soon · Early access waitlist open</div>
+      <div class="upgrade-plan-price">Coming soon Â· Early access waitlist open</div>
       <div class="upgrade-feature-list">
         <div class="upgrade-feature-item">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" class="upgrade-check"><polyline points="20 6 9 17 4 12"/></svg>
@@ -857,7 +857,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js" integrity="sha384-3zSEDfvllQohrq0PHL1fOXJuC/jSOO34H46t6UQfobFOmxE5BpjjaIJY5F2/bMnU" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" integrity="sha384-JcnsjUPPylna1s1fvi1u12X5qjY5OL56iySh75FdtrwhO/SWXgMjoVqcKyIIWOLk" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js" integrity="sha384-weMABwrltA6jWR8DDe9Jp5blk+tZQh7ugpCsF3JwSA53WZM9/14PjS5LAJNHNjAI" crossorigin="anonymous"></script>
-<script type="module" src="./js/core/app.js?v=41"></script>
+<script type="module" src="./js/core/app.js?v=42"></script>
 <!-- ============ AUTH OVERLAY ============ -->
 <div id="authOverlay" class="extracted-inline-50">
   <div class="extracted-inline-51">
