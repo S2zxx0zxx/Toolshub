@@ -32,8 +32,8 @@
   background: var(--bg-app);
   border-bottom: 1px solid var(--border-x, rgba(200,155,60,0.18));
   flex-shrink: 0;
-  backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
 }
 .ex-topbar-logo {
   display: flex;

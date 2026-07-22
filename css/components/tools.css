@@ -141,7 +141,7 @@
   color: var(--text-secondary);
   min-height: 60px;
   white-space: pre-wrap;
-  word-break: break-word;
+  overflow-wrap: break-word;
   line-height: 1.6;
 }
 
