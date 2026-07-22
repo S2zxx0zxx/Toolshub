@@ -5,6 +5,7 @@ import { resolvePlan } from './planResolver.js';
 import { checkAndIncrementDailyUsage } from './usageTracker.js';
 import { FirebaseAdmin } from './firebaseAdmin.js';
 import { MODEL_CATALOG_TIERS, rankOf } from './modelAccess.js';
+import { callModelWithFallback } from './modelFallback.js';
 import * as statusMonitor from './statusMonitor.js';
 
 const corsHeaders = {
@@ -16,46 +17,7 @@ const corsHeaders = {
 
 import { checkRateLimit, checkPaymentRateLimit } from './rateLimiter.js';
 
-async function callGitHubModels(modelId, payload, env) {
-  const ghPayload = { 
-    max_tokens: 4096,
-    top_p: 1,
-    ...payload, 
-    model: modelId 
-  };
-  const ghResponse = await fetch('https://models.github.ai/inference/chat/completions', {
-    method: 'POST',
-    headers: {
-      'Accept': 'application/vnd.github+json',
-      'X-GitHub-Api-Version': '2022-11-28',
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${env.GITHUB_MODELS_TOKEN}`,
-      'Accept-Encoding': 'identity'
-    },
-    body: JSON.stringify(ghPayload)
-  });
 
-  if (!ghResponse.ok) {
-    return { ok: false, response: ghResponse };
-  }
-
-  const responseHeaders = new Headers(ghResponse.headers);
-  responseHeaders.delete('content-encoding');
-  responseHeaders.delete('content-length');
-  responseHeaders.delete('transfer-encoding');
-  // corsHeaders is defined globally
-  for (const [key, value] of Object.entries(corsHeaders)) {
-    responseHeaders.set(key, value);
-  }
-
-  return { 
-    ok: true, 
-    response: new Response(ghResponse.body, {
-      status: ghResponse.status,
-      headers: responseHeaders
-    })
-  };
-}
 
 export default withSentry((env) => {
   if (!env.SENTRY_DSN) {
@@ -81,6 +43,13 @@ export default withSentry((env) => {
         status: 200,
         headers: corsHeaders
       });
+    }
+
+    const url = new URL(request.url);
+
+    // 1.5 Public Health Check Endpoint (For UptimeRobot)
+    if (request.method === 'GET' && (url.pathname === '/health' || url.pathname === '/api/health')) {
+      return new Response('OK', { status: 200, headers: corsHeaders });
     }
 
     // 2. Enforce HTTP Method
@@ -274,80 +243,33 @@ export default withSentry((env) => {
       return new Response("Internal Server Error: GROQ_API_KEY secret is not set.", { status: 500, headers: corsHeaders });
     }
 
-    // 5.5 Bypass Groq for explicit GitHub Models
-    if (targetModel === 'gpt-4o-mini' && env.GITHUB_MODELS_TOKEN) {
-      try {
-        const ghRes = await callGitHubModels('openai/gpt-4o-mini', payload, env);
-        if (ghRes.ok) return ghRes.response;
-        
-        const errorText = await ghRes.response.text();
-        return new Response('GitHub Models Error: ' + errorText, { status: 500, headers: corsHeaders });
-      } catch (e) {
-        return new Response('Internal Server Error: GitHub Models unreachable', { status: 500, headers: corsHeaders });
-      }
-    }
+    // 6. Execute Model Call with Tier-Aware Fallback
+    const fallbackResult = await callModelWithFallback(targetModel, payload, env, callerPlan.planId);
 
-    // 6. Proxy Request to Groq API
-    let groqResponse;
-    let groqNetworkFailed = false;
-
-    try {
-      groqResponse = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${apiKey}`,
-          'Accept-Encoding': 'identity'
-        },
-        body: JSON.stringify(payload)
-      });
-    } catch (e) {
-      console.error("Fetch error to Groq:", e);
-      groqNetworkFailed = true;
-    }
-
-    const groqFailed = groqNetworkFailed || !groqResponse.ok;
-
-    if (groqFailed) {
-      if (targetModel === 'llama-3.3-70b-versatile' && env.GITHUB_MODELS_TOKEN) {
-        console.log("Groq failed, attempting GitHub Models fallback (meta-llama/Llama-3.3-70B-Instruct)...");
-        try {
-          const ghRes1 = await callGitHubModels('meta-llama/Llama-3.3-70B-Instruct', payload, env);
-          if (ghRes1.ok) {
-            console.log("Served by: github-models (meta-llama/Llama-3.3-70B-Instruct) after Groq failure");
-            return ghRes1.response;
-          }
-          
-          console.log("GitHub Models (meta-llama/Llama-3.3-70B-Instruct) failed, attempting secondary fallback (openai/gpt-4o-mini)...");
-          const ghRes2 = await callGitHubModels('openai/gpt-4o-mini', payload, env);
-          if (ghRes2.ok) {
-            console.log("Served by: github-models (openai/gpt-4o-mini) after Groq failure");
-            return ghRes2.response;
-          }
-        } catch (fallbackErr) {
-          console.error("Fallback chain threw an error:", fallbackErr);
-        }
-      }
-
-      // If fallback wasn't eligible or all fallbacks failed, return the real Groq error
-      if (groqNetworkFailed) {
-        return new Response('Internal Server Error: Unable to connect to AI provider.', { status: 500, headers: corsHeaders });
-      } else {
-        const responseHeaders = new Headers(groqResponse.headers);
+    if (!fallbackResult.ok) {
+      // Total failure case: return the last error from the chain
+      // If we got an HTTP response back, forward it so the client knows it was an upstream error.
+      // Otherwise, return a generic 500.
+      if (fallbackResult.response) {
+        const responseHeaders = new Headers(fallbackResult.response.headers);
         responseHeaders.delete('content-encoding');
         responseHeaders.delete('content-length');
         responseHeaders.delete('transfer-encoding');
         for (const [key, value] of Object.entries(corsHeaders)) {
           responseHeaders.set(key, value);
         }
-        return new Response(groqResponse.body, {
-          status: groqResponse.status,
+        return new Response(fallbackResult.response.body, {
+          status: fallbackResult.response.status,
           headers: responseHeaders
         });
+      } else {
+        return new Response('Internal Server Error: All eligible AI providers are unreachable.', { status: 500, headers: corsHeaders });
       }
     }
 
-    console.log("Served by: groq");
+    const groqResponse = fallbackResult.response;
+    const servedByModel = fallbackResult.servedByModel;
+    console.log(`Served by: ${servedByModel}`);
 
     try {
       // 6.2 Handle Synthetic SSE for Compound Models
