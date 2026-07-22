@@ -166,12 +166,12 @@ export const Sidebar = (() => {
     renderProjects();
     renderHistory();
 
-    // Bind a secret click handler to the avatar for dev unlock (5 clicks)
-    const avatar = document.getElementById('sidebarAvatar');
-    if (avatar) {
+    // Bind a secret click handler to the avatar/footer for dev unlock (5 clicks)
+    const sidebarFooter = document.querySelector('.sidebar-footer');
+    if (sidebarFooter) {
       let avatarClickCount = 0;
       let avatarClickTimer;
-      avatar.addEventListener('click', () => {
+      sidebarFooter.addEventListener('click', () => {
         avatarClickCount++;
         clearTimeout(avatarClickTimer);
         if (avatarClickCount >= 5) {
@@ -189,7 +189,7 @@ export const Sidebar = (() => {
     if (!code) return;
     
     try {
-      const user = CloudDB.getCurrentUser();
+      const user = Auth.getCurrentUser();
       if (!user) {
         alert('You must be logged in to redeem a code.');
         return;
