@@ -1077,30 +1077,30 @@ document.addEventListener('DOMContentLoaded', async () => {
     renderUsageBlock();
   }
 
-  // Initial update and event listener
-  updatePlanUI();
-  window.addEventListener('plan-changed', updatePlanUI);
-
-  // Set initial persona subtitle in Settings
-  const initialPersonaId = LocalSettings.getPersona();
-  const sub = document.getElementById('personaSubText');
-  if (sub) {
-    if (!initialPersonaId || initialPersonaId === 'general') {
-      sub.textContent = 'General';
-    } else {
-      const p = PERSONAS.find(p => p.id === initialPersonaId);
-      sub.textContent = p ? p.label : 'General';
+  // Wait for all modules and DOM to be fully ready before initial UI passes
+  document.addEventListener('DOMContentLoaded', () => {
+    updatePlanUI();
+    
+    const initialPersonaId = LocalSettings.getPersona();
+    const sub = document.getElementById('personaSubText');
+    if (sub) {
+      if (!initialPersonaId || initialPersonaId === 'general') {
+        sub.textContent = 'General';
+      } else {
+        const p = PERSONAS.find(p => p.id === initialPersonaId);
+        sub.textContent = p ? p.label : 'General';
+      }
     }
-  }
 
-  // Check for deep link or default to new chat
-  if (window.location.hash && window.location.hash.startsWith('#chat=')) {
-    const chatId = window.location.hash.replace('#chat=', '');
-    Chat.loadChat(chatId);
-  } else {
-    // always show empty state with no tool selected on fresh load
-    Chat.newChat();
-  }
+    if (window.location.hash && window.location.hash.startsWith('#chat=')) {
+      const chatId = window.location.hash.replace('#chat=', '');
+      Chat.loadChat(chatId);
+    } else {
+      Chat.newChat();
+    }
+  });
+
+  window.addEventListener('plan-changed', updatePlanUI);
 
   // ---------- AUTHENTICATION UI ----------
   let isSignupMode = false;
