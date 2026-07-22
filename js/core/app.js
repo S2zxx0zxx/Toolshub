@@ -992,6 +992,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   PWA.init();
   ToolSelector.init();
   Sidebar.init();
+  Router.init();
   BottomSheet.init();
   ChangePlanModal.init();
   ConnectorsSheet.init();

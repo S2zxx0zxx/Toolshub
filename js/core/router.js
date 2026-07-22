@@ -7,6 +7,7 @@ export const Router = (() => {
 
   function navigate(screen) {
     currentScreen = screen;
+    sessionStorage.setItem('toolshub_active_screen', screen);
     const app = document.getElementById('app');
     app.dataset.screen = screen;
 
@@ -43,7 +44,15 @@ export const Router = (() => {
     Events.publish('ALL_SUBSCREENS_CLOSED');
   }
 
+  function init() {
+    const saved = sessionStorage.getItem('toolshub_active_screen');
+    if (saved) {
+      navigate(saved);
+    }
+  }
+
   return {
+    init,
     navigate,
     openSubScreen,
     closeSubScreen,

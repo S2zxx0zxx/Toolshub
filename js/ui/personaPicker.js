@@ -158,6 +158,11 @@ export const PersonaPicker = (() => {
 
   function close() {
     if (!modalOverlay) return;
+
+    if (LocalSettings && LocalSettings.getPersona() === null) {
+      LocalSettings.setPersona('general');
+    }
+
     modalOverlay.classList.remove('is-open');
     if (_closeTimer) clearTimeout(_closeTimer);
     _closeTimer = setTimeout(() => {
