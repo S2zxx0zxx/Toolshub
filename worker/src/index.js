@@ -203,13 +203,22 @@ export default withSentry((env) => {
       }
     }
 
-    const fbAdmin = new FirebaseAdmin(env.FIREBASE_SERVICE_ACCOUNT);
-    const usageCheck = await checkAndIncrementDailyUsage(fbAdmin, callerPlan.uid, callerPlan.dailyLimit, env);
-    if (!usageCheck.allowed) {
-      return new Response(JSON.stringify({ error: 'daily_limit_reached', limit: callerPlan.dailyLimit }), {
-        status: 429,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-      });
+    let fbAdmin = null;
+    if (env.FIREBASE_SERVICE_ACCOUNT) {
+      try {
+        fbAdmin = new FirebaseAdmin(env.FIREBASE_SERVICE_ACCOUNT);
+        const usageCheck = await checkAndIncrementDailyUsage(fbAdmin, callerPlan.uid, callerPlan.dailyLimit, env);
+        if (!usageCheck.allowed) {
+          return new Response(JSON.stringify({ error: 'daily_limit_reached', limit: callerPlan.dailyLimit }), {
+            status: 429,
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+          });
+        }
+      } catch (e) {
+        console.warn("Firebase usage check failed:", e);
+      }
+    } else {
+      console.warn("FIREBASE_SERVICE_ACCOUNT not set. Skipping daily usage enforcement.");
     }
 
     const { messages, model, temperature, stream, response_format, mode, tools } = body;
@@ -283,7 +292,9 @@ export default withSentry((env) => {
 
     // Record non-identifying aggregate usage stat (errors are swallowed inside)
     const toolCategory = body.toolCategory || (mode === 'agent' ? 'agent' : 'chat');
-    env.ctx.waitUntil(recordUsageStat(fbAdmin, targetModel, toolCategory, env));
+    if (fbAdmin) {
+      env.ctx.waitUntil(recordUsageStat(fbAdmin, targetModel, toolCategory, env));
+    }
 
     Sentry.addBreadcrumb({ category: 'model', message: `Routing request for model ${targetModel}`, level: 'info' });
 
