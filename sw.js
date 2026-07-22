@@ -1,4 +1,4 @@
-const CACHE_NAME = 'toolshub-cache-v46';
+const CACHE_NAME = 'toolshub-cache-v47';
 const urlsToCache = [
   './',
   './index.html',
@@ -21,6 +21,12 @@ const urlsToCache = [
   './css/components/chatHistory.css',
   './css/components/bugReport.css',
   './css/components/advancedControls.css',
+  // === CSS EXCLUSIVE ===
+  './css/exclusive/exclusive-tokens.css',
+  './css/exclusive/exclusive-layout.css',
+  './css/exclusive/exclusive-home.css',
+  './css/exclusive/exclusive-chat.css',
+  './css/exclusive/exclusive-mastertool.css',
   // === JS CORE ===
   './js/core/app.js',
   './js/core/events.js',
@@ -70,7 +76,17 @@ const urlsToCache = [
   // === JS TOOLS EXTRA ===
   './js/tools/connectorsRegistry.js',
   // === JS AI EXTRA ===
-  './js/ai/agentToolBridge.js'
+  './js/ai/agentToolBridge.js',
+  // === JS EXCLUSIVE ===
+  './js/exclusive/state/exclusiveAccess.js',
+  './js/exclusive/core/exclusiveRouter.js',
+  './js/exclusive/ui/exclusiveShell.js',
+  './js/exclusive/ui/exclusiveHomeScreen.js',
+  './js/exclusive/ui/exclusiveChatEngine.js',
+  './js/exclusive/ui/modelPickerExclusive.js',
+  './js/exclusive/ai/modelDecisionEngine.js',
+  './js/exclusive/ai/masterTool.js',
+  './js/exclusive/ai/synthesizer.js'
 ];
 
 self.addEventListener('install', event => {

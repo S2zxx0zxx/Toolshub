@@ -8,7 +8,7 @@ import { ExclusiveAccess } from '../state/exclusiveAccess.js';
 import { ExclusiveHomeScreen } from './exclusiveHomeScreen.js';
 import { ExclusiveChatEngine } from './exclusiveChatEngine.js';
 import { Router } from '../../core/router.js';
-import { Toast } from '../..//ui/toast.js';
+import { Toast } from '../../ui/toast.js';
 
 export const ExclusiveShell = (() => {
 
