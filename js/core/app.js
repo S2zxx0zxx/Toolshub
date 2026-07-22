@@ -1000,7 +1000,6 @@ document.addEventListener('DOMContentLoaded', async () => {
   Settings.init();
   PersonaPicker.init();
   HomeScreen.init();
-  StatusScreen.init();
 
   async function renderUsageBlock() {
     const valueEls = document.querySelectorAll('.settings-usage-value');
@@ -1184,6 +1183,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   // Initialize Firebase dynamically to avoid network-blocking module crashes
   await initFirebase();
+  StatusScreen.init();
 
   function updateGreeting(user) {
     const greetingEl = document.getElementById('greetingText');
