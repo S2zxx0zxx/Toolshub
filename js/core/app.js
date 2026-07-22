@@ -988,27 +988,37 @@ document.addEventListener('DOMContentLoaded', async () => {
   PersonaPicker.init();
 
   async function renderUsageBlock() {
-    const valueEl = document.getElementById('settingsUsageValue');
-    const fillEl = document.getElementById('settingsUsageBarFill');
-    if (!valueEl || !fillEl) return;
+    const valueEls = document.querySelectorAll('.settings-usage-value');
+    const fillEls = document.querySelectorAll('.settings-usage-bar-fill');
+    if (!valueEls.length || !fillEls.length) return;
 
     const planId = LocalSettings.getCurrentPlan();
     const plan = PLANS.find(p => p.id === planId);
     const cap = plan ? plan.dailyMessageCap : 15;
 
     const usage = await CloudDB.getTodayUsage();
+    
+    // Also update tokens
+    const tokenEl = document.getElementById('settingsTokenValue');
+
     if (!usage) {
-      valueEl.textContent = '-- / --';
-      fillEl.style.width = '0%';
+      valueEls.forEach(el => el.textContent = '-- / --');
+      fillEls.forEach(el => el.style.width = '0%');
+      if (tokenEl) tokenEl.textContent = '0';
       return;
     }
 
+    if (tokenEl) {
+      tokenEl.textContent = usage.tokens.toLocaleString();
+    }
+
     if (cap === Infinity) {
-      valueEl.textContent = `${usage.count} / Unlimited`;
-      fillEl.style.width = '100%';
+      valueEls.forEach(el => el.textContent = `${usage.count} / Unlimited`);
+      fillEls.forEach(el => el.style.width = '100%');
     } else {
-      valueEl.textContent = `${usage.count} / ${cap}`;
-      fillEl.style.width = `${Math.min(100, (usage.count / cap) * 100)}%`;
+      valueEls.forEach(el => el.textContent = `${usage.count} / ${cap}`);
+      const pct = Math.min(100, Math.round((usage.count / cap) * 100));
+      fillEls.forEach(el => el.style.width = `${pct}%`);
     }
   }
 
