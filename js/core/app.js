@@ -1234,13 +1234,22 @@ document.addEventListener('DOMContentLoaded', async () => {
         const loader = document.getElementById('global-loader');
         if (loader) {
           loader.style.opacity = '0';
-          setTimeout(() => loader.remove(), 300);
+          setTimeout(() => loader.remove(), 200);
         }
 
         const ghLoader = document.getElementById('github-loader');
-        if (ghLoader) {
+        const ghBar = document.getElementById('gh-progress-bar');
+        if (ghLoader && ghBar) {
+          ghBar.style.animation = 'none';
+          ghBar.style.transition = 'transform 0.2s ease-out';
+          ghBar.style.transform = 'scaleX(1)';
+          setTimeout(() => {
+            ghLoader.style.opacity = '0';
+            setTimeout(() => ghLoader.remove(), 200);
+          }, 200);
+        } else if (ghLoader) {
           ghLoader.style.opacity = '0';
-          setTimeout(() => ghLoader.remove(), 300);
+          setTimeout(() => ghLoader.remove(), 200);
         }
 
         if (isReload && document.documentElement.hasAttribute('data-is-reload')) {
@@ -1283,13 +1292,22 @@ document.addEventListener('DOMContentLoaded', async () => {
         const loader = document.getElementById('global-loader');
         if (loader) {
           loader.style.opacity = '0';
-          setTimeout(() => loader.remove(), 300);
+          setTimeout(() => loader.remove(), 200);
         }
 
         const ghLoader = document.getElementById('github-loader');
-        if (ghLoader) {
+        const ghBar = document.getElementById('gh-progress-bar');
+        if (ghLoader && ghBar) {
+          ghBar.style.animation = 'none';
+          ghBar.style.transition = 'transform 0.2s ease-out';
+          ghBar.style.transform = 'scaleX(1)';
+          setTimeout(() => {
+            ghLoader.style.opacity = '0';
+            setTimeout(() => ghLoader.remove(), 200);
+          }, 200);
+        } else if (ghLoader) {
           ghLoader.style.opacity = '0';
-          setTimeout(() => ghLoader.remove(), 300);
+          setTimeout(() => ghLoader.remove(), 200);
         }
 
         if (isReload && document.documentElement.hasAttribute('data-is-reload')) {

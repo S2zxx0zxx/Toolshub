@@ -50,20 +50,20 @@
 
   <!-- GitHub Style Top Progress Bar (Only shows on reload) -->
   <div id="github-loader" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 3px; z-index: 9999999; background: transparent;">
-    <div style="width: 100%; height: 100%; background: var(--primary, #a855f7); transform-origin: left; animation: gh-progress 2s cubic-bezier(0.1, 0.8, 0.3, 1) forwards;"></div>
+    <div id="gh-progress-bar" style="width: 100%; height: 100%; background: var(--primary, #a855f7); transform-origin: left; transform: scaleX(0); animation: gh-progress 3s cubic-bezier(0.1, 0.8, 0.3, 1) forwards;"></div>
     <style>
       @keyframes gh-progress {
         0% { transform: scaleX(0); }
-        50% { transform: scaleX(0.6); }
-        99% { transform: scaleX(0.95); }
-        100% { transform: scaleX(1); }
+        10% { transform: scaleX(0.3); }
+        50% { transform: scaleX(0.7); }
+        100% { transform: scaleX(0.90); }
       }
       html[data-is-reload="true"] #github-loader { display: block; }
       html[data-is-reload="true"] #global-loader > div { display: none !important; }
     </style>
   </div>
 
-  <div id="global-loader" style="position: fixed; inset: 0; background: #050505; z-index: 999999; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: opacity 0.5s ease, visibility 0.5s ease; font-family: monospace, 'Courier New', Courier; overflow: hidden; perspective: 800px;">
+  <div id="global-loader" style="position: fixed; inset: 0; background: #050505; z-index: 999999; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: opacity 0.2s ease, visibility 0.2s ease; font-family: monospace, 'Courier New', Courier; overflow: hidden; perspective: 800px;">
     
     <!-- 3D Cyber Core Loader -->
     <div style="position: relative; width: 80px; height: 80px; margin-bottom: 50px; transform-style: preserve-3d; animation: cyber-spin 6s linear infinite;">
