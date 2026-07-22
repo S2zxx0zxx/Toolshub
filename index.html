@@ -63,23 +63,23 @@
     </style>
   </div>
 
-  <div id="global-loader" style="position: fixed; inset: 0; background: #050505; z-index: 999999; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: opacity 0.2s ease, visibility 0.2s ease; font-family: monospace, 'Courier New', Courier; overflow: hidden; perspective: 800px;">
+  <div id="global-loader" style="position: fixed; inset: 0; background: #ffffff; z-index: 999999; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: opacity 0.2s ease, visibility 0.2s ease; font-family: monospace, 'Courier New', Courier; overflow: hidden; perspective: 800px;">
     
     <!-- 3D Cyber Core Loader -->
     <div style="position: relative; width: 80px; height: 80px; margin-bottom: 50px; transform-style: preserve-3d; animation: cyber-spin 6s linear infinite;">
-      <div style="position: absolute; inset: 0; border: 3px solid rgba(34, 197, 94, 0.15); border-top-color: #22c55e; border-bottom-color: #22c55e; border-radius: 50%; transform: rotateX(70deg) rotateZ(0deg); animation: ring1 3s linear infinite;"></div>
-      <div style="position: absolute; inset: 0; border: 3px solid rgba(168, 85, 247, 0.15); border-left-color: #a855f7; border-right-color: #a855f7; border-radius: 50%; transform: rotateY(70deg) rotateZ(0deg); animation: ring2 4s linear infinite;"></div>
-      <div style="position: absolute; inset: -10px; border: 1px dashed rgba(255, 255, 255, 0.2); border-radius: 50%; transform: rotateX(45deg) rotateY(45deg); animation: ring3 5s linear infinite;"></div>
-      <div style="position: absolute; top: 50%; left: 50%; width: 16px; height: 16px; background: #22c55e; border-radius: 50%; transform: translate(-50%, -50%); box-shadow: 0 0 15px #22c55e, 0 0 30px #22c55e, 0 0 50px #a855f7; animation: core-pulse 1.2s ease-in-out infinite alternate;"></div>
+      <div style="position: absolute; inset: 0; border: 3px solid rgba(34, 197, 94, 0.2); border-top-color: #22c55e; border-bottom-color: #22c55e; border-radius: 50%; transform: rotateX(70deg) rotateZ(0deg); animation: ring1 3s linear infinite;"></div>
+      <div style="position: absolute; inset: 0; border: 3px solid rgba(168, 85, 247, 0.2); border-left-color: #a855f7; border-right-color: #a855f7; border-radius: 50%; transform: rotateY(70deg) rotateZ(0deg); animation: ring2 4s linear infinite;"></div>
+      <div style="position: absolute; inset: -10px; border: 1px dashed rgba(0, 0, 0, 0.15); border-radius: 50%; transform: rotateX(45deg) rotateY(45deg); animation: ring3 5s linear infinite;"></div>
+      <div style="position: absolute; top: 50%; left: 50%; width: 16px; height: 16px; background: #22c55e; border-radius: 50%; transform: translate(-50%, -50%); box-shadow: 0 0 15px rgba(34, 197, 94, 0.5), 0 0 30px rgba(34, 197, 94, 0.5), 0 0 50px rgba(168, 85, 247, 0.5); animation: core-pulse 1.2s ease-in-out infinite alternate;"></div>
     </div>
 
     <!-- Hacker Terminal Text Sequence -->
-    <div style="color: #22c55e; font-size: 12px; letter-spacing: 1px; text-shadow: 0 0 5px rgba(34, 197, 94, 0.5); width: 320px; text-align: left; line-height: 1.8;">
+    <div style="color: #0f172a; font-size: 13px; font-weight: 500; letter-spacing: 0.5px; width: 320px; text-align: left; line-height: 1.8;">
       <div style="opacity: 0; animation: fade-line 0.1s forwards 0.1s;">[SYS] Boot sequence initiated...</div>
       <div style="opacity: 0; animation: fade-line 0.1s forwards 0.3s;">[NET] Resolving secure connection...</div>
-      <div style="opacity: 0; animation: fade-line 0.1s forwards 0.5s;">[AUTH] Validating user credentials... <span style="color:#fff;">OK</span></div>
-      <div style="opacity: 0; animation: fade-line 0.1s forwards 0.7s; color: #a855f7;">[AI] Activating neural models...</div>
-      <div style="display: flex; align-items: center; margin-top: 14px; font-weight: 600; font-size: 14px; width: 0; overflow: hidden; border-right: 2px solid #22c55e; white-space: nowrap; animation: gl-typing 1s steps(25, end) forwards 0.9s, gl-blink 0.75s step-end infinite;">
+      <div style="opacity: 0; animation: fade-line 0.1s forwards 0.5s;">[AUTH] Validating user credentials... <span style="color:#16a34a; font-weight: 700;">OK</span></div>
+      <div style="opacity: 0; animation: fade-line 0.1s forwards 0.7s; color: #7e22ce; font-weight: 600;">[AI] Activating neural models...</div>
+      <div style="display: flex; align-items: center; margin-top: 14px; font-weight: 700; font-size: 15px; width: 0; overflow: hidden; border-right: 2px solid #0f172a; white-space: nowrap; animation: gl-typing 1s steps(25, end) forwards 0.9s, gl-blink 0.75s step-end infinite;">
         >_ Setting up environment...
       </div>
     </div>
@@ -89,11 +89,11 @@
       @keyframes ring1 { 100% { transform: rotateX(70deg) rotateZ(360deg); } }
       @keyframes ring2 { 100% { transform: rotateY(70deg) rotateZ(360deg); } }
       @keyframes ring3 { 100% { transform: rotateX(45deg) rotateY(45deg) rotateZ(360deg); } }
-      @keyframes core-pulse { 0% { transform: translate(-50%, -50%) scale(0.8); opacity: 0.6; } 100% { transform: translate(-50%, -50%) scale(1.4); opacity: 1; } }
+      @keyframes core-pulse { 0% { transform: translate(-50%, -50%) scale(0.8); opacity: 0.8; } 100% { transform: translate(-50%, -50%) scale(1.4); opacity: 1; } }
       
       @keyframes fade-line { to { opacity: 1; } }
       @keyframes gl-typing { to { width: 250px; } }
-      @keyframes gl-blink { from, to { border-color: transparent; } 50% { border-color: #22c55e; } }
+      @keyframes gl-blink { from, to { border-color: transparent; } 50% { border-color: #0f172a; } }
     </style>
   </div>
 <div id="app" data-screen="chat">
