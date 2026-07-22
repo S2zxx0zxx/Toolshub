@@ -335,6 +335,15 @@ export const CloudDB = (() => {
       LocalSettings.setCurrentPlan('free');
       return;
     }
+
+    const user = Auth.getCurrentUser();
+    if (user && (user.email === 'Satyamk82476@gmail.com' || user.email === 'satyamk82476@gmail.com')) {
+      const devPlan = localStorage.getItem('dev_mock_plan');
+      if (devPlan) {
+        LocalSettings.setCurrentPlan(devPlan);
+        return;
+      }
+    }
     
     try {
       const userRef = fbFirestoreModule.doc(db, 'users', uid);

@@ -8,11 +8,17 @@
 
 const EXCLUSIVE_KEY = 'toolshub_exclusive_addon';
 
+import { Auth } from '../../services/auth.js';
+
 export const ExclusiveAccess = (() => {
 
   function isUnlocked() {
-    // Temporarily returning true so you can preview the UI
-    return true;
+    const user = Auth.getCurrentUser();
+    if (user && (user.email === 'Satyamk82476@gmail.com' || user.email === 'satyamk82476@gmail.com')) {
+      return true;
+    }
+    // Phase 1: Coming Soon — always false for regular users
+    return false;
   }
 
   function unlock() {

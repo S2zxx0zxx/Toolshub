@@ -235,6 +235,17 @@ export const ChangePlanModal = (() => {
       confirmBtn.textContent = 'Processing...';
     }
 
+    if (currentUser.email === 'Satyamk82476@gmail.com' || currentUser.email === 'satyamk82476@gmail.com') {
+      localStorage.setItem('dev_mock_plan', planId);
+      import('../../services/localSettings.js').then(module => {
+        module.LocalSettings.setCurrentPlan(planId);
+        window.dispatchEvent(new CustomEvent('plan-changed'));
+        if (typeof Toast !== 'undefined') Toast.show(`Developer Access: Plan updated to ${planId} for testing.`);
+        close();
+      });
+      return;
+    }
+
     try {
       // 2. Get the user's Firebase ID token
       const idToken = await currentUser.getIdToken();
