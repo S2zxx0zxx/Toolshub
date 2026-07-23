@@ -271,7 +271,7 @@
 }
 
 .home-cap-cell {
-  background: var(--bg-surface);
+  background: #1E1E22; /* Match image cards perfectly */
   border: none;
   box-shadow: 0 4px 24px rgba(0,0,0,0.55), 0 1px 6px rgba(0,0,0,0.35);
   border-radius: var(--r-lg);
@@ -316,7 +316,7 @@
   padding: 0;
   overflow: hidden;
   aspect-ratio: 2 / 1;
-  background: #191919;
+  background: #1E1E22; /* Match PNG background perfectly */
   border-radius: var(--r-lg);
   border: none;
   box-shadow: 0 8px 40px rgba(0,0,0,0.7), 0 2px 12px rgba(0,0,0,0.5);
@@ -346,7 +346,7 @@
 }
 
 .home-feature-card {
-  background: #121212; /* Matches the dark PNG asset seamlessly */
+  background: #1E1E22; /* Matches the dark PNG asset seamlessly */
   border: none;
   box-shadow: 0 8px 40px rgba(0,0,0,0.6), 0 2px 12px rgba(0,0,0,0.4);
   border-radius: var(--r-xl);
@@ -445,22 +445,21 @@
   margin-bottom: calc(-1 * var(--sp-5)); 
   height: auto;
   min-height: 0;
-  background: transparent;
+  background: #1E1E22;
   border-radius: 0;
   overflow: hidden; 
   clip-path: none;
   border: none;
+  aspect-ratio: 16 / 9; /* Creates the crop box naturally */
 }
 
 .home-feature-mini-img {
   display: block;
   width: 100%;
-  height: auto;
-  aspect-ratio: 1536 / 1024;
-  object-fit: fill; 
+  height: 100%;
+  object-fit: cover; /* Perfectly crops without distortion, just like capability cards */
+  object-position: top center; /* Aligns to top so we don't crop top UI elements */
   margin: 0;
-  margin-top: -10%; /* Crop the baked-in top padding */
-  margin-bottom: -10%; /* Crop the baked-in bottom padding */
   transform: scale(1.01);
 }
 
