@@ -2,6 +2,7 @@ import { LocalSettings } from '../services/localSettings.js';
 import { PERSONAS } from '../config/personas.js';
 import { ToolSelector } from '../tools/registry.js';
 import { Toast } from './toast.js';
+import { OverlayManager } from '../services/overlayManager.js';
 
 export const PersonaPicker = (() => {
   let modalOverlay = null;
@@ -149,11 +150,7 @@ export const PersonaPicker = (() => {
     const currentPersona = LocalSettings ? LocalSettings.getPersona() : null;
     updateActiveCard(currentPersona || 'general');
     
-    modalOverlay.style.display = 'flex';
-    // Small timeout for CSS transition
-    setTimeout(() => {
-      modalOverlay.classList.add('is-open');
-    }, 10);
+    OverlayManager.open(modalOverlay);
   }
 
   function close() {
@@ -163,14 +160,7 @@ export const PersonaPicker = (() => {
       LocalSettings.setPersona('general');
     }
 
-    modalOverlay.classList.remove('is-open');
-    if (_closeTimer) clearTimeout(_closeTimer);
-    _closeTimer = setTimeout(() => {
-      if (!modalOverlay.classList.contains('is-open')) {
-        modalOverlay.style.display = 'none';
-      }
-      _closeTimer = null;
-    }, 220); // match var(--dur-base)
+    OverlayManager.close(modalOverlay);
   }
 
   return { init, open, close };

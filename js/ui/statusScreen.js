@@ -62,14 +62,10 @@ export const StatusScreen = (() => {
         
         // Visual backfill for empty past days to simulate history
         if (!dState) {
-          const seed = d.charCodeAt(d.length - 1) + d.charCodeAt(d.length - 2) + model.id.length;
-          const num = seed % 100;
-          if (num < 3) dState = 'outage'; // ~3% red
-          else if (num < 15) dState = 'degraded'; // ~12% yellow
-          else dState = 'operational'; // ~85% green
+          dState = 'nodata'; // Do not fabricate synthetic data (P2-8)
         }
 
-        dataCount++;
+        if (dState !== 'nodata') dataCount++;
         if (dState === 'operational') uptimeCount++;
         
         return `<div class="status-bar bar-${dState}" title="${d}: ${dState}"></div>`;

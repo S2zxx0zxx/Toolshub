@@ -971,11 +971,7 @@ const PWA = (() => {
         return;
       }
       
-      document.getElementById('installSheetOverlay').style.display = 'flex';
-      // tiny delay to allow display:flex to apply before adding is-open
-      setTimeout(() => {
-        document.querySelector('#installSheetOverlay .sheet')?.classList.add('is-open');
-      }, 10);
+      OverlayManager.open(document.getElementById('installSheetOverlay'));
     });
 
     document.getElementById('installSheetCloseBtn')?.addEventListener('click', closeInstallSheet);
@@ -998,11 +994,7 @@ const PWA = (() => {
   }
 
   function closeInstallSheet() {
-    const sheet = document.querySelector('#installSheetOverlay .sheet');
-    if (sheet) sheet.classList.remove('is-open');
-    setTimeout(() => {
-      document.getElementById('installSheetOverlay').style.display = 'none';
-    }, 300); // match animation duration
+    OverlayManager.close(document.getElementById('installSheetOverlay'));
   }
 
   return { init };

@@ -148,7 +148,7 @@
 .bar-operational { background: var(--success); }
 .bar-degraded { background: var(--warning); }
 .bar-outage { background: var(--danger); }
-.bar-nodata { background: var(--border-med); }
+.bar-nodata { background: var(--border-subtle); opacity: 0.5; }
 
 .service-uptime-footer {
   display: flex;
