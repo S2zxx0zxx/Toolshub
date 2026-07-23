@@ -810,3 +810,250 @@
     font-size: 12px !important;
   }
 }
+
+/* ============================================================
+   VISUAL UPGRADE — SHARED UTILITY CLASSES (additive only)
+   Reference-inspired depth: corner glows, floating pills,
+   ghost icons, animated logo card — all in ToolsHub dark/gold.
+   Nothing above this line was modified.
+   ============================================================ */
+
+/* ---------- SHARED: CORNER GLOW ---------- */
+.home-glow-corner {
+  position: absolute;
+  width: 280px;
+  height: 220px;
+  background: radial-gradient(ellipse at center, var(--accent-soft) 0%, transparent 70%);
+  filter: blur(70px);
+  pointer-events: none;
+  z-index: 0;
+}
+.home-glow-corner--top-right  { top: -40px;  right: -40px;  }
+.home-glow-corner--top-left   { top: -40px;  left: -40px;   }
+.home-glow-corner--bottom-left { bottom: -30px; left: -30px; }
+
+/* ---------- SHARED: FLOATING PILL ---------- */
+.home-float-pill {
+  position: absolute;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  padding: var(--sp-1) var(--sp-3);
+  border-radius: var(--r-full);
+  background: var(--bg-surface-2);
+  border: 1px solid var(--border-med);
+  box-shadow: var(--sh-md);
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  color: var(--text-secondary);
+  pointer-events: none;
+  white-space: nowrap;
+  z-index: 2;
+}
+
+/* ---------- SHARED: GHOST ICON ---------- */
+.home-ghost-icon {
+  position: absolute;
+  opacity: 0.06;
+  pointer-events: none;
+  color: var(--text-primary);
+  z-index: 0;
+}
+.home-ghost-icon svg { width: 100%; height: 100%; }
+
+/* ---------- SHARED: SLOW FLOAT ANIMATION ---------- */
+@keyframes home-float {
+  0%, 100% { transform: translateY(0px) rotate(-2deg); }
+  50%       { transform: translateY(-10px) rotate(2deg); }
+}
+.home-float-anim {
+  animation: home-float 7s ease-in-out infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .home-float-anim { animation: none !important; transform: rotate(-2deg) !important; }
+}
+
+/* ---------- HERO: SECOND GLOW (top-right corner) ---------- */
+.home-hero-glow-2 {
+  width: 340px;
+  height: 280px;
+  opacity: 0.7;
+}
+
+/* ---------- HERO: FLOATING LOGO CARD ---------- */
+.home-hero-logo-card {
+  position: absolute;
+  right: -10px;
+  top: 50%;
+  transform: translateY(-50%) rotate(-2deg);
+  width: 72px;
+  height: 72px;
+  border-radius: var(--r-lg);
+  background: var(--bg-surface);
+  border: 1px solid var(--border-med);
+  box-shadow: var(--sh-xl);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  z-index: 2;
+  pointer-events: none;
+  /* float animation overrides the static transform */
+}
+.home-hero-logo-card img {
+  width: 52px;
+  height: 52px;
+  object-fit: contain;
+  border-radius: 10px;
+}
+/* Hide on narrow viewports — must not overlap headline */
+@media (max-width: 640px) {
+  .home-hero-logo-card { display: none; }
+}
+/* On medium screens where card could sit beside text, ensure hero has room */
+@media (min-width: 641px) {
+  .home-hero {
+    padding-right: 96px; /* makes room for the 72px card + gap */
+  }
+}
+
+/* ---------- CAPABILITY GRID: CAP-CELL GLOW ---------- */
+.home-cap-cell {
+  position: relative;
+  overflow: hidden;
+}
+.home-cap-cell-glow {
+  width: 180px;
+  height: 140px;
+  opacity: 0.4;
+  transition: opacity var(--dur-slow) var(--ease);
+}
+.home-cap-cell:hover .home-cap-cell-glow {
+  opacity: 0.75;
+}
+/* Ensure existing cap-cell content sits above glow */
+.home-cap-icon,
+.home-cap-title,
+.home-cap-sub {
+  position: relative;
+  z-index: 1;
+}
+
+/* ---------- FEATURE CARDS: MINI AREA POSITIONING BASE ---------- */
+.home-feature-mini {
+  position: relative;
+  overflow: visible; /* pills may float slightly above the box */
+}
+
+/* ---------- FEATURE CARD: SOURCE PILLS (Deep Research) ---------- */
+.home-source-pill {
+  position: absolute;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-1);
+  padding: 3px var(--sp-2);
+  border-radius: var(--r-full);
+  background: var(--bg-surface-3);
+  border: 1px solid var(--border-subtle);
+  box-shadow: var(--sh-sm);
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text-muted);
+  pointer-events: none;
+  white-space: nowrap;
+  z-index: 2;
+}
+.home-source-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: var(--r-full);
+  background: var(--accent);
+  flex-shrink: 0;
+  opacity: 0.8;
+}
+
+/* ---------- FEATURE CARD: NAME SPEECH-BUBBLE PILLS (Team Collab) ---------- */
+.home-name-pill {
+  position: absolute;
+  display: inline-flex;
+  align-items: center;
+  padding: 4px var(--sp-2);
+  border-radius: var(--r-sm);
+  background: var(--bg-surface-3);
+  border: 1px solid var(--border-subtle);
+  box-shadow: var(--sh-md);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  pointer-events: none;
+  white-space: nowrap;
+  z-index: 2;
+}
+/* Speech-bubble triangle pointing down */
+.home-name-pill::after {
+  content: '';
+  position: absolute;
+  bottom: -6px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-top: 6px solid var(--bg-surface-3);
+}
+
+/* ---------- COMPARE: RIGHT SIDE WRAPPER + GLOW ---------- */
+.home-compare-right-wrap {
+  position: relative;
+}
+
+/* ---------- SOCIAL PROOF: TRUST BADGE ---------- */
+.home-proof-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  padding: var(--sp-1) var(--sp-3);
+  border-radius: var(--r-full);
+  background: var(--accent-soft);
+  border: 1px solid var(--border-med);
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  color: var(--accent);
+  margin-bottom: var(--sp-4);
+  letter-spacing: 0.02em;
+}
+.home-proof-badge-stars {
+  color: var(--accent);
+  letter-spacing: 1px;
+  font-size: 11px;
+}
+
+/* ---------- CTA BAND: GLOW LAYERS ---------- */
+.home-cta-band {
+  position: relative;
+  overflow: hidden;
+}
+/* Ensure CTA band text content sits above glows */
+.home-cta-band-title,
+.home-cta-band-sub,
+.home-cta-band .btn {
+  position: relative;
+  z-index: 1;
+}
+
+/* ---------- MOBILE SAFETY: clamp pill positions ---------- */
+@media (max-width: 640px) {
+  .home-source-pill,
+  .home-name-pill {
+    font-size: 10px;
+  }
+  /* Source pills: keep within card bounds on mobile */
+  .home-source-pill[style*="right:-8px"] {
+    right: 0 !important;
+  }
+  /* Name pills: slightly tighter on mobile */
+  .home-name-pill {
+    padding: 3px var(--sp-1);
+  }
+}

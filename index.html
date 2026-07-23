@@ -213,6 +213,8 @@
         <!-- === SECTION 1: HERO === -->
         <section class="home-hero">
           <div class="home-hero-blob"></div>
+          <!-- ADDITIVE: second directional glow from top-right corner -->
+          <div class="home-hero-glow-2 home-glow-corner home-glow-corner--top-right" aria-hidden="true"></div>
           <div class="home-hero-inner">
             <div class="home-hero-badge">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2 L14.5 9.5 L22 12 L14.5 14.5 L12 22 L9.5 14.5 L2 12 L9.5 9.5 Z"/></svg>
@@ -222,12 +224,16 @@
               Your entire toolkit,<br><em>finally in one place.</em>
             </h1>
             <p class="home-hero-sub">
-              Write, research, calculate, create. ToolsHub brings together everything you reach for &mdash; smarter, faster, together.
+              Write, research, Build, create. ToolsHub brings together everything you reach for &mdash; smarter, faster, together.
             </p>
             <div class="home-hero-ctas">
               <button class="btn btn-primary" data-home-cta="chat">Open ToolsHub</button>
               <button class="btn btn-ghost" id="homeGhostCta">See what&rsquo;s inside &darr;</button>
             </div>
+          </div>
+          <!-- ADDITIVE: floating animated logo card — hidden on mobile (<640px) via CSS -->
+          <div class="home-hero-logo-card home-float-anim" aria-hidden="true">
+            <img src="assets/icon-master.png" alt="" width="52" height="52" loading="eager" decoding="async">
           </div>
         </section>
 
@@ -260,31 +266,43 @@
           </div>
           <div class="home-capability-grid">
             <div class="home-cap-cell">
+              <!-- ADDITIVE: corner glow -->
+              <div class="home-cap-cell-glow home-glow-corner home-glow-corner--bottom-left" aria-hidden="true"></div>
               <div class="home-cap-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg></div>
               <div class="home-cap-title">Fast Responses</div>
               <div class="home-cap-sub">Get instant answers without waiting. Optimised for speed.</div>
             </div>
             <div class="home-cap-cell">
+              <!-- ADDITIVE: corner glow -->
+              <div class="home-cap-cell-glow home-glow-corner home-glow-corner--bottom-left" aria-hidden="true"></div>
               <div class="home-cap-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 00-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0020 4.77 5.07 5.07 0 0019.91 1S18.73.65 16 2.48a13.38 13.38 0 00-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 005 4.77a5.44 5.44 0 00-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 009 18.13V22"/></svg></div>
               <div class="home-cap-title">Code &amp; Logic</div>
               <div class="home-cap-sub">Debug, explain, and write code across any language or framework.</div>
             </div>
             <div class="home-cap-cell">
+              <!-- ADDITIVE: corner glow -->
+              <div class="home-cap-cell-glow home-glow-corner home-glow-corner--bottom-left" aria-hidden="true"></div>
               <div class="home-cap-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></div>
               <div class="home-cap-title">Creative Writing</div>
               <div class="home-cap-sub">Captions, blogs, scripts, emails &mdash; original copy on demand.</div>
             </div>
             <div class="home-cap-cell">
+              <!-- ADDITIVE: corner glow -->
+              <div class="home-cap-cell-glow home-glow-corner home-glow-corner--bottom-left" aria-hidden="true"></div>
               <div class="home-cap-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></div>
               <div class="home-cap-title">Deep Research</div>
               <div class="home-cap-sub">Multi-step web research condensed into a single clear answer.</div>
             </div>
             <div class="home-cap-cell">
+              <!-- ADDITIVE: corner glow -->
+              <div class="home-cap-cell-glow home-glow-corner home-glow-corner--bottom-left" aria-hidden="true"></div>
               <div class="home-cap-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2 L14.5 9.5 L22 12 L14.5 14.5 L12 22 L9.5 14.5 L2 12 L9.5 9.5 Z"/></svg></div>
               <div class="home-cap-title">Smart Reasoning</div>
               <div class="home-cap-sub">Complex problems broken down into clear, step-by-step thinking.</div>
             </div>
             <div class="home-cap-cell">
+              <!-- ADDITIVE: corner glow -->
+              <div class="home-cap-cell-glow home-glow-corner home-glow-corner--bottom-left" aria-hidden="true"></div>
               <div class="home-cap-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div>
               <div class="home-cap-title">Image Understanding</div>
               <div class="home-cap-sub">Describe, analyse, or extract text from any image you share.</div>
@@ -311,6 +329,10 @@
                 <span class="home-mini-chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 010 20 15.3 15.3 0 010-20z"/></svg>Web</span>
                 <span class="home-mini-chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/></svg>Career</span>
                 <span class="home-mini-chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V9z"/><polyline points="13 2 13 9 20 9"/></svg>Files</span>
+                <!-- ADDITIVE: ghost file icon — same SVG as "Files" chip scaled 4x, low opacity background depth -->
+                <div class="home-ghost-icon" style="bottom:-8px;right:-8px;width:80px;height:80px;" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M13 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V9z"/><polyline points="13 2 13 9 20 9"/></svg>
+                </div>
               </div>
             </div>
 
@@ -321,6 +343,11 @@
               </div>
               <p class="home-feature-desc">Compress images, merge or split PDFs, convert formats. File tools run instantly, right in your browser.</p>
               <div class="home-feature-mini" style="flex-direction: column; gap: var(--sp-2);">
+                <!-- ADDITIVE: floating upload pill — echoes reference's "Upload file" pill technique -->
+                <div class="home-float-pill" style="top:-16px;right:12px;transform:rotate(3deg);" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:11px;height:11px;"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/></svg>
+                  PDF
+                </div>
                 <div class="home-mini-bar"><div class="home-mini-bar-fill" style="width: 80%;"></div></div>
                 <div style="font-size: 11px; color: var(--text-muted);">PDF · Image · Converter &mdash; processing locally</div>
               </div>
@@ -334,6 +361,8 @@
               </div>
               <p class="home-feature-desc">Let ToolsHub plan and execute multi-step tasks on your behalf &mdash; automatically selecting the right tools for the job.</p>
               <div class="home-feature-mini">
+                <!-- ADDITIVE: subtle corner glow — gives this "automation" card a sense of active energy -->
+                <div class="home-glow-corner home-glow-corner--bottom-left" style="width:160px;height:120px;" aria-hidden="true"></div>
                 <div class="home-mini-toggle-row">
                   <span>Agent Mode</span>
                   <div class="home-mini-toggle"></div>
@@ -349,6 +378,10 @@
               </div>
               <p class="home-feature-desc">Runs multiple searches, synthesises results, and delivers a sourced answer. No tab-switching, no copy-paste grind.</p>
               <div class="home-feature-mini">
+                <!-- ADDITIVE: floating source-domain pills — "search sources" rather than "team members", repurposed from reference's speech-bubble pill technique -->
+                <div class="home-source-pill" style="top:-14px;right:8px;transform:rotate(-4deg);" aria-hidden="true"><span class="home-source-dot"></span>arxiv.org</div>
+                <div class="home-source-pill" style="bottom:-12px;right:-4px;transform:rotate(3deg);" aria-hidden="true"><span class="home-source-dot"></span>wikipedia</div>
+                <div class="home-source-pill" style="top:-14px;left:8px;transform:rotate(2deg);" aria-hidden="true"><span class="home-source-dot"></span>reuters</div>
                 <div class="home-mini-globe">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 010 20 15.3 15.3 0 010-20z"/></svg>
                   Searching &amp; synthesising across the web&hellip;
@@ -364,6 +397,9 @@
               </div>
               <p class="home-feature-desc">Share workspaces, co-create content, and keep your whole team on the same page &mdash; arriving later this year.</p>
               <div class="home-feature-mini" style="opacity: 0.5;">
+                <!-- ADDITIVE: initials speech-bubble pills — same generic-initials convention as social-proof avatars. Inside the same 0.5 opacity wrapper so they don't look more "live" than the feature. -->
+                <div class="home-name-pill" style="top:-24px;left:12px;transform:rotate(-3deg);" aria-hidden="true">P. S.</div>
+                <div class="home-name-pill" style="top:-24px;right:12px;transform:rotate(2deg);" aria-hidden="true">A. K.</div>
                 <span class="home-mini-chip">Shared workspace</span>
                 <span class="home-mini-chip">Live edits</span>
               </div>
@@ -376,6 +412,10 @@
               </div>
               <p class="home-feature-desc">Localised content formats, regional prompts, and a product shaped around how professionals in these markets actually work.</p>
               <div class="home-feature-mini">
+                <!-- ADDITIVE: ghost globe — atmospheric background depth, same technique as Card 1 ghost icon -->
+                <div class="home-ghost-icon" style="bottom:-16px;right:-16px;width:100px;height:100px;" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 010 20 15.3 15.3 0 010-20z"/></svg>
+                </div>
                 <div class="home-mini-flags">🇮🇳 🇦🇪 🇬🇧</div>
               </div>
             </div>
@@ -452,14 +492,18 @@
               </div>
             </div>
             <div class="home-compare-vs">vs</div>
-            <div class="home-compare-right">
-              <h3 class="home-compare-right-title">Everything,<br>one workspace.</h3>
-              <ul class="home-compare-right-list">
-                <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>All tools, one login</li>
-                <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Chat &amp; tool history saved</li>
-                <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Works offline as a PWA</li>
-              </ul>
-              <button class="btn btn-primary" data-home-cta="plans">See Plans</button>
+            <!-- ADDITIVE: wrapper for position:relative; glow makes the "right answer" side visually win -->
+            <div class="home-compare-right-wrap">
+              <div class="home-glow-corner home-glow-corner--top-left" aria-hidden="true"></div>
+              <div class="home-compare-right">
+                <h3 class="home-compare-right-title">Everything,<br>one workspace.</h3>
+                <ul class="home-compare-right-list">
+                  <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>All tools, one login</li>
+                  <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Chat &amp; tool history saved</li>
+                  <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Works offline as a PWA</li>
+                </ul>
+                <button class="btn btn-primary" data-home-cta="plans">See Plans</button>
+              </div>
             </div>
           </div>
         </section>
@@ -467,6 +511,11 @@
         <!-- === SECTION 7: SOCIAL PROOF === -->
         <section class="home-section reveal">
           <div class="home-proof">
+            <!-- ADDITIVE: trust badge — truthful PWA capability. [COPY REVIEW] Update wording before launch if preferred. -->
+            <div class="home-proof-badge">
+              <span class="home-proof-badge-stars">★★★★★</span>
+              PWA &middot; Works Offline
+            </div>
             <div class="home-proof-avatars">
               <!-- Generic initials avatars — replace with real user stats before launch -->
               <div class="home-proof-avatar">R</div>
@@ -486,6 +535,9 @@
         <!-- === SECTION 8: FINAL CTA BAND === -->
         <section class="home-section reveal">
           <div class="home-cta-band">
+            <!-- ADDITIVE: corner glows — same signature as hero + compare-right, creating deliberate page rhythm -->
+            <div class="home-glow-corner home-glow-corner--top-right" aria-hidden="true"></div>
+            <div class="home-glow-corner home-glow-corner--bottom-left" style="width:200px;height:160px;" aria-hidden="true"></div>
             <h2 class="home-cta-band-title">Ready to work smarter?</h2>
             <p class="home-cta-band-sub">Everything you need is already here &mdash; just hit Start.</p>
             <button class="btn btn-primary" style="min-width: 200px;" data-home-cta="chat">Start Using ToolsHub</button>
