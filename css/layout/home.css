@@ -310,16 +310,14 @@
 }
 
 /* ---------- Capability cell — full image asset (icon+title+description baked in) ---------- */
-/* Outer card: border-radius var(--r-lg) = 20px, padding var(--sp-5) = 20px.
-   Concentric-corners formula: inner-radius = outer-radius − padding = 20 − 20 = 0px.
-   By inheriting the 20px padding and setting background to surface-2 (#1e1e22), 
-   the image's own dark margin blends seamlessly into the card's padding. */
 .home-cap-cell--img {
+  padding: 0;
+  overflow: hidden;
   aspect-ratio: 2 / 1;
   background: var(--bg-surface-2);
   border-radius: var(--r-lg);
   border: 1px solid var(--border-subtle);
-  display: flex;
+  display: block;
   position: relative;
 }
 
@@ -330,13 +328,15 @@
 }
 
 .home-cap-cell-img {
+  display: block;
   width: 100%;
   height: 100%;
   object-fit: cover;
   object-position: center center;
-  display: block;
-  border-radius: 0px; /* inner-radius = 20px - 20px = 0px */
-  border: none; /* ensure no double border */
+  margin: 0;
+  /* The asset has a baked-in ~8px dark margin. Scale it by ~3.5% to bleed 
+     that margin out past the container's edge, completely eliminating the gap. */
+  scale: 1.035;
 }
 
 /* ---------- SECTION 4: FEATURE BENTO ---------- */
@@ -446,11 +446,14 @@
 }
 
 .home-feature-mini-img {
+  display: block;
   width: 100%;
   height: 100%;
-  object-fit: cover;               /* safety net — assets already match ratio exactly */
+  object-fit: cover;
   object-position: center;
-  display: block;
+  margin: 0;
+  /* Bleed out the asset's baked-in dark margin so it fills the box edge-to-edge */
+  scale: 1.035;
 }
 
 .home-mini-chip {
