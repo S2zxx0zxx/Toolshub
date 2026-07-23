@@ -278,6 +278,7 @@
   display: flex;
   flex-direction: column;
   gap: var(--sp-2);
+  overflow: hidden;
   transition: transform var(--dur-base) var(--ease), box-shadow var(--dur-base) var(--ease), border-color var(--dur-base) var(--ease);
 }
 .home-cap-cell:hover {
@@ -335,7 +336,7 @@
   height: 100%; /* Fill the 2:1 container */
   object-fit: cover;
   margin: 0;
-  transform: scale(1.01); /* Eliminates 1px white sub-pixel gaps in Light Mode without cropping content */
+  /* No scale needed — padding:0 + overflow:hidden on container clips cleanly */
 }
 
 /* ---------- SECTION 4: FEATURE BENTO ---------- */
@@ -354,7 +355,7 @@
   flex-direction: column;
   gap: var(--sp-3);
   transition: transform var(--dur-base) var(--ease), box-shadow var(--dur-base) var(--ease);
-  overflow: hidden;
+  overflow: hidden; /* This clips everything — inner image doesn't need its own radius */
 }
 .home-feature-card:hover {
   transform: translateY(-4px);
@@ -421,43 +422,36 @@
 }
 
 /* ---------- Feature card inner visual — replaced with real image asset ---------- */
-/* Additive modifier: does not touch the base rule above.
-   Cards without a confirmed image still fall through to the base rule.
-   Background MUST stay --bg-surface-2: the 4 pre-edited PNGs have their
-   corner-fill set to the same #1e1e22 hex, so any other color produces a
-   visible seam ring around the image's own rounded corners. */
-/* Outer card: border-radius var(--r-xl) = 24px, padding var(--sp-5) = 20px.
-   Concentric-corners formula: inner-radius = outer-radius − padding = 24 − 20 = 4px.
-   This makes the image's own corner curve geometrically concentric with the card's
-   outer curve — single smooth arc, no visible gap or double-border. */
+/* BLEED-TO-EDGE TECHNIQUE:
+   Negative margins pull the image container flush against ALL card edges.
+   The outer card's overflow:hidden + border-radius:24px acts as the single
+   clipping mask — perfectly concentric, zero fake inner border, zero seam.
+   No inner border-radius needed. */
 .home-feature-mini--img {
   margin-top: auto;
-  padding: 0;                      /* image fills edge-to-edge, no inner padding */
-  display: block;                  /* override base flex layout — img doesn't need it */
-  width: 100%;
+  padding: 0;
+  display: block;
+  width: calc(100% + var(--sp-5) * 2); /* bleed left + right past card padding */
+  margin-left: calc(-1 * var(--sp-5)); /* pull flush to left card edge */
+  margin-right: calc(-1 * var(--sp-5));
+  margin-bottom: calc(-1 * var(--sp-5)); /* pull flush to bottom card edge */
   height: auto;
-  min-height: 0;                   /* cancel the base rule's 56px floor */
-  background: #191919 !important;  /* Exact hex matching PNG asset corner-fill — changed from #1e1e22 to match new --bg-surface-2 token */
-  border-radius: var(--r-md);      /* Smooth curve instead of sharp 4px */
-  overflow: hidden;                /* clip image cleanly to this radius */
-  clip-path: inset(0 round var(--r-md)); /* Bulletproof smooth curve clipping */
-  border: none;                    /* REMOVED: 1px solid var(--border-subtle) caused double-border */
+  min-height: 0;
+  background: #191919;
+  border-radius: 0;      /* NO inner radius — outer card clips perfectly */
+  overflow: visible;     /* outer card handles all clipping */
+  clip-path: none;       /* outer card handles all clipping */
+  border: none;
 }
 
 .home-feature-mini-img {
   display: block;
   width: 100%;
   height: auto;
-  aspect-ratio: 1536 / 1024; /* Fixes Safari/WebKit height collapse bug */
-  object-fit: fill;
+  aspect-ratio: 1536 / 1024;
+  object-fit: cover; /* cover fills the container cleanly */
   margin: 0;
-  transform: scale(1.01); /* Eliminates 1px white sub-pixel gaps in Light Mode */
-  /* 
-     Crop ~13% baked-in gap from top and bottom by pulling image bounds outside container.
-     Preserves 100% of horizontal side content since width is not scaled.
-  */
-  margin-top: -8.7%;
-  margin-bottom: -8.7%;
+  /* No negative margins needed — bleed technique handles cropping at the card level */
 }
 
 .home-mini-chip {
