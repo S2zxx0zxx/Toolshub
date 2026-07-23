@@ -333,8 +333,10 @@
   display: block;
   width: 100%;
   height: 100%;
-  object-fit: cover; /* Hides baked-in PNG margins. Card IS the image. */
+  object-fit: cover;
   margin: 0;
+  transform: scale(1.3); /* Zoom in 30% — crops the ~13% dark baked-in PNG margins. Container clips via overflow:hidden */
+  transform-origin: center center;
 }
 
 /* ---------- SECTION 4: FEATURE BENTO ---------- */
@@ -444,10 +446,10 @@
   margin-bottom: calc(-1 * var(--sp-5)); /* pull flush to bottom card edge */
   height: auto;
   min-height: 0;
-  background: #191919;
-  border-radius: 0;      /* NO inner radius — outer card clips perfectly */
-  overflow: visible;     /* outer card handles all clipping */
-  clip-path: none;       /* outer card handles all clipping */
+  background: transparent;
+  border-radius: 0;
+  overflow: hidden; /* MUST be hidden so scale() on the img gets clipped */
+  clip-path: none;
   border: none;
 }
 
@@ -456,9 +458,10 @@
   width: 100%;
   height: auto;
   aspect-ratio: 1536 / 1024;
-  object-fit: cover; /* cover fills the container cleanly */
+  object-fit: cover;
   margin: 0;
-  /* No negative margins needed — bleed technique handles cropping at the card level */
+  transform: scale(1.3); /* Zoom in 30% — crops the ~13% dark baked-in PNG margins. Container overflow:hidden clips the result */
+  transform-origin: center center;
 }
 
 .home-mini-chip {
