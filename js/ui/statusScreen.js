@@ -48,7 +48,8 @@ export const StatusScreen = (() => {
     let globalState = 'operational';
 
     models.forEach(model => {
-      const doc = statusMap[model.id] || { state: 'nodata', uptimeDay: {} };
+      const safeId = model.id.replace(/\//g, '-');
+      const doc = statusMap[safeId] || { state: 'nodata', uptimeDay: {} };
       
       if (doc.state === 'outage') globalState = 'outage';
       else if (doc.state === 'degraded' && globalState !== 'outage') globalState = 'degraded';

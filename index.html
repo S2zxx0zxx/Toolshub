@@ -324,15 +324,13 @@
                 <h3 class="home-feature-title">Multi-Tool Workspace</h3>
               </div>
               <p class="home-feature-desc">Social media, website audit, career tools, file utilities &mdash; all in a single tab. Switch tools in seconds, not apps.</p>
-              <div class="home-feature-mini">
-                <span class="home-mini-chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 2H7a5 5 0 00-5 5v10a5 5 0 005 5h10a5 5 0 005-5V7a5 5 0 00-5-5z"/><path d="M16 11.37A4 4 0 1112.63 8 4 4 0 0116 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>Social</span>
-                <span class="home-mini-chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 010 20 15.3 15.3 0 010-20z"/></svg>Web</span>
-                <span class="home-mini-chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/></svg>Career</span>
-                <span class="home-mini-chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V9z"/><polyline points="13 2 13 9 20 9"/></svg>Files</span>
-                <!-- ADDITIVE: ghost file icon — same SVG as "Files" chip scaled 4x, low opacity background depth -->
-                <div class="home-ghost-icon" style="bottom:-8px;right:-8px;width:80px;height:80px;" aria-hidden="true">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M13 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V9z"/><polyline points="13 2 13 9 20 9"/></svg>
-                </div>
+              <div class="home-feature-mini home-feature-mini--img">
+                <img
+                  src="./assets/home/multi-tool-workspace.png"
+                  alt=""
+                  class="home-feature-mini-img"
+                  loading="lazy"
+                />
               </div>
             </div>
 
@@ -342,14 +340,13 @@
                 <h3 class="home-feature-title">Analyse Any File</h3>
               </div>
               <p class="home-feature-desc">Compress images, merge or split PDFs, convert formats. File tools run instantly, right in your browser.</p>
-              <div class="home-feature-mini" style="flex-direction: column; gap: var(--sp-2);">
-                <!-- ADDITIVE: floating upload pill — echoes reference's "Upload file" pill technique -->
-                <div class="home-float-pill" style="top:-16px;right:12px;transform:rotate(3deg);" aria-hidden="true">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:11px;height:11px;"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/></svg>
-                  PDF
-                </div>
-                <div class="home-mini-bar"><div class="home-mini-bar-fill" style="width: 80%;"></div></div>
-                <div style="font-size: 11px; color: var(--text-muted);">PDF · Image · Converter &mdash; processing locally</div>
+              <div class="home-feature-mini home-feature-mini--img">
+                <img
+                  src="./assets/home/analyse-file.png"
+                  alt=""
+                  class="home-feature-mini-img"
+                  loading="lazy"
+                />
               </div>
             </div>
 
@@ -360,13 +357,13 @@
                 <span class="home-feature-tag tag-pro">PRO</span>
               </div>
               <p class="home-feature-desc">Let ToolsHub plan and execute multi-step tasks on your behalf &mdash; automatically selecting the right tools for the job.</p>
-              <div class="home-feature-mini">
-                <!-- ADDITIVE: subtle corner glow — gives this "automation" card a sense of active energy -->
-                <div class="home-glow-corner home-glow-corner--bottom-left" style="width:160px;height:120px;" aria-hidden="true"></div>
-                <div class="home-mini-toggle-row">
-                  <span>Agent Mode</span>
-                  <div class="home-mini-toggle"></div>
-                </div>
+              <div class="home-feature-mini home-feature-mini--img">
+                <img
+                  src="./assets/home/agent-mode.png"
+                  alt=""
+                  class="home-feature-mini-img"
+                  loading="lazy"
+                />
               </div>
             </div>
 
@@ -377,15 +374,13 @@
                 <span class="home-feature-tag tag-pro">PRO</span>
               </div>
               <p class="home-feature-desc">Runs multiple searches, synthesises results, and delivers a sourced answer. No tab-switching, no copy-paste grind.</p>
-              <div class="home-feature-mini">
-                <!-- ADDITIVE: floating source-domain pills — "search sources" rather than "team members", repurposed from reference's speech-bubble pill technique -->
-                <div class="home-source-pill" style="top:-14px;right:8px;transform:rotate(-4deg);" aria-hidden="true"><span class="home-source-dot"></span>arxiv.org</div>
-                <div class="home-source-pill" style="bottom:-12px;right:-4px;transform:rotate(3deg);" aria-hidden="true"><span class="home-source-dot"></span>wikipedia</div>
-                <div class="home-source-pill" style="top:-14px;left:8px;transform:rotate(2deg);" aria-hidden="true"><span class="home-source-dot"></span>reuters</div>
-                <div class="home-mini-globe">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 010 20 15.3 15.3 0 010-20z"/></svg>
-                  Searching &amp; synthesising across the web&hellip;
-                </div>
+              <div class="home-feature-mini home-feature-mini--img">
+                <img
+                  src="./assets/home/deep-research.png"
+                  alt=""
+                  class="home-feature-mini-img"
+                  loading="lazy"
+                />
               </div>
             </div>
 

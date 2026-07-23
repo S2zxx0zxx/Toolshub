@@ -52,7 +52,8 @@ export async function scheduled(event, env, ctx) {
     const result = await probeModel(modelId, env);
     const newState = result.success ? 'operational' : 'outage';
     
-    const statusRef = `systemStatus/${modelId}`;
+    const safeId = modelId.replace(/\//g, '-');
+    const statusRef = `systemStatus/${safeId}`;
     
     // Read current status
     let currentStatus = null;

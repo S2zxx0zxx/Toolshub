@@ -39,7 +39,8 @@ export default withSentry((env) => {
   };
 }, {
   async fetch(request, env, ctx) {
-
+    env.ctx = ctx;
+    try {
 
     // 1. Handle CORS Preflight (OPTIONS)
     if (request.method === 'OPTIONS') {
@@ -406,6 +407,10 @@ export default withSentry((env) => {
     } catch (e) {
       console.error("Error processing successful Groq response:", e);
       return new Response('Internal Server Error: Error processing AI response.', { status: 500, headers: corsHeaders });
+    }
+    } catch (unhandledException) {
+      console.error("Unhandled Exception in fetch:", unhandledException);
+      return new Response(JSON.stringify({ error: unhandledException.message, stack: unhandledException.stack }), { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
     }
   },
   

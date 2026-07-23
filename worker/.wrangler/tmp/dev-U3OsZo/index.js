@@ -16699,7 +16699,8 @@ async function scheduled(event, env, ctx) {
   for (const modelId of Object.keys(MODEL_CATALOG_TIERS)) {
     const result = await probeModel(modelId, env);
     const newState = result.success ? "operational" : "outage";
-    const statusRef = `systemStatus/${modelId}`;
+    const safeId = modelId.replace(/\//g, "-");
+    const statusRef = `systemStatus/${safeId}`;
     let currentStatus = null;
     try {
       currentStatus = await admin.getDocument(statusRef);
@@ -17028,287 +17029,293 @@ var src_default = withSentry((env) => {
   };
 }, {
   async fetch(request, env, ctx) {
-    if (request.method === "OPTIONS") {
-      return new Response("OK", {
-        status: 200,
-        headers: corsHeaders
-      });
-    }
-    const url = new URL(request.url);
-    if (request.method === "GET" && (url.pathname === "/health" || url.pathname === "/api/health")) {
-      return new Response("OK", { status: 200, headers: corsHeaders });
-    }
-    if (request.method === "GET" && url.pathname === "/api/admin/usage-stats") {
-      const { handleAdminUsageStats: handleAdminUsageStats2 } = await Promise.resolve().then(() => (init_adminStats(), adminStats_exports));
-      return await handleAdminUsageStats2(request, env, corsHeaders);
-    }
-    if (request.method === "GET" && url.pathname === "/api/admin/agent-health") {
-      if (env.ADMIN_UID && request.headers.get("Authorization") !== `Bearer ${env.ADMIN_UID}`) {
-        return new Response("Unauthorized", { status: 401, headers: corsHeaders });
+    env.ctx = ctx;
+    try {
+      if (request.method === "OPTIONS") {
+        return new Response("OK", {
+          status: 200,
+          headers: corsHeaders
+        });
       }
-      const { runOpsAgent: runOpsAgent2 } = await Promise.resolve().then(() => (init_ops(), ops_exports));
-      const report = await runOpsAgent2(env);
-      return new Response(report, { status: 200, headers: { ...corsHeaders, "Content-Type": "text/plain" } });
-    }
-    if (request.method !== "POST") {
-      return new Response("Method Not Allowed", { status: 405, headers: corsHeaders });
-    }
-    const clientIp = request.headers.get("cf-connecting-ip") || "unknown";
-    if (url.pathname.startsWith("/api/payment/")) {
-      addBreadcrumb({ category: "payment", message: "Processing payment webhook", level: "info" });
-      if (!await checkPaymentRateLimit(clientIp, env)) {
+      const url = new URL(request.url);
+      if (request.method === "GET" && (url.pathname === "/health" || url.pathname === "/api/health")) {
+        return new Response("OK", { status: 200, headers: corsHeaders });
+      }
+      if (request.method === "GET" && url.pathname === "/api/admin/usage-stats") {
+        const { handleAdminUsageStats: handleAdminUsageStats2 } = await Promise.resolve().then(() => (init_adminStats(), adminStats_exports));
+        return await handleAdminUsageStats2(request, env, corsHeaders);
+      }
+      if (request.method === "GET" && url.pathname === "/api/admin/agent-health") {
+        if (env.ADMIN_UID && request.headers.get("Authorization") !== `Bearer ${env.ADMIN_UID}`) {
+          return new Response("Unauthorized", { status: 401, headers: corsHeaders });
+        }
+        const { runOpsAgent: runOpsAgent2 } = await Promise.resolve().then(() => (init_ops(), ops_exports));
+        const report = await runOpsAgent2(env);
+        return new Response(report, { status: 200, headers: { ...corsHeaders, "Content-Type": "text/plain" } });
+      }
+      if (request.method !== "POST") {
+        return new Response("Method Not Allowed", { status: 405, headers: corsHeaders });
+      }
+      const clientIp = request.headers.get("cf-connecting-ip") || "unknown";
+      if (url.pathname.startsWith("/api/payment/")) {
+        addBreadcrumb({ category: "payment", message: "Processing payment webhook", level: "info" });
+        if (!await checkPaymentRateLimit(clientIp, env)) {
+          return new Response("Too Many Requests. Please slow down.", { status: 429, headers: corsHeaders });
+        }
+        return await handlePaymentRequest(request, env, corsHeaders);
+      }
+      if (!await checkRateLimit(clientIp, env)) {
         return new Response("Too Many Requests. Please slow down.", { status: 429, headers: corsHeaders });
       }
-      return await handlePaymentRequest(request, env, corsHeaders);
-    }
-    if (!await checkRateLimit(clientIp, env)) {
-      return new Response("Too Many Requests. Please slow down.", { status: 429, headers: corsHeaders });
-    }
-    if (url.pathname === "/api/dev-access/redeem") {
-      const { handleDevAccessRedeem: handleDevAccessRedeem2 } = await Promise.resolve().then(() => (init_devAccess(), devAccess_exports));
-      return await handleDevAccessRedeem2(request, env, corsHeaders);
-    }
-    let callerPlan;
-    try {
-      callerPlan = await resolvePlan(request, env);
-    } catch (e) {
-      return new Response(JSON.stringify({ error: "Invalid or expired authentication token." }), {
-        status: 401,
-        headers: { ...corsHeaders, "Content-Type": "application/json" }
-      });
-    }
-    let body;
-    try {
-      body = await request.json();
-    } catch (e) {
-      return new Response("Bad Request: Invalid JSON", { status: 400, headers: corsHeaders });
-    }
-    if (body.type === "search") {
-      const tavilyKey = env.TAVILY_API_KEY;
-      if (!tavilyKey) {
-        return new Response(JSON.stringify({ error: "Search is not configured." }), { status: 503, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+      if (url.pathname === "/api/dev-access/redeem") {
+        const { handleDevAccessRedeem: handleDevAccessRedeem2 } = await Promise.resolve().then(() => (init_devAccess(), devAccess_exports));
+        return await handleDevAccessRedeem2(request, env, corsHeaders);
       }
+      let callerPlan;
       try {
-        const tavilyResponse = await fetch("https://api.tavily.com/search", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            api_key: tavilyKey,
-            query: body.query,
-            search_depth: "basic",
-            include_answer: true,
-            max_results: 5
-          })
-        });
-        const tavilyData = await tavilyResponse.text();
-        return new Response(tavilyData, { status: tavilyResponse.status, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+        callerPlan = await resolvePlan(request, env);
       } catch (e) {
-        return new Response(JSON.stringify({ error: "Search service unavailable." }), { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+        return new Response(JSON.stringify({ error: "Invalid or expired authentication token." }), {
+          status: 401,
+          headers: { ...corsHeaders, "Content-Type": "application/json" }
+        });
       }
-    }
-    if (body.type === "rag_ingest") {
+      let body;
       try {
-        if (!body.text) {
-          return new Response(JSON.stringify({ error: "Text is required for ingestion." }), { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+        body = await request.json();
+      } catch (e) {
+        return new Response("Bad Request: Invalid JSON", { status: 400, headers: corsHeaders });
+      }
+      if (body.type === "search") {
+        const tavilyKey = env.TAVILY_API_KEY;
+        if (!tavilyKey) {
+          return new Response(JSON.stringify({ error: "Search is not configured." }), { status: 503, headers: { ...corsHeaders, "Content-Type": "application/json" } });
         }
-        const aiResponse = await env.AI.run("@cf/baai/bge-base-en-v1.5", {
-          text: [body.text]
-        });
-        const vector = aiResponse.data[0];
-        const recordId = body.metadata?.id || crypto.randomUUID();
-        const record = {
-          id: recordId,
-          values: vector,
-          metadata: { text: body.text, ...body.metadata }
-        };
-        const insertResponse = await env.VECTORIZE.insert([record]);
-        return new Response(JSON.stringify({ success: true, insertResponse, id: recordId }), { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } });
-      } catch (e) {
-        return new Response(JSON.stringify({ error: "RAG ingestion failed.", details: e.message }), { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } });
-      }
-    }
-    if (body.type === "rag_query") {
-      try {
-        if (!body.query) {
-          return new Response(JSON.stringify({ error: "Query is required." }), { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } });
-        }
-        const aiResponse = await env.AI.run("@cf/baai/bge-base-en-v1.5", {
-          text: [body.query]
-        });
-        const queryVector = aiResponse.data[0];
-        const searchResults = await env.VECTORIZE.query(queryVector, {
-          topK: 5,
-          returnMetadata: "all"
-        });
-        const matches = searchResults.matches.map((m) => ({
-          score: m.score,
-          text: m.metadata?.text,
-          ...m.metadata
-        }));
-        return new Response(JSON.stringify({ results: matches }), { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } });
-      } catch (e) {
-        return new Response(JSON.stringify({ error: "RAG query failed.", details: e.message }), { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } });
-      }
-    }
-    let fbAdmin = null;
-    if (env.FIREBASE_SERVICE_ACCOUNT) {
-      try {
-        fbAdmin = new FirebaseAdmin(env.FIREBASE_SERVICE_ACCOUNT);
-        const usageCheck = await checkAndIncrementDailyUsage(fbAdmin, callerPlan.uid, callerPlan.dailyLimit, env);
-        if (!usageCheck.allowed) {
-          return new Response(JSON.stringify({ error: "daily_limit_reached", limit: callerPlan.dailyLimit }), {
-            status: 429,
-            headers: { ...corsHeaders, "Content-Type": "application/json" }
+        try {
+          const tavilyResponse = await fetch("https://api.tavily.com/search", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              api_key: tavilyKey,
+              query: body.query,
+              search_depth: "basic",
+              include_answer: true,
+              max_results: 5
+            })
           });
+          const tavilyData = await tavilyResponse.text();
+          return new Response(tavilyData, { status: tavilyResponse.status, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+        } catch (e) {
+          return new Response(JSON.stringify({ error: "Search service unavailable." }), { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } });
         }
-      } catch (e) {
-        console.warn("Firebase usage check failed:", e);
       }
-    } else {
-      console.warn("FIREBASE_SERVICE_ACCOUNT not set. Skipping daily usage enforcement.");
-    }
-    const { messages, model, temperature, stream, response_format, mode, tools } = body;
-    if (!messages || !Array.isArray(messages)) {
-      return new Response('Bad Request: Missing or invalid "messages" array.', { status: 400, headers: corsHeaders });
-    }
-    let targetModel = model;
-    if (targetModel === "llama3-70b-8192" || targetModel === "llama-3.1-70b-versatile" || targetModel === "llama-3.3-70b-versatile" || !targetModel) {
-      targetModel = "llama-3.3-70b-versatile";
-    }
-    if (targetModel === "llama3-8b-8192" || targetModel === "llama-3.1-8b-instant") {
-      targetModel = "llama-3.1-8b-instant";
-    }
-    let targetAgent = "chat";
-    if (mode !== "agent" && mode !== "classify") {
-      targetAgent = await routeRequest(messages, env, callerPlan.planId);
-      addBreadcrumb({ category: "orchestrator", message: `Orchestrator routed request to: ${targetAgent}`, level: "info" });
-      if (targetAgent === "creator") {
-        const creatorResponse = await runCreatorAgent(messages, env);
-        const newHeaders = new Headers(creatorResponse.headers);
-        for (const [key, value] of Object.entries(corsHeaders)) {
-          newHeaders.set(key, value);
+      if (body.type === "rag_ingest") {
+        try {
+          if (!body.text) {
+            return new Response(JSON.stringify({ error: "Text is required for ingestion." }), { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+          }
+          const aiResponse = await env.AI.run("@cf/baai/bge-base-en-v1.5", {
+            text: [body.text]
+          });
+          const vector = aiResponse.data[0];
+          const recordId = body.metadata?.id || crypto.randomUUID();
+          const record = {
+            id: recordId,
+            values: vector,
+            metadata: { text: body.text, ...body.metadata }
+          };
+          const insertResponse = await env.VECTORIZE.insert([record]);
+          return new Response(JSON.stringify({ success: true, insertResponse, id: recordId }), { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+        } catch (e) {
+          return new Response(JSON.stringify({ error: "RAG ingestion failed.", details: e.message }), { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } });
         }
-        return new Response(creatorResponse.body, { status: creatorResponse.status, headers: newHeaders });
       }
-      if (targetAgent === "coder") {
-        const payloadOpts = { temperature: 0.2, stream: !!stream };
-        const coderResult = await runCoderAgent(messages, env, callerPlan.planId, payloadOpts);
-        if (!coderResult.ok) {
-          return new Response("Internal Server Error: Coder Agent Failed.", { status: 500, headers: corsHeaders });
+      if (body.type === "rag_query") {
+        try {
+          if (!body.query) {
+            return new Response(JSON.stringify({ error: "Query is required." }), { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+          }
+          const aiResponse = await env.AI.run("@cf/baai/bge-base-en-v1.5", {
+            text: [body.query]
+          });
+          const queryVector = aiResponse.data[0];
+          const searchResults = await env.VECTORIZE.query(queryVector, {
+            topK: 5,
+            returnMetadata: "all"
+          });
+          const matches = searchResults.matches.map((m) => ({
+            score: m.score,
+            text: m.metadata?.text,
+            ...m.metadata
+          }));
+          return new Response(JSON.stringify({ results: matches }), { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+        } catch (e) {
+          return new Response(JSON.stringify({ error: "RAG query failed.", details: e.message }), { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } });
         }
-        targetModel = "gpt-4o-mini";
-        const responseHeaders = new Headers(coderResult.response.headers);
-        responseHeaders.delete("content-encoding");
-        responseHeaders.delete("content-length");
-        responseHeaders.delete("transfer-encoding");
-        for (const [key, value] of Object.entries(corsHeaders)) {
-          responseHeaders.set(key, value);
-        }
-        if (!stream) {
-          const data = await coderResult.response.json();
-          return new Response(JSON.stringify(data), { status: 200, headers: responseHeaders });
-        }
-        return new Response(coderResult.response.body, { status: 200, headers: responseHeaders });
       }
-    }
-    const requiredTier = MODEL_CATALOG_TIERS[targetModel] || "free";
-    if (rankOf(requiredTier) > rankOf(callerPlan.planId)) {
-      return new Response(JSON.stringify({
-        error: "model_tier_required",
-        requiredTier,
-        yourTier: callerPlan.planId
-      }), {
-        status: 403,
-        headers: { ...corsHeaders, "Content-Type": "application/json" }
-      });
-    }
-    const toolCategory = body.toolCategory || (mode === "agent" ? "agent" : "chat");
-    if (fbAdmin) {
-      env.ctx.waitUntil(recordUsageStat(fbAdmin, targetModel, toolCategory, env));
-    }
-    addBreadcrumb({ category: "model", message: `Routing request for model ${targetModel}`, level: "info" });
-    const isCompoundModel = targetModel === "groq/compound" || targetModel === "groq/compound-mini";
-    const payload = {
-      model: targetModel,
-      messages,
-      temperature: typeof temperature === "number" ? temperature : 0.7,
-      stream: isCompoundModel ? false : !!stream
-    };
-    if (response_format) {
-      payload.response_format = response_format;
-    }
-    if (mode === "agent" && tools) {
-      payload.tools = tools;
-    }
-    const apiKey = env.GROQ_API_KEY;
-    if (!apiKey) {
-      return new Response("Internal Server Error: GROQ_API_KEY secret is not set.", { status: 500, headers: corsHeaders });
-    }
-    const fallbackResult = await callModelWithFallback(targetModel, payload, env, callerPlan.planId);
-    if (!fallbackResult.ok) {
-      if (fallbackResult.response) {
-        const responseHeaders = new Headers(fallbackResult.response.headers);
-        responseHeaders.delete("content-encoding");
-        responseHeaders.delete("content-length");
-        responseHeaders.delete("transfer-encoding");
-        for (const [key, value] of Object.entries(corsHeaders)) {
-          responseHeaders.set(key, value);
+      let fbAdmin = null;
+      if (env.FIREBASE_SERVICE_ACCOUNT) {
+        try {
+          fbAdmin = new FirebaseAdmin(env.FIREBASE_SERVICE_ACCOUNT);
+          const usageCheck = await checkAndIncrementDailyUsage(fbAdmin, callerPlan.uid, callerPlan.dailyLimit, env);
+          if (!usageCheck.allowed) {
+            return new Response(JSON.stringify({ error: "daily_limit_reached", limit: callerPlan.dailyLimit }), {
+              status: 429,
+              headers: { ...corsHeaders, "Content-Type": "application/json" }
+            });
+          }
+        } catch (e) {
+          console.warn("Firebase usage check failed:", e);
         }
-        return new Response(fallbackResult.response.body, {
-          status: fallbackResult.response.status,
-          headers: responseHeaders
-        });
       } else {
-        return new Response("Internal Server Error: All eligible AI providers are unreachable.", { status: 500, headers: corsHeaders });
+        console.warn("FIREBASE_SERVICE_ACCOUNT not set. Skipping daily usage enforcement.");
       }
-    }
-    const groqResponse = fallbackResult.response;
-    const servedByModel = fallbackResult.servedByModel;
-    console.log(`Served by: ${servedByModel}`);
-    try {
-      if (isCompoundModel && !!stream) {
-        const data = await groqResponse.json();
-        const content = data.choices && data.choices[0] && data.choices[0].message ? data.choices[0].message.content || "" : "";
-        const fakeChunk = JSON.stringify({ choices: [{ delta: { content } }] });
-        const sseBody = `data: ${fakeChunk}
+      const { messages, model, temperature, stream, response_format, mode, tools } = body;
+      if (!messages || !Array.isArray(messages)) {
+        return new Response('Bad Request: Missing or invalid "messages" array.', { status: 400, headers: corsHeaders });
+      }
+      let targetModel = model;
+      if (targetModel === "llama3-70b-8192" || targetModel === "llama-3.1-70b-versatile" || targetModel === "llama-3.3-70b-versatile" || !targetModel) {
+        targetModel = "llama-3.3-70b-versatile";
+      }
+      if (targetModel === "llama3-8b-8192" || targetModel === "llama-3.1-8b-instant") {
+        targetModel = "llama-3.1-8b-instant";
+      }
+      let targetAgent = "chat";
+      if (mode !== "agent" && mode !== "classify") {
+        targetAgent = await routeRequest(messages, env, callerPlan.planId);
+        addBreadcrumb({ category: "orchestrator", message: `Orchestrator routed request to: ${targetAgent}`, level: "info" });
+        if (targetAgent === "creator") {
+          const creatorResponse = await runCreatorAgent(messages, env);
+          const newHeaders = new Headers(creatorResponse.headers);
+          for (const [key, value] of Object.entries(corsHeaders)) {
+            newHeaders.set(key, value);
+          }
+          return new Response(creatorResponse.body, { status: creatorResponse.status, headers: newHeaders });
+        }
+        if (targetAgent === "coder") {
+          const payloadOpts = { temperature: 0.2, stream: !!stream };
+          const coderResult = await runCoderAgent(messages, env, callerPlan.planId, payloadOpts);
+          if (!coderResult.ok) {
+            return new Response("Internal Server Error: Coder Agent Failed.", { status: 500, headers: corsHeaders });
+          }
+          targetModel = "gpt-4o-mini";
+          const responseHeaders = new Headers(coderResult.response.headers);
+          responseHeaders.delete("content-encoding");
+          responseHeaders.delete("content-length");
+          responseHeaders.delete("transfer-encoding");
+          for (const [key, value] of Object.entries(corsHeaders)) {
+            responseHeaders.set(key, value);
+          }
+          if (!stream) {
+            const data = await coderResult.response.json();
+            return new Response(JSON.stringify(data), { status: 200, headers: responseHeaders });
+          }
+          return new Response(coderResult.response.body, { status: 200, headers: responseHeaders });
+        }
+      }
+      const requiredTier = MODEL_CATALOG_TIERS[targetModel] || "free";
+      if (rankOf(requiredTier) > rankOf(callerPlan.planId)) {
+        return new Response(JSON.stringify({
+          error: "model_tier_required",
+          requiredTier,
+          yourTier: callerPlan.planId
+        }), {
+          status: 403,
+          headers: { ...corsHeaders, "Content-Type": "application/json" }
+        });
+      }
+      const toolCategory = body.toolCategory || (mode === "agent" ? "agent" : "chat");
+      if (fbAdmin) {
+        env.ctx.waitUntil(recordUsageStat(fbAdmin, targetModel, toolCategory, env));
+      }
+      addBreadcrumb({ category: "model", message: `Routing request for model ${targetModel}`, level: "info" });
+      const isCompoundModel = targetModel === "groq/compound" || targetModel === "groq/compound-mini";
+      const payload = {
+        model: targetModel,
+        messages,
+        temperature: typeof temperature === "number" ? temperature : 0.7,
+        stream: isCompoundModel ? false : !!stream
+      };
+      if (response_format) {
+        payload.response_format = response_format;
+      }
+      if (mode === "agent" && tools) {
+        payload.tools = tools;
+      }
+      const apiKey = env.GROQ_API_KEY;
+      if (!apiKey) {
+        return new Response("Internal Server Error: GROQ_API_KEY secret is not set.", { status: 500, headers: corsHeaders });
+      }
+      const fallbackResult = await callModelWithFallback(targetModel, payload, env, callerPlan.planId);
+      if (!fallbackResult.ok) {
+        if (fallbackResult.response) {
+          const responseHeaders = new Headers(fallbackResult.response.headers);
+          responseHeaders.delete("content-encoding");
+          responseHeaders.delete("content-length");
+          responseHeaders.delete("transfer-encoding");
+          for (const [key, value] of Object.entries(corsHeaders)) {
+            responseHeaders.set(key, value);
+          }
+          return new Response(fallbackResult.response.body, {
+            status: fallbackResult.response.status,
+            headers: responseHeaders
+          });
+        } else {
+          return new Response("Internal Server Error: All eligible AI providers are unreachable.", { status: 500, headers: corsHeaders });
+        }
+      }
+      const groqResponse = fallbackResult.response;
+      const servedByModel = fallbackResult.servedByModel;
+      console.log(`Served by: ${servedByModel}`);
+      try {
+        if (isCompoundModel && !!stream) {
+          const data = await groqResponse.json();
+          const content = data.choices && data.choices[0] && data.choices[0].message ? data.choices[0].message.content || "" : "";
+          const fakeChunk = JSON.stringify({ choices: [{ delta: { content } }] });
+          const sseBody = `data: ${fakeChunk}
 
 data: [DONE]
 
 `;
-        const responseHeaders2 = new Headers();
+          const responseHeaders2 = new Headers();
+          for (const [key, value] of Object.entries(corsHeaders)) {
+            responseHeaders2.set(key, value);
+          }
+          responseHeaders2.set("Content-Type", "text/event-stream");
+          return new Response(sseBody, {
+            status: 200,
+            headers: responseHeaders2
+          });
+        }
+        const responseHeaders = new Headers(groqResponse.headers);
+        responseHeaders.delete("content-encoding");
+        responseHeaders.delete("content-length");
+        responseHeaders.delete("transfer-encoding");
         for (const [key, value] of Object.entries(corsHeaders)) {
-          responseHeaders2.set(key, value);
+          responseHeaders.set(key, value);
         }
-        responseHeaders2.set("Content-Type", "text/event-stream");
-        return new Response(sseBody, {
-          status: 200,
-          headers: responseHeaders2
-        });
-      }
-      const responseHeaders = new Headers(groqResponse.headers);
-      responseHeaders.delete("content-encoding");
-      responseHeaders.delete("content-length");
-      responseHeaders.delete("transfer-encoding");
-      for (const [key, value] of Object.entries(corsHeaders)) {
-        responseHeaders.set(key, value);
-      }
-      if (!stream && !isCompoundModel) {
-        const data = await groqResponse.json();
-        if (mode === "agent") {
-          data.meta = { planId: callerPlan.planId, maxSteps: callerPlan.maxSteps };
+        if (!stream && !isCompoundModel) {
+          const data = await groqResponse.json();
+          if (mode === "agent") {
+            data.meta = { planId: callerPlan.planId, maxSteps: callerPlan.maxSteps };
+          }
+          return new Response(JSON.stringify(data), {
+            status: groqResponse.status,
+            headers: responseHeaders
+          });
         }
-        return new Response(JSON.stringify(data), {
+        return new Response(groqResponse.body, {
           status: groqResponse.status,
           headers: responseHeaders
         });
+      } catch (e) {
+        console.error("Error processing successful Groq response:", e);
+        return new Response("Internal Server Error: Error processing AI response.", { status: 500, headers: corsHeaders });
       }
-      return new Response(groqResponse.body, {
-        status: groqResponse.status,
-        headers: responseHeaders
-      });
-    } catch (e) {
-      console.error("Error processing successful Groq response:", e);
-      return new Response("Internal Server Error: Error processing AI response.", { status: 500, headers: corsHeaders });
+    } catch (unhandledException) {
+      console.error("Unhandled Exception in fetch:", unhandledException);
+      return new Response(JSON.stringify({ error: unhandledException.message, stack: unhandledException.stack }), { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
   },
   async scheduled(event, env, ctx) {
