@@ -332,6 +332,7 @@
   display: block;
   width: 100%;
   height: auto;
+  aspect-ratio: 2 / 1; /* Fixes Safari/WebKit height collapse bug */
   object-fit: fill; /* Allows negative margins to physically reduce layout height */
   margin: 0;
 }
@@ -464,6 +465,7 @@
   display: block;
   width: 100%;
   height: auto;
+  aspect-ratio: 1536 / 1024; /* Fixes Safari/WebKit height collapse bug */
   object-fit: fill;
   margin: 0;
   /* 
