@@ -310,6 +310,10 @@
 }
 
 /* ---------- Capability cell — full image asset (icon+title+description baked in) ---------- */
+/* Outer card: border-radius var(--r-lg) = 20px, padding var(--sp-5) = 20px.
+   Concentric-corners formula: inner-radius = outer-radius − padding = 20 − 20 = 0px.
+   The image therefore has square corners; overflow:hidden on this element clips it
+   cleanly to the outer card's curve with zero visible seam or double-border. */
 .home-cap-cell--img {
   padding: 0;
   overflow: hidden;
@@ -333,10 +337,8 @@
   object-fit: cover;
   object-position: center center;
   display: block;
-  /* Pull the image outward by the equivalent of the image's own dark outer
-     margin (~8px each side at 1024 wide ≈ 1.6%). This removes the thin gap
-     between the image card edge and our site's card border. */
-  scale: 1.032;
+  /* No scale trick needed — overflow:hidden on the parent clips correctly
+     once the inner radius is geometrically correct (0px per formula above). */
 }
 
 /* ---------- SECTION 4: FEATURE BENTO ---------- */
@@ -427,6 +429,10 @@
    Background MUST stay --bg-surface-2: the 4 pre-edited PNGs have their
    corner-fill set to the same #1e1e22 hex, so any other color produces a
    visible seam ring around the image's own rounded corners. */
+/* Outer card: border-radius var(--r-xl) = 24px, padding var(--sp-5) = 20px.
+   Concentric-corners formula: inner-radius = outer-radius − padding = 24 − 20 = 4px.
+   This makes the image's own corner curve geometrically concentric with the card's
+   outer curve — single smooth arc, no visible gap or double-border. */
 .home-feature-mini--img {
   margin-top: auto;
   padding: 0;                      /* image fills edge-to-edge, no inner padding */
@@ -436,8 +442,8 @@
   height: auto;
   min-height: 0;                   /* cancel the base rule's 56px floor */
   background: var(--bg-surface-2); /* must equal #1e1e22 — same as corner-fill in each PNG */
-  border-radius: var(--r-md);
-  overflow: hidden;                /* clip image to rounded corners */
+  border-radius: 4px;              /* = var(--r-xl) [24px] − var(--sp-5) [20px] — concentric-corners formula */
+  overflow: hidden;                /* clip image cleanly to this radius */
   border: 1px solid var(--border-subtle);
 }
 
