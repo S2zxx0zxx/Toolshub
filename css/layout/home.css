@@ -313,6 +313,7 @@
 .home-cap-cell--img {
   padding: 0;
   overflow: hidden;
+  clip-path: inset(0 round var(--r-lg)); /* Bulletproof clipping for transformed children */
   aspect-ratio: 2 / 1;
   background: var(--bg-surface-2);
   border-radius: var(--r-lg);
@@ -332,11 +333,19 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: center center;
+  object-position: center bottom;
   margin: 0;
-  /* The asset has a baked-in ~8px dark margin. Scale it by ~3.5% to bleed 
-     that margin out past the container's edge, completely eliminating the gap. */
-  scale: 1.035;
+  /* Default small bleed for images with tiny margins */
+  transform: scale(1.035);
+  transform-origin: center bottom;
+}
+
+/* Precision compensations for massive baked-in top margins */
+.home-cap-cell-img[src*="fast-responses"] {
+  transform: scale(1.18);
+}
+.home-cap-cell-img[src*="code-logic"] {
+  transform: scale(1.10);
 }
 
 /* ---------- SECTION 4: FEATURE BENTO ---------- */
@@ -442,6 +451,7 @@
   background: var(--bg-surface-2); /* must equal #1e1e22 — same as corner-fill in each PNG */
   border-radius: 4px;              /* = var(--r-xl) [24px] − var(--sp-5) [20px] — concentric-corners formula */
   overflow: hidden;                /* clip image cleanly to this radius */
+  clip-path: inset(0 round 4px);   /* Bulletproof clipping for transformed children */
   border: none;                    /* REMOVED: 1px solid var(--border-subtle) caused double-border */
 }
 
@@ -452,8 +462,9 @@
   object-fit: cover;
   object-position: center;
   margin: 0;
-  /* Bleed out the asset's baked-in dark margin so it fills the box edge-to-edge */
-  scale: 1.035;
+  /* Feature assets have massive ~13% top/bottom baked-in margins.
+     Scale by 1.28 to push the empty space completely outside the box. */
+  transform: scale(1.28);
 }
 
 .home-mini-chip {
