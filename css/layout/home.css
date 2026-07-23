@@ -315,7 +315,7 @@
   padding: 0;
   overflow: hidden;
   clip-path: inset(0 round var(--r-lg)); /* Bulletproof clipping */
-  background: var(--bg-surface-2);
+  background: #1e1e22 !important; /* Force exact PNG hex so it blends perfectly in Light Mode */
   border-radius: var(--r-lg);
   border: 1px solid var(--border-subtle);
   display: block;
@@ -335,6 +335,7 @@
   aspect-ratio: 2 / 1; /* Fixes Safari/WebKit height collapse bug */
   object-fit: fill; /* Allows negative margins to physically reduce layout height */
   margin: 0;
+  transform: scale(1.01); /* Eliminates 1px white sub-pixel gaps in Light Mode without cropping content */
 }
 
 /* 
@@ -454,10 +455,10 @@
   width: 100%;
   height: auto;
   min-height: 0;                   /* cancel the base rule's 56px floor */
-  background: var(--bg-surface-2); /* must equal #1e1e22 — same as corner-fill in each PNG */
-  border-radius: 4px;              /* = var(--r-xl) [24px] − var(--sp-5) [20px] — concentric-corners formula */
+  background: #1e1e22 !important;  /* Force exact PNG hex so it blends perfectly in Light Mode */
+  border-radius: var(--r-md);      /* Smooth curve instead of sharp 4px */
   overflow: hidden;                /* clip image cleanly to this radius */
-  clip-path: inset(0 round 4px);   /* Bulletproof clipping */
+  clip-path: inset(0 round var(--r-md)); /* Bulletproof smooth curve clipping */
   border: none;                    /* REMOVED: 1px solid var(--border-subtle) caused double-border */
 }
 
@@ -468,6 +469,7 @@
   aspect-ratio: 1536 / 1024; /* Fixes Safari/WebKit height collapse bug */
   object-fit: fill;
   margin: 0;
+  transform: scale(1.01); /* Eliminates 1px white sub-pixel gaps in Light Mode */
   /* 
      Crop ~13% baked-in gap from top and bottom by pulling image bounds outside container.
      Preserves 100% of horizontal side content since width is not scaled.
