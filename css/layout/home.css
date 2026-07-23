@@ -302,12 +302,12 @@
 .home-cap-title {
   font-size: var(--fs-sm);
   font-weight: 600;
-  color: var(--text-primary);
+  color: #F3F4F6; /* Force light text on dark card */
 }
 
 .home-cap-sub {
   font-size: var(--fs-xs);
-  color: var(--text-secondary);
+  color: #9CA3AF; /* Force light text on dark card */
   line-height: 1.5;
 }
 
@@ -379,34 +379,34 @@
   gap: 4px;
   padding: 2px var(--sp-2);
   border-radius: var(--r-full);
-  background: var(--bg-surface-3);
+  background: rgba(255, 255, 255, 0.1);
   font-size: 11px;
   font-weight: 600;
-  color: var(--text-muted);
+  color: #9CA3AF;
   white-space: nowrap;
 }
 
 .home-feature-tag.tag-pro {
-  background: rgba(168, 85, 247, 0.12);
-  color: var(--accent-pro);
+  background: rgba(168, 85, 247, 0.15);
+  color: #C084FC;
 }
 
 .home-feature-tag.tag-soon {
-  background: var(--bg-surface-3);
-  color: var(--text-muted);
+  background: rgba(255, 255, 255, 0.1);
+  color: #9CA3AF;
 }
 
 .home-feature-title {
   font-family: var(--font-display);
   font-size: var(--fs-md);
   font-weight: 600;
-  color: var(--text-primary);
+  color: #F3F4F6; /* Force light text on dark card */
   line-height: 1.3;
 }
 
 .home-feature-desc {
   font-size: var(--fs-sm);
-  color: var(--text-secondary);
+  color: #9CA3AF; /* Force light text on dark card */
   line-height: 1.6;
   flex: 1;
 }
@@ -414,8 +414,8 @@
 /* Mini visual mockup inside each card — text/chip version only */
 .home-feature-mini {
   margin-top: auto;
-  background: var(--bg-surface-2);
-  border: 1px solid var(--border-subtle);
+  background: rgba(255, 255, 255, 0.03); /* Force dark mode container */
+  border: 1px solid rgba(255, 255, 255, 0.08); /* Force dark mode border */
   border-radius: var(--r-md);
   padding: var(--sp-3);
   display: flex;
@@ -474,18 +474,18 @@
   gap: var(--sp-1);
   padding: 3px var(--sp-2);
   border-radius: var(--r-full);
-  background: var(--bg-surface-3);
-  border: 1px solid var(--border-subtle);
+  background: rgba(255, 255, 255, 0.05); /* Force dark mode */
+  border: 1px solid rgba(255, 255, 255, 0.08);
   font-size: 11px;
   font-weight: 500;
-  color: var(--text-secondary);
+  color: #9CA3AF; /* Force dark mode text */
 }
 .home-mini-chip svg { width: 12px; height: 12px; color: var(--accent); }
 
 .home-mini-bar {
   width: 100%;
   height: 6px;
-  background: var(--bg-surface-3);
+  background: rgba(255, 255, 255, 0.1); /* Force dark mode */
   border-radius: var(--r-full);
   overflow: hidden;
 }
