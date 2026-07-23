@@ -267,6 +267,7 @@
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: var(--sp-3);
+  align-items: start; /* Allows cells to shrink to their actual content height */
 }
 
 .home-cap-cell {
@@ -313,8 +314,7 @@
 .home-cap-cell--img {
   padding: 0;
   overflow: hidden;
-  clip-path: inset(0 round var(--r-lg)); /* Bulletproof clipping for transformed children */
-  aspect-ratio: 2 / 1;
+  clip-path: inset(0 round var(--r-lg)); /* Bulletproof clipping */
   background: var(--bg-surface-2);
   border-radius: var(--r-lg);
   border: 1px solid var(--border-subtle);
@@ -331,21 +331,27 @@
 .home-cap-cell-img {
   display: block;
   width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: center bottom;
+  height: auto;
+  object-fit: fill; /* Allows negative margins to physically reduce layout height */
   margin: 0;
-  /* Default small bleed for images with tiny margins */
-  transform: scale(1.035);
-  transform-origin: center bottom;
 }
 
-/* Precision compensations for massive baked-in top margins */
+/* 
+   Negative margins crop the baked-in top/bottom space without scaling width, 
+   preserving 100% of the UI content on the sides. Percentages are relative to container width.
+*/
 .home-cap-cell-img[src*="fast-responses"] {
-  transform: scale(1.18);
+  margin-top: -8.5%;
+  margin-bottom: -8.5%;
 }
 .home-cap-cell-img[src*="code-logic"] {
-  transform: scale(1.10);
+  margin-top: -5.5%;
+  margin-bottom: -5.5%;
+}
+.home-cap-cell-img[src*="creative-writing"],
+.home-cap-cell-img[src*="smart-assistance"] {
+  margin-top: -2%;
+  margin-bottom: -2%;
 }
 
 /* ---------- SECTION 4: FEATURE BENTO ---------- */
@@ -444,27 +450,28 @@
   margin-top: auto;
   padding: 0;                      /* image fills edge-to-edge, no inner padding */
   display: block;                  /* override base flex layout — img doesn't need it */
-  aspect-ratio: 3 / 2;            /* matches every supplied asset's 1536×1024 ratio */
   width: 100%;
   height: auto;
   min-height: 0;                   /* cancel the base rule's 56px floor */
   background: var(--bg-surface-2); /* must equal #1e1e22 — same as corner-fill in each PNG */
   border-radius: 4px;              /* = var(--r-xl) [24px] − var(--sp-5) [20px] — concentric-corners formula */
   overflow: hidden;                /* clip image cleanly to this radius */
-  clip-path: inset(0 round 4px);   /* Bulletproof clipping for transformed children */
+  clip-path: inset(0 round 4px);   /* Bulletproof clipping */
   border: none;                    /* REMOVED: 1px solid var(--border-subtle) caused double-border */
 }
 
 .home-feature-mini-img {
   display: block;
   width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: center;
+  height: auto;
+  object-fit: fill;
   margin: 0;
-  /* Feature assets have massive ~13% top/bottom baked-in margins.
-     Scale by 1.28 to push the empty space completely outside the box. */
-  transform: scale(1.28);
+  /* 
+     Crop ~13% baked-in gap from top and bottom by pulling image bounds outside container.
+     Preserves 100% of horizontal side content since width is not scaled.
+  */
+  margin-top: -8.7%;
+  margin-bottom: -8.7%;
 }
 
 .home-mini-chip {
