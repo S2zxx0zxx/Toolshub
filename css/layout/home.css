@@ -87,7 +87,7 @@
   transform: translateX(-50%);
   width: 600px;
   height: 400px;
-  background: radial-gradient(ellipse at center, var(--accent-soft) 0%, transparent 70%);
+  background: radial-gradient(ellipse at center, rgba(255,255,255,0.04) 0%, transparent 70%);
   filter: blur(80px);
   pointer-events: none;
   z-index: 0;
@@ -105,11 +105,11 @@
   gap: var(--sp-2);
   padding: var(--sp-1) var(--sp-3);
   border-radius: var(--r-full);
-  background: var(--accent-soft);
-  border: 1px solid var(--border-med);
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.14);
   font-size: var(--fs-xs);
   font-weight: 600;
-  color: var(--accent);
+  color: rgba(255,255,255,0.85);
   margin-bottom: var(--sp-5);
   letter-spacing: 0.02em;
   text-transform: uppercase;
@@ -130,7 +130,7 @@
 }
 .home-hero-headline em {
   font-style: normal;
-  color: var(--accent);
+  color: #ffffff; /* Pure white — was gold #c8890a */
 }
 
 .home-hero-sub {
@@ -316,7 +316,7 @@
   overflow: hidden;
   clip-path: inset(0 round var(--r-lg)); /* Bulletproof clipping */
   aspect-ratio: 2 / 1; /* Restore uniform height */
-  background: #1e1e22 !important; /* Force exact PNG hex so it blends perfectly in Light Mode */
+  background: #191919 !important; /* Exact hex matching PNG asset corner-fill — changed from #1e1e22 to match new --bg-surface-2 token */
   border-radius: var(--r-lg);
   border: 1px solid var(--border-subtle);
   display: block;
@@ -437,7 +437,7 @@
   width: 100%;
   height: auto;
   min-height: 0;                   /* cancel the base rule's 56px floor */
-  background: #1e1e22 !important;  /* Force exact PNG hex so it blends perfectly in Light Mode */
+  background: #191919 !important;  /* Exact hex matching PNG asset corner-fill — changed from #1e1e22 to match new --bg-surface-2 token */
   border-radius: var(--r-md);      /* Smooth curve instead of sharp 4px */
   overflow: hidden;                /* clip image cleanly to this radius */
   clip-path: inset(0 round var(--r-md)); /* Bulletproof smooth curve clipping */
@@ -642,8 +642,8 @@
 }
 
 .home-compare-right {
-  background: var(--accent-soft);
-  border: 2px solid var(--accent);
+  background: rgba(255,255,255,0.03);
+  border: 2px solid rgba(255,255,255,0.16);
   border-radius: var(--r-xl);
   padding: var(--sp-5);
   display: flex;
@@ -892,7 +892,7 @@
   position: absolute;
   width: 280px;
   height: 220px;
-  background: radial-gradient(ellipse at center, var(--accent-soft) 0%, transparent 70%);
+  background: radial-gradient(ellipse at center, rgba(255,255,255,0.04) 0%, transparent 70%);
   filter: blur(70px);
   pointer-events: none;
   z-index: 0;

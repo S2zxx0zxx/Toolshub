@@ -6,11 +6,11 @@
 
 :root {
 
-  /* ---------- COLOR: BASE (Dark theme, default) ---------- */
-  --bg-app:        #0e0e10;   /* app background */
-  --bg-surface:    #17171a;   /* sidebar, sheets, cards */
-  --bg-surface-2:  #1e1e22;   /* elevated cards, input fields */
-  --bg-surface-3:  #26262b;   /* hover states on surface-2 */
+  /* ---------- COLOR: BASE (Dark theme — true black, default) ---------- */
+  --bg-app:        #080808;   /* true black app background */
+  --bg-surface:    #101010;   /* sidebar, sheets, cards */
+  --bg-surface-2:  #191919;   /* elevated cards, input fields */
+  --bg-surface-3:  #222222;   /* hover states on surface-2 */
   --border-subtle: rgba(255,255,255,0.08);
   --border-med:    rgba(255,255,255,0.14);
 
@@ -18,14 +18,14 @@
   --text-primary:   #f2f1ed;
   --text-secondary: #a6a5a0;
   --text-muted:     #737270;
-  --text-inverse:   #14140f;
+  --text-inverse:   #080808;
 
-  /* ---------- COLOR: ACCENT (gold — DigiRise family accent) ---------- */
-  --accent:        #c8890a;
-  --accent-hover:  #e0a02a;
-  --accent-soft:   rgba(200,137,10,0.14);
-  --accent-text-on: #14140f; /* text color when sitting on accent bg */
-  --accent-pro:    #a855f7;  /* purple/neon for PRO elements */
+  /* ---------- COLOR: ACCENT (white — clean premium dark mode) ---------- */
+  --accent:          #ffffff;              /* was gold #c8890a — now white */
+  --accent-hover:    rgba(255,255,255,0.82); /* slightly dimmer white on hover */
+  --accent-soft:     rgba(255,255,255,0.06); /* very subtle white mist for glows/badges */
+  --accent-text-on:  #0a0a0a;              /* dark text on white button */
+  --accent-pro:      #a855f7;              /* purple/neon for PRO elements — unchanged */
 
   /* ---------- COLOR: SEMANTIC ---------- */
   --success: #4caf6d;
