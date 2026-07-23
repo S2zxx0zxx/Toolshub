@@ -405,7 +405,7 @@
   flex: 1;
 }
 
-/* Mini visual mockup inside each card */
+/* Mini visual mockup inside each card — text/chip version only */
 .home-feature-mini {
   margin-top: auto;
   background: var(--bg-surface-2);
@@ -417,6 +417,15 @@
   align-items: center;
   flex-wrap: wrap;
   min-height: 56px;
+}
+
+/* IMPORTANT: when card has an image, strip all base-rule styles */
+.home-feature-card .home-feature-mini.home-feature-mini--img {
+  border: none !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  padding: 0 !important;
+  min-height: 0 !important;
 }
 
 /* ---------- Feature card inner visual — replaced with real image asset ---------- */
