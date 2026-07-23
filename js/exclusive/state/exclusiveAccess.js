@@ -9,12 +9,13 @@
 const EXCLUSIVE_KEY = 'toolshub_exclusive_addon';
 
 import { Auth } from '../../services/auth.js';
+import { isDevAccount } from '../../config/devAccounts.js';
 
 export const ExclusiveAccess = (() => {
 
   function isUnlocked() {
     const user = Auth.getCurrentUser();
-    if (user && (user.email === 'Satyamk82476@gmail.com' || user.email === 'satyamk82476@gmail.com' || user.email === 'Styamk82476@gmail.com' || user.email === 'styamk82476@gmail.com')) {
+    if (user && isDevAccount(user.email)) {
       return true;
     }
     // Phase 1: Coming Soon — always false for regular users

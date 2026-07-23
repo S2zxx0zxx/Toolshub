@@ -17,6 +17,7 @@ import { PERSONAS } from '../config/personas.js';
 import { PLANS } from '../config/plans.js';
 import { Router } from './router.js';
 import { Auth } from '../services/auth.js';
+import { isDevAccount } from '../config/devAccounts.js';
 import { CloudDB } from '../services/cloudDb.js';
 import { initFirebase, auth, db, fbAuthModule, fbFirestoreModule } from '../services/firebase.js';
 import { aiApi } from '../services/aiApi.js';
@@ -1287,7 +1288,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       if (sidebarLoginBtn) sidebarLoginBtn.style.display = 'none';
       const devLoginBtn = document.getElementById('devLoginBtn');
       if (devLoginBtn) {
-        if (user.email && user.email.toLowerCase() === 'satyamk82476@gmail.com') {
+        if (isDevAccount(user.email)) {
           devLoginBtn.style.display = 'inline-block';
         } else {
           devLoginBtn.style.display = 'none';

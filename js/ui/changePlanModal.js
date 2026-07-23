@@ -2,6 +2,7 @@ import { LocalSettings } from '../services/localSettings.js';
 import { PLANS } from '../config/plans.js';
 import { Toast } from './toast.js';
 import { Auth } from '../services/auth.js';
+import { isDevAccount } from '../config/devAccounts.js';
 import { CloudDB } from '../services/cloudDb.js';
 import { OverlayManager } from '../services/overlayManager.js';
 import { API_ENDPOINT } from '../config/api.js';
@@ -236,9 +237,9 @@ export const ChangePlanModal = (() => {
       confirmBtn.textContent = 'Processing...';
     }
 
-    if (currentUser.email === 'Satyamk82476@gmail.com' || currentUser.email === 'satyamk82476@gmail.com' || currentUser.email === 'Styamk82476@gmail.com' || currentUser.email === 'styamk82476@gmail.com') {
+    if (isDevAccount(currentUser.email)) {
       localStorage.setItem('dev_mock_plan', planId);
-      import('../../services/localSettings.js').then(module => {
+      import('../services/localSettings.js').then(module => {
         module.LocalSettings.setCurrentPlan(planId);
         window.dispatchEvent(new CustomEvent('plan-changed'));
         if (typeof Toast !== 'undefined') Toast.show(`Developer Access: Plan updated to ${planId} for testing.`);

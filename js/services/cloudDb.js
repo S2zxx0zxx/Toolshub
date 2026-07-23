@@ -1,6 +1,7 @@
 import { db, fbFirestoreModule } from './firebase.js';
 import { Auth } from './auth.js';
 import { LocalSettings } from './localSettings.js';
+import { isDevAccount } from '../config/devAccounts.js';
 
 export const CloudDB = (() => {
   let conversationsUnsubscribe = null;
@@ -331,7 +332,7 @@ export const CloudDB = (() => {
     }
 
     const user = Auth.getCurrentUser();
-    if (user && (user.email === 'Satyamk82476@gmail.com' || user.email === 'satyamk82476@gmail.com' || user.email === 'Styamk82476@gmail.com' || user.email === 'styamk82476@gmail.com')) {
+    if (user && isDevAccount(user.email)) {
       const devPlan = localStorage.getItem('dev_mock_plan');
       if (devPlan) {
         LocalSettings.setCurrentPlan(devPlan);
