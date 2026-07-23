@@ -272,19 +272,19 @@
 
 .home-cap-cell {
   background: var(--bg-surface);
-  border: 1px solid var(--border-subtle);
+  border: none;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.55), 0 1px 6px rgba(0,0,0,0.35);
   border-radius: var(--r-lg);
   padding: var(--sp-5);
   display: flex;
   flex-direction: column;
   gap: var(--sp-2);
   overflow: hidden;
-  transition: transform var(--dur-base) var(--ease), box-shadow var(--dur-base) var(--ease), border-color var(--dur-base) var(--ease);
+  transition: transform var(--dur-base) var(--ease), box-shadow var(--dur-base) var(--ease);
 }
 .home-cap-cell:hover {
   transform: translateY(-3px);
-  box-shadow: var(--sh-lg);
-  border-color: var(--border-med);
+  box-shadow: 0 12px 48px rgba(0,0,0,0.7), 0 4px 16px rgba(0,0,0,0.5);
 }
 
 .home-cap-icon {
@@ -315,28 +315,26 @@
 .home-cap-cell--img {
   padding: 0;
   overflow: hidden;
-  clip-path: inset(0 round var(--r-lg)); /* Bulletproof clipping */
-  aspect-ratio: 2 / 1; /* Restore uniform height */
-  background: #191919 !important; /* Exact hex matching PNG asset corner-fill — changed from #1e1e22 to match new --bg-surface-2 token */
+  aspect-ratio: 2 / 1;
+  background: #191919;
   border-radius: var(--r-lg);
-  border: 1px solid var(--border-subtle);
+  border: none;
+  box-shadow: 0 8px 40px rgba(0,0,0,0.7), 0 2px 12px rgba(0,0,0,0.5);
   display: block;
   position: relative;
 }
 
 .home-cap-cell--img:hover {
   transform: translateY(-3px);
-  box-shadow: var(--sh-lg);
-  border-color: var(--border-med);
+  box-shadow: 0 16px 56px rgba(0,0,0,0.8), 0 4px 20px rgba(0,0,0,0.6);
 }
 
 .home-cap-cell-img {
   display: block;
   width: 100%;
-  height: 100%; /* Fill the 2:1 container */
-  object-fit: cover;
+  height: 100%;
+  object-fit: cover; /* Hides baked-in PNG margins. Card IS the image. */
   margin: 0;
-  /* No scale needed — padding:0 + overflow:hidden on container clips cleanly */
 }
 
 /* ---------- SECTION 4: FEATURE BENTO ---------- */
@@ -348,18 +346,18 @@
 
 .home-feature-card {
   background: var(--bg-surface);
-  border: 1px solid var(--border-subtle);
+  border: none;
+  box-shadow: 0 8px 40px rgba(0,0,0,0.6), 0 2px 12px rgba(0,0,0,0.4);
   border-radius: var(--r-xl);
   padding: var(--sp-5);
   display: flex;
   flex-direction: column;
   gap: var(--sp-3);
-  transition: transform var(--dur-base) var(--ease), box-shadow var(--dur-base) var(--ease);
-  overflow: hidden; /* This clips everything — inner image doesn't need its own radius */
+  overflow: hidden;
 }
 .home-feature-card:hover {
   transform: translateY(-4px);
-  box-shadow: var(--sh-lg);
+  box-shadow: 0 16px 64px rgba(0,0,0,0.75), 0 4px 20px rgba(0,0,0,0.5);
 }
 
 .home-feature-card-header {
