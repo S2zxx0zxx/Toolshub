@@ -321,7 +321,7 @@ The absolute gateway. All traffic must pass through this proxy.
 | :--- | :--- |
 | `js/env.js` | Contained only `window.ENV = {}`. Never imported anywhere. Removed from SW cache and disk. |
 
-### Modified Files (Audit Batch 1 + Batch 2 + Batch 3)
+### Modified Files (Audit Batches 1 - 4 Completed)
 | File | What Changed |
 | :--- | :--- |
 | `worker/src/devAccess.js` | Added ID token verification + email allowlist check (fixed P1-4 privilege escalation). |
