@@ -267,7 +267,7 @@
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: var(--sp-3);
-  align-items: start; /* Allows cells to shrink to their actual content height */
+  /* Cells will automatically stretch to equal heights */
 }
 
 .home-cap-cell {
@@ -315,6 +315,7 @@
   padding: 0;
   overflow: hidden;
   clip-path: inset(0 round var(--r-lg)); /* Bulletproof clipping */
+  aspect-ratio: 2 / 1; /* Restore uniform height */
   background: #1e1e22 !important; /* Force exact PNG hex so it blends perfectly in Light Mode */
   border-radius: var(--r-lg);
   border: 1px solid var(--border-subtle);
@@ -331,29 +332,10 @@
 .home-cap-cell-img {
   display: block;
   width: 100%;
-  height: auto;
-  aspect-ratio: 2 / 1; /* Fixes Safari/WebKit height collapse bug */
-  object-fit: fill; /* Allows negative margins to physically reduce layout height */
+  height: 100%; /* Fill the 2:1 container */
+  object-fit: cover;
   margin: 0;
   transform: scale(1.01); /* Eliminates 1px white sub-pixel gaps in Light Mode without cropping content */
-}
-
-/* 
-   Negative margins crop the baked-in top/bottom space without scaling width, 
-   preserving 100% of the UI content on the sides. Percentages are relative to container width.
-*/
-.home-cap-cell-img[src*="fast-responses"] {
-  margin-top: -8.5%;
-  margin-bottom: -8.5%;
-}
-.home-cap-cell-img[src*="code-logic"] {
-  margin-top: -5.5%;
-  margin-bottom: -5.5%;
-}
-.home-cap-cell-img[src*="creative-writing"],
-.home-cap-cell-img[src*="smart-assistance"] {
-  margin-top: -2%;
-  margin-bottom: -2%;
 }
 
 /* ---------- SECTION 4: FEATURE BENTO ---------- */
