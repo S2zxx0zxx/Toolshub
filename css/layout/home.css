@@ -312,16 +312,14 @@
 /* ---------- Capability cell — full image asset (icon+title+description baked in) ---------- */
 /* Outer card: border-radius var(--r-lg) = 20px, padding var(--sp-5) = 20px.
    Concentric-corners formula: inner-radius = outer-radius − padding = 20 − 20 = 0px.
-   The image therefore has square corners; overflow:hidden on this element clips it
-   cleanly to the outer card's curve with zero visible seam or double-border. */
+   By inheriting the 20px padding and setting background to surface-2 (#1e1e22), 
+   the image's own dark margin blends seamlessly into the card's padding. */
 .home-cap-cell--img {
-  padding: 0;
-  overflow: hidden;
   aspect-ratio: 2 / 1;
-  background: var(--bg-surface-2, var(--bg-surface));
+  background: var(--bg-surface-2);
   border-radius: var(--r-lg);
   border: 1px solid var(--border-subtle);
-  display: block;
+  display: flex;
   position: relative;
 }
 
@@ -337,8 +335,8 @@
   object-fit: cover;
   object-position: center center;
   display: block;
-  /* No scale trick needed — overflow:hidden on the parent clips correctly
-     once the inner radius is geometrically correct (0px per formula above). */
+  border-radius: 0px; /* inner-radius = 20px - 20px = 0px */
+  border: none; /* ensure no double border */
 }
 
 /* ---------- SECTION 4: FEATURE BENTO ---------- */
@@ -444,7 +442,7 @@
   background: var(--bg-surface-2); /* must equal #1e1e22 — same as corner-fill in each PNG */
   border-radius: 4px;              /* = var(--r-xl) [24px] − var(--sp-5) [20px] — concentric-corners formula */
   overflow: hidden;                /* clip image cleanly to this radius */
-  border: 1px solid var(--border-subtle);
+  border: none;                    /* REMOVED: 1px solid var(--border-subtle) caused double-border */
 }
 
 .home-feature-mini-img {
