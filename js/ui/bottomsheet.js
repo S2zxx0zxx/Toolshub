@@ -25,7 +25,7 @@ export const MODEL_CATALOG = [
   {
     category: 'FULL',
     models: [
-      { id: 'llama-3.1-8b-instant', label: 'DigiPro', tag: '(High)', sub: 'Fastest Ever You Think', dailyLimit: 500000, requiredTier: 'monthly' },
+      { id: 'llama-3.1-8b-instant', label: 'DigiPro', tag: '(High)', sub: 'Fastest Ever You Think', dailyLimit: 500000, requiredTier: 'free' },
       { id: 'gpt-4o-mini', label: 'Maya', tag: '(</> Max)', sub: 'You Think I code', dailyLimit: 50000, requiredTier: '6month' }
     ]
   },

@@ -429,6 +429,48 @@ export function getAllToolSchemas() {
           required: ["query"]
         }
       }
+    },
+    // --- TYPE D: GitHub Tools ---
+    {
+      type: "function",
+      function: {
+        name: "github_list_files",
+        description: "List all files in the connected GitHub repository",
+        parameters: {
+          type: "object",
+          properties: {
+            branch: { type: "string", description: "Optional branch name. Defaults to main/master." }
+          }
+        }
+      }
+    },
+    {
+      type: "function",
+      function: {
+        name: "github_read_file",
+        description: "Read the contents of a file from the connected GitHub repository",
+        parameters: {
+          type: "object",
+          properties: {
+            path: { type: "string", description: "The file path in the repository (e.g. src/index.js)" }
+          },
+          required: ["path"]
+        }
+      }
+    },
+    {
+      type: "function",
+      function: {
+        name: "github_search_code",
+        description: "Search for code inside the connected GitHub repository",
+        parameters: {
+          type: "object",
+          properties: {
+            query: { type: "string", description: "The search query" }
+          },
+          required: ["query"]
+        }
+      }
     }
   ];
 
