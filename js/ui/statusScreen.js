@@ -1,5 +1,6 @@
 import { db, fbFirestoreModule } from '../services/firebase.js';
 import { MODEL_CATALOG } from './bottomsheet.js';
+import { Router } from '../core/router.js';
 
 export const StatusScreen = (() => {
 
@@ -45,7 +46,7 @@ export const StatusScreen = (() => {
 
     // Wire back button
     document.getElementById('statusBackBtn')?.addEventListener('click', () => {
-      import('../core/router.js').then(m => m.Router.navigate('settings'));
+      Router.navigate('settings');
     });
 
     subscribeToStatus();

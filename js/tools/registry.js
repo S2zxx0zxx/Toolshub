@@ -372,16 +372,18 @@ export const ToolSelector = (() => {
     if (!activeToolId) return null;
     const result = findTool(activeToolId);
     if (!result) return null;
-    // mode: 'utility' tools always inject (they have an execute function).
+    // mode: 'utility' tools always inject context.
     // mode: 'prompt-template' tools only inject context once (freshly selected)
     // to prevent tool context from leaking into unrelated topics in the same chat.
     const isUtility = result.tool.mode === 'utility';
-    const isFresh = toolFreshlySelected;
-    // Mark as consumed — next getActiveTool call for prompt-template will see isFresh=false
-    if (!isUtility && isFresh) {
-      toolFreshlySelected = false;
-    }
-    return { ...result, mode: isUtility ? 'utility' : 'prompt-template', isFresh };
+    return { ...result, mode: isUtility ? 'utility' : 'prompt-template', isFresh: toolFreshlySelected };
+  }
+
+  // Called by prompt.js AFTER it has injected tool context into the system prompt.
+  // Separating this from getActiveTool() prevents the flag being consumed by the
+  // multiple getActiveTool() calls in chatEngine.js (newChat, typing indicator, consumeStream).
+  function markToolContextUsed() {
+    toolFreshlySelected = false;
   }
 
   // ---------- RENDER: suggested prompt cards on empty state ----------
@@ -437,6 +439,7 @@ export const ToolSelector = (() => {
     init,
     selectTool,
     getActiveTool,
+    markToolContextUsed,
     findTool,
     getToolMetaById,
     renderCategoryLevel,

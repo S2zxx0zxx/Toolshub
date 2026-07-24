@@ -40,7 +40,7 @@ export const Chat = (() => {
     currentChat = {
       id: genId(),
       title: 'New chat',
-      toolId: ToolSelector.getActiveTool() ? ToolSelector.getActiveTool().tool.id : null,
+      toolId: (() => { const t = ToolSelector.getActiveTool(); return t ? t.tool.id : null; })(),
       messages: [],
       createdAt: Date.now(),
       updatedAt: Date.now(),

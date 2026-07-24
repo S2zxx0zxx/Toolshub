@@ -1093,8 +1093,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     
     if (subName) subName.textContent = planObj.label;
     if (subStatus) {
-      subStatus.textContent = 'active';
-      subStatus.className = 'settings-sub-status-text is-active';
+      const realStatus = LocalSettings.getSubscriptionStatus?.() || (currentPlanId === 'free' ? 'free' : 'active');
+      const isStatusActive = realStatus === 'active';
+      subStatus.textContent = isStatusActive ? 'active' : realStatus;
+      subStatus.className = `settings-sub-status-text ${isStatusActive ? 'is-active' : 'is-inactive'}`;
     }
     if (subPeriod) {
       subPeriod.textContent = currentPlanId === 'free' ? 'Forever free' : `Renews: ${planObj.priceLabel}${planObj.periodLabel}`;
