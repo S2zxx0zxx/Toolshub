@@ -1,4 +1,4 @@
-import { MODEL_CATALOG_TIERS, rankOf, ENDPOINTS } from './modelAccess.js';
+import { MODEL_CATALOG_TIERS, rankOf, ENDPOINTS, MODEL_BACKUP_PAIRS } from './modelAccess.js';
 import * as Sentry from '@sentry/cloudflare';
 
 // Helper to delay
@@ -78,7 +78,7 @@ async function callGroq(modelId, payload, env, timeoutMs) {
   }
 }
 
-async function callWithRetry(modelId, payload, env, isLayer2, timeoutMs) {
+async function callWithRetry(modelId, payload, env, provider, timeoutMs) {
   const MAX_RETRIES = 2;
   const RETRY_DELAY_MS = 1000;
   
@@ -87,7 +87,7 @@ async function callWithRetry(modelId, payload, env, isLayer2, timeoutMs) {
 
   for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
     try {
-      const response = isLayer2
+      const response = provider === 'github'
         ? await callGitHubModels(modelId, payload, env)
         : await callGroq(modelId, payload, env, timeoutMs);
         
@@ -109,13 +109,16 @@ async function callWithRetry(modelId, payload, env, isLayer2, timeoutMs) {
 
 export async function callModelWithFallback(requestedModelId, payload, env, userPlanId, persona) {
   const pair = MODEL_BACKUP_PAIRS[persona];
-  const isIntent = persona === 'intentClassifier';
+  const isIntent = persona === 'intentClassifier' || persona === 'orchestratorAgent' || persona === 'opsAgent';
   
-  // 1. Layer 1 (Groq)
+  const layer1Provider = pair?.layer1Provider || 'groq';
+  const layer2Provider = pair?.layer2Provider || 'github';
+
+  // 1. Layer 1
   const layer1ModelId = pair ? pair.layer1 : requestedModelId;
   const l1Timeout = isIntent ? 5000 : 18000; // tighter timeout for intent
   
-  const l1Result = await callWithRetry(layer1ModelId, payload, env, false, l1Timeout);
+  const l1Result = await callWithRetry(layer1ModelId, payload, env, layer1Provider, l1Timeout);
   if (l1Result.ok) {
     return { ok: true, response: l1Result.response, servedByModel: layer1ModelId };
   }
@@ -131,14 +134,15 @@ export async function callModelWithFallback(requestedModelId, payload, env, user
     console.warn(`Layer 1 (${layer1ModelId}) failed for ${persona || requestedModelId}. Reason: ${l1Result.error?.message || l1Result.response?.status}`);
   }
 
-  // 2. Layer 2 (GitHub Models)
+  // 2. Layer 2
   const layer2ModelId = pair ? pair.layer2 : null;
   let l2Result = { ok: false };
   if (layer2ModelId) {
-    if (!env.GITHUB_MODELS_TOKEN) {
+    const useGitHub = layer2Provider === 'github';
+    if (useGitHub && !env.GITHUB_MODELS_TOKEN) {
       console.warn("GitHub Models token missing, skipping Layer 2.");
     } else {
-      l2Result = await callWithRetry(layer2ModelId, payload, env, true, l1Timeout);
+      l2Result = await callWithRetry(layer2ModelId, payload, env, layer2Provider, l1Timeout);
       if (l2Result.ok) {
         if (env.SENTRY_DSN) {
           Sentry.addBreadcrumb({
@@ -192,6 +196,7 @@ export async function callModelWithFallback(requestedModelId, payload, env, user
          level: 'error'
       });
     }
+    console.error("Cloudflare AI fallback error:", agent5Error);
     return { 
       ok: false, 
       response: l2Result.response || l1Result.response, 

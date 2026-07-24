@@ -5,7 +5,7 @@ import { resolvePlan } from './planResolver.js';
 import { checkAndIncrementDailyUsage } from './usageTracker.js';
 import { recordUsageStat } from './usageStats.js';
 import { FirebaseAdmin } from './firebaseAdmin.js';
-import { MODEL_CATALOG_TIERS, rankOf } from './modelAccess.js';
+import { MODEL_CATALOG_TIERS, rankOf, MODEL_BACKUP_PAIRS } from './modelAccess.js';
 import { callModelWithFallback } from './modelFallback.js';
 import * as statusMonitor from './statusMonitor.js';
 import { routeRequest } from './agents/orchestrator.js';
@@ -229,6 +229,10 @@ export default withSentry((env) => {
 
     let targetModel = model;
     let resolvedPersona = persona;
+    if (resolvedPersona && !MODEL_BACKUP_PAIRS[resolvedPersona]) {
+      Sentry.addBreadcrumb({ category: 'validation', message: `unknown persona received: ${resolvedPersona}`, level: 'warning' });
+      resolvedPersona = null;
+    }
 
     // Note: llama3-70b-8192 and llama3-8b-8192 are decommissioned by Groq.
     if (targetModel === 'llama3-70b-8192' || targetModel === 'llama-3.1-70b-versatile' || targetModel === 'llama-3.3-70b-versatile' || !targetModel) {

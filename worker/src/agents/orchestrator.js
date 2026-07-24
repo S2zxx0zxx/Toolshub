@@ -36,7 +36,7 @@ Evaluate the following user message and return:
   };
 
   try {
-    const result = await callModelWithFallback(orchestratorModel, payload, env, userPlanId);
+    const result = await callModelWithFallback(orchestratorModel, payload, env, userPlanId, 'orchestratorAgent');
     if (!result.ok) {
       throw new Error("Orchestrator failed to decide.");
     }

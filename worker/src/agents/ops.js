@@ -43,7 +43,7 @@ Keep the report concise, use bullet points, and highlight critical warnings if a
     stream: false
   };
 
-  const result = await callModelWithFallback(model, payload, env, 'yearly'); // Treat internal Ops as highest tier
+  const result = await callModelWithFallback(model, payload, env, 'yearly', 'opsAgent'); // Treat internal Ops as highest tier
   
   if (result.ok) {
     const data = await result.response.json();

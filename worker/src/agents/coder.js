@@ -26,5 +26,5 @@ Always consider edge cases, performance (Big O), and security vulnerabilities.`;
     model: model
   };
 
-  return await callModelWithFallback(model, payload, env, userPlanId);
+  return await callModelWithFallback(model, payload, env, userPlanId, 'coderAgent');
 }

@@ -5,6 +5,9 @@ export const MODEL_CATALOG_TIERS = {
   'maya': '6month',
   'mayaPro': 'yearly',
   'intentClassifier': 'free',
+  'orchestratorAgent': 'free',
+  'coderAgent': 'free',
+  'opsAgent': 'free',
   // Keep legacy IDs for safety during rollout
   'llama-3.3-70b-versatile': 'free',
   'llama-3.1-8b-instant': 'free',     
@@ -18,7 +21,10 @@ export const MODEL_BACKUP_PAIRS = {
   digipro:  { layer1: 'groq/compound-mini',       layer2: 'openai/gpt-5-mini' },
   maya:     { layer1: 'groq/compound',            layer2: 'deepseek/DeepSeek-V3-0324' },
   mayaPro:  { layer1: 'groq/compound',            layer2: 'openai/gpt-5-chat' },
-  intentClassifier: { layer1: 'llama-3.1-8b-instant', layer2: 'microsoft/Phi-4-mini-instruct' }
+  intentClassifier: { layer1: 'llama-3.1-8b-instant', layer2: 'microsoft/Phi-4-mini-instruct' },
+  orchestratorAgent: { layer1: 'llama-3.1-8b-instant', layer2: 'microsoft/Phi-4-mini-instruct' },
+  coderAgent: { layer1: 'gpt-4o-mini', layer2: 'llama-3.3-70b-versatile', layer1Provider: 'github', layer2Provider: 'groq' },
+  opsAgent: { layer1: 'llama-3.1-8b-instant', layer2: 'microsoft/Phi-4-mini-instruct' }
 };
 
 export function rankOf(tier) {
