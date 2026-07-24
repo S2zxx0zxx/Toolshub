@@ -4,7 +4,6 @@ import { Auth } from '../services/auth.js';
 export const ContextManager = (() => {
   
   const MAX_HISTORY_MESSAGES = 100;
-  const SUMMARIZE_THRESHOLD = 60;
 
   function buildContext(messages, toolResults = []) {
     const context = [];

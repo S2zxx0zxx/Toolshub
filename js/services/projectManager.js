@@ -1,6 +1,4 @@
 import { LocalSettings } from './localSettings.js';
-import { CloudDB } from './cloudDb.js';
-import { Auth } from './auth.js';
 
 export const ProjectManager = (() => {
   const STORAGE_KEY = 'toolshub_projects';

@@ -113,7 +113,7 @@ export const ToolIntelligence = (() => {
     };
     
     const formatter = formatters[toolId];
-    return formatter ? formatter(result) : (typeof r === 'string' ? r : JSON.stringify(result, null, 2));
+    return formatter ? formatter(result) : (typeof result === 'string' ? result : JSON.stringify(result, null, 2));
   }
 
   return {

@@ -1,8 +1,8 @@
-# 🌌 ToolsHub: Architectural Codex v5.0 (Audit-Hardened)
+# 🌌 ToolsHub: Architectural Codex v6.0 (Unicorn Edition)
 
 > **MISSION DIRECTIVE:** This document is the ultimate source of truth for ToolsHub. It is specifically engineered to be ingested by AI agents and Senior Engineers. By reading this file, an AI must perfectly understand the entire architectural state, security boundaries, component responsibilities, data flows, and future roadmap without needing to scan individual source files. **Read carefully before executing any code changes.**
 
-![Architecture Version](https://img.shields.io/badge/Architecture-v5.0-6c63ff?style=flat-square)
+![Architecture Version](https://img.shields.io/badge/Architecture-v6.0-6c63ff?style=flat-square)
 ![Status](https://img.shields.io/badge/Status-Production_Ready-34a853?style=flat-square)
 ![Frontend](https://img.shields.io/badge/Frontend-Vanilla_JS_SPA-fbbc05?style=flat-square)
 ![Backend](https://img.shields.io/badge/Backend-Cloudflare_Workers-f38020?style=flat-square)
@@ -419,18 +419,6 @@ firebase deploy --only hosting
 - Send a chat message as a free/guest user — confirm no `403 model_tier_required` in console
 - Send a classification-heavy prompt (e.g. "create a picture of a sunset") — confirm `detectIntent` still returns valid JSON (not an SSE stream)
 - Check Settings screen usage bar still displays correct numbers
-
----
-*End of Codex v5.0. You are now initialized with absolute knowledge of the current state of ToolsHub.*
-
-
-> **MISSION DIRECTIVE:** This document is the ultimate source of truth for ToolsHub. It is specifically engineered to be ingested by AI agents and Senior Engineers. By reading this file, an AI must perfectly understand the entire architectural state, security boundaries, component responsibilities, data flows, and future roadmap without needing to scan individual source files. **Read carefully before executing any code changes.**
-
-![Architecture Version](https://img.shields.io/badge/Architecture-v5.1-6c63ff?style=flat-square)
-![Status](https://img.shields.io/badge/Status-Production_Ready-34a853?style=flat-square)
-![Frontend](https://img.shields.io/badge/Frontend-Vanilla_JS_SPA-fbbc05?style=flat-square)
-![Backend](https://img.shields.io/badge/Backend-Cloudflare_Workers-f38020?style=flat-square)
-![Database](https://img.shields.io/badge/Database-Firebase_Firestore-ffca28?style=flat-square)
 
 ---
 
