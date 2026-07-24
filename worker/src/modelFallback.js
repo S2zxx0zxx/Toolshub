@@ -7,7 +7,7 @@ const delay = ms => new Promise(res => setTimeout(res, ms));
 async function callCloudflareAI(payload, env) {
   // Use Cloudflare's native AI as the ultimate Agent 5 fallback.
   // It runs on the edge and is almost never down.
-  const response = await env.AI.run('@cf/meta/llama-3.1-8b-instruct', {
+  const response = await env.AI.run('@cf/meta/llama-3.1-8b-instruct-fp8', {
     messages: payload.messages,
     stream: payload.stream
   });
@@ -187,7 +187,7 @@ export async function callModelWithFallback(requestedModelId, payload, env, user
     }
     
     const cfResponse = await callCloudflareAI(payload, env);
-    return { ok: true, response: cfResponse, servedByModel: '@cf/meta/llama-3.1-8b-instruct' };
+    return { ok: true, response: cfResponse, servedByModel: '@cf/meta/llama-3.1-8b-instruct-fp8' };
   } catch (agent5Error) {
     if (env.SENTRY_DSN) {
       Sentry.addBreadcrumb({
