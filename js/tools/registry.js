@@ -179,12 +179,15 @@ export const ToolSelector = (() => {
         .filter(Boolean)
         .map(({ tool, category }) => ({ ...tool, categoryId: category.id }));
     }
-    // Cold-start fallback: static pinned:true tools
+    // Cold-start fallback: one tool per category
     const pinned = [];
     const enabledIds = LocalSettings ? LocalSettings.getEnabledCategories() : null;
     DATA.forEach(cat => {
       if (enabledIds !== null && !enabledIds.includes(cat.id)) return;
-      cat.tools.forEach(t => { if (t.pinned) pinned.push({ ...t, categoryId: cat.id }); });
+      // Add first tool from each category
+      if (cat.tools.length > 0) {
+        pinned.push({ ...cat.tools[0], categoryId: cat.id });
+      }
     });
     return pinned;
   }
@@ -193,7 +196,20 @@ export const ToolSelector = (() => {
   function renderPins() {
     const el = document.getElementById('sidebarPins');
     if (!el) return;
-    el.innerHTML = getPinned().map(t => `
+    
+    // Show more pinned tools - one from each category + most used
+    const pinned = getPinned();
+    
+    // Add most used tools to pinned
+    const mostUsed = getMostUsedTools();
+    for (const tool of mostUsed) {
+      if (!pinned.find(p => p.id === tool.id)) {
+        const found = findTool(tool.id);
+        if (found) pinned.push({ ...found.tool, categoryId: found.category.id });
+      }
+    }
+    
+    el.innerHTML = pinned.slice(0, 8).map(t => `
       <div class="sidebar-pin-item" data-tool-id="${t.id}">
         ${icon(t.icon)}
         <span>${t.title}</span>
@@ -202,6 +218,19 @@ export const ToolSelector = (() => {
     el.querySelectorAll('.sidebar-pin-item').forEach(node => {
       node.addEventListener('click', () => selectTool(node.dataset.toolId));
     });
+  }
+
+  // Get most used tools from localStorage
+  function getMostUsedTools() {
+    try {
+      const usage = JSON.parse(localStorage.getItem('th_tool_usage') || '{}');
+      return Object.entries(usage)
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 5)
+        .map(([id, count]) => ({ id, count }));
+    } catch {
+      return [];
+    }
   }
 
   // ---------- RENDER: level 1 (categories) — respects enabled-category filter ----------
@@ -213,7 +242,25 @@ export const ToolSelector = (() => {
     const enabledIds = LocalSettings ? LocalSettings.getEnabledCategories() : null;
     const visible = enabledIds === null ? DATA : DATA.filter(c => enabledIds.includes(c.id));
 
-    el.innerHTML = visible.map(cat => `
+    // Add "All Tools" option at the top
+    const allToolsCount = DATA.reduce((sum, cat) => sum + cat.tools.length, 0);
+    
+    el.innerHTML = `
+      <div class="category-card" data-cat-id="all" style="background: var(--primary); color: white; border: none;">
+        <div class="category-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:24px;height:24px;">
+            <polygon points="12 2 2 7 12 12 22 7 12 2"/>
+            <polyline points="2 17 12 22 22 17"/>
+            <polyline points="2 12 12 17 22 12"/>
+          </svg>
+        </div>
+        <div class="category-body">
+          <div class="category-title">All ${allToolsCount} Tools</div>
+          <div class="category-sub">Browse every tool</div>
+        </div>
+        <svg class="tool-check" style="color:inherit;width:16px;height:16px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="9 18 15 12 9 6"/></svg>
+      </div>
+    ` + visible.map(cat => `
       <div class="category-card" data-cat-id="${cat.id}">
         <div class="category-icon">${icon(cat.icon)}</div>
         <div class="category-body">
@@ -230,6 +277,40 @@ export const ToolSelector = (() => {
 
   // ---------- RENDER: level 2 (tools within category) ----------
   function renderToolLevel(catId) {
+    // Handle "All Tools" - show all tools from all categories
+    if (catId === 'all') {
+      const allTools = [];
+      DATA.forEach(cat => {
+        cat.tools.forEach(t => {
+          allTools.push({ ...t, categoryId: cat.id, categoryName: cat.title });
+        });
+      });
+      
+      const el = document.getElementById('toolLevel');
+      el.innerHTML = allTools.map(t => `
+        <div class="tool-card ${t.id === activeToolId ? 'is-selected' : ''}" data-tool-id="${t.id}">
+          <div class="tool-icon">${icon(t.icon)}</div>
+          <div class="tool-body">
+            <div class="tool-title">${t.title}</div>
+            <div class="tool-sub">${t.categoryName} · ${t.sub}</div>
+          </div>
+          ${t.id === activeToolId ? `<svg class="tool-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>` : ''}
+        </div>
+      `).join('');
+      el.querySelectorAll('.tool-card').forEach(node => {
+        node.addEventListener('click', () => selectTool(node.dataset.toolId));
+      });
+      
+      // slide to level 2
+      const levels = document.getElementById('toolLevels');
+      const sheet = document.getElementById('toolSheet');
+      const title = document.getElementById('toolSheetTitle');
+      levels.classList.add('level-2');
+      sheet.classList.add('has-back');
+      title.textContent = `All ${allTools.length} Tools`;
+      return;
+    }
+    
     const cat = DATA.find(c => c.id === catId);
     if (!cat) return;
 
