@@ -11,7 +11,7 @@ async function probeModel(modelId, env) {
   if (!token) return { success: false, reason: 'missing_token' };
 
   const payload = {
-    model: isGithubModel ? 'openai/gpt-4o-mini' : modelId,
+    model: isGithubModel ? 'gpt-4o-mini' : modelId,
     messages: [{ role: 'user', content: 'hello' }],
     max_tokens: 5
   };

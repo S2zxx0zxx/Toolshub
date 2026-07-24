@@ -75,7 +75,7 @@ async function callProvider(modelId, payload, env) {
   // Define which provider handles which model
   if (modelId === 'gpt-4o-mini') {
     if (!env.GITHUB_MODELS_TOKEN) throw new Error("GitHub Models token missing.");
-    return await callGitHubModels('openai/gpt-4o-mini', payload, env);
+    return await callGitHubModels('gpt-4o-mini', payload, env);
   }
   
   // Note: If falling back to 70B from github models, its model id there is meta-llama/Llama-3.3-70B-Instruct.
