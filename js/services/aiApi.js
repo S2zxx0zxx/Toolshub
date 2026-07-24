@@ -46,9 +46,29 @@ export const aiApi = (() => {
   // Initialize ping on load
   setTimeout(pingBackend, 1000);
 
+  function resolveModelAndPersona() {
+    let selected = LocalSettings.getSelectedChatModel() || 'digilite';
+    // Legacy mapping
+    if (selected === 'llama-3.3-70b-versatile') selected = 'digilite';
+    if (selected === 'groq/compound-mini') selected = 'digipro';
+    if (selected === 'gpt-4o-mini') selected = 'maya';
+    if (selected === 'groq/compound') selected = 'mayaPro';
+
+    let model = CHAT_MODEL;
+    if (selected === 'digipro') model = 'groq/compound-mini';
+    else if (selected === 'maya') model = 'groq/compound';
+    else if (selected === 'mayaPro') model = 'groq/compound';
+    else if (selected === 'digilite') model = 'llama-3.3-70b-versatile';
+
+    return { model, persona: selected };
+  }
+
   async function* fetchGroqStream(messages) {
+    const { model, persona } = resolveModelAndPersona();
+    
     const payload = {
-      model: LocalSettings.getSelectedChatModel() || CHAT_MODEL,
+      model,
+      persona,
       messages: messages,
       temperature: 0.7,
       stream: true
@@ -79,9 +99,8 @@ export const aiApi = (() => {
       
       // NEW: Detect 429 rate-limit error and dispatch exhaustion event
       if (response.status === 429 || (errorText && errorText.toLowerCase().includes('rate_limit'))) {
-        const currentModel = LocalSettings.getSelectedChatModel() || 'llama-3.3-70b-versatile';
         window.dispatchEvent(new CustomEvent('model-exhausted', { 
-          detail: { modelId: currentModel, timestamp: Date.now() } 
+          detail: { modelId: persona, timestamp: Date.now() } 
         }));
       }
       
@@ -165,9 +184,12 @@ export const aiApi = (() => {
   }
 
   async function chatAgentRound(messages, tools) {
+    const { model, persona } = resolveModelAndPersona();
+    
     const payload = {
       mode: 'agent',
-      model: LocalSettings.getSelectedChatModel() || CHAT_MODEL,
+      model,
+      persona,
       messages: messages,
       tools: tools,
       temperature: 0.7,

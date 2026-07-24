@@ -222,18 +222,25 @@ export default withSentry((env) => {
       console.warn("FIREBASE_SERVICE_ACCOUNT not set. Skipping daily usage enforcement.");
     }
 
-    const { messages, model, temperature, stream, response_format, mode, tools } = body;
+    const { messages, model, persona, temperature, stream, response_format, mode, tools } = body;
     if (!messages || !Array.isArray(messages)) {
       return new Response('Bad Request: Missing or invalid "messages" array.', { status: 400, headers: corsHeaders });
     }
 
     let targetModel = model;
+    let resolvedPersona = persona;
+
     // Note: llama3-70b-8192 and llama3-8b-8192 are decommissioned by Groq.
     if (targetModel === 'llama3-70b-8192' || targetModel === 'llama-3.1-70b-versatile' || targetModel === 'llama-3.3-70b-versatile' || !targetModel) {
       targetModel = 'llama-3.3-70b-versatile';
+      if (!resolvedPersona) resolvedPersona = 'digilite';
     }
     if (targetModel === 'llama3-8b-8192' || targetModel === 'llama-3.1-8b-instant') {
       targetModel = 'llama-3.1-8b-instant';
+    }
+
+    if (mode === 'classify') {
+      resolvedPersona = 'intentClassifier';
     }
 
     // Agent 1: Orchestrator Hook
@@ -282,7 +289,7 @@ export default withSentry((env) => {
     }
 
     // Enforce model access tier
-    const requiredTier = MODEL_CATALOG_TIERS[targetModel] || 'free';
+    const requiredTier = MODEL_CATALOG_TIERS[resolvedPersona || targetModel] || 'free';
     if (rankOf(requiredTier) > rankOf(callerPlan.planId)) {
       return new Response(JSON.stringify({ 
         error: 'model_tier_required', 
@@ -326,7 +333,7 @@ export default withSentry((env) => {
     }
 
     // 6. Execute Model Call with Tier-Aware Fallback
-    const fallbackResult = await callModelWithFallback(targetModel, payload, env, callerPlan.planId);
+    const fallbackResult = await callModelWithFallback(targetModel, payload, env, callerPlan.planId, resolvedPersona);
 
     if (!fallbackResult.ok) {
       // Total failure case: return the last error from the chain

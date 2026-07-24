@@ -52,38 +52,33 @@ async function callGitHubModels(modelId, payload, env) {
   return ghResponse;
 }
 
-async function callGroq(modelId, payload, env) {
+async function callGroq(modelId, payload, env, timeoutMs) {
   const apiKey = env.GROQ_API_KEY;
   if (!apiKey) {
     throw new Error("GROQ_API_KEY secret is not set.");
   }
   
-  const groqResponse = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${apiKey}`,
-      'Accept-Encoding': 'identity'
-    },
-    body: JSON.stringify({ ...payload, model: modelId })
-  });
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
   
-  return groqResponse;
-}
-
-async function callProvider(modelId, payload, env) {
-  // Define which provider handles which model
-  if (modelId === 'gpt-4o-mini') {
-    if (!env.GITHUB_MODELS_TOKEN) throw new Error("GitHub Models token missing.");
-    return await callGitHubModels('gpt-4o-mini', payload, env);
+  try {
+    const groqResponse = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${apiKey}`,
+        'Accept-Encoding': 'identity'
+      },
+      body: JSON.stringify({ ...payload, model: modelId }),
+      signal: controller.signal
+    });
+    return groqResponse;
+  } finally {
+    clearTimeout(timeoutId);
   }
-  
-  // Note: If falling back to 70B from github models, its model id there is meta-llama/Llama-3.3-70B-Instruct.
-  // But since we are mapping strictly through MODEL_CATALOG_TIERS, we stick to Groq's IDs where applicable.
-  return await callGroq(modelId, payload, env);
 }
 
-async function callWithRetry(modelId, payload, env) {
+async function callWithRetry(modelId, payload, env, isLayer2, timeoutMs) {
   const MAX_RETRIES = 2;
   const RETRY_DELAY_MS = 1000;
   
@@ -92,11 +87,13 @@ async function callWithRetry(modelId, payload, env) {
 
   for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
     try {
-      const response = await callProvider(modelId, payload, env);
+      const response = isLayer2
+        ? await callGitHubModels(modelId, payload, env)
+        : await callGroq(modelId, payload, env, timeoutMs);
+        
       if (response.ok) {
         return { ok: true, response };
       }
-      // If it's a 4xx error (like invalid request), retrying probably won't help, but we'll stick to a simple strategy for now
       lastResponse = response;
     } catch (e) {
       lastError = e;
@@ -110,65 +107,77 @@ async function callWithRetry(modelId, payload, env) {
   return { ok: false, response: lastResponse, error: lastError };
 }
 
-export async function callModelWithFallback(requestedModelId, payload, env, userPlanId) {
-  // Generate an ordered list of models from highest to lowest tier
-  // Sort models based on their rank
-  const orderedModels = Object.keys(MODEL_CATALOG_TIERS).sort((a, b) => {
-    return rankOf(MODEL_CATALOG_TIERS[b]) - rankOf(MODEL_CATALOG_TIERS[a]);
-  });
+export async function callModelWithFallback(requestedModelId, payload, env, userPlanId, persona) {
+  const pair = MODEL_BACKUP_PAIRS[persona];
+  const isIntent = persona === 'intentClassifier';
+  
+  // 1. Layer 1 (Groq)
+  const layer1ModelId = pair ? pair.layer1 : requestedModelId;
+  const l1Timeout = isIntent ? 5000 : 18000; // tighter timeout for intent
+  
+  const l1Result = await callWithRetry(layer1ModelId, payload, env, false, l1Timeout);
+  if (l1Result.ok) {
+    return { ok: true, response: l1Result.response, servedByModel: layer1ModelId };
+  }
 
-  // Find where our requested model is in the fallback chain
-  const startIndex = orderedModels.indexOf(requestedModelId);
-  const userRank = rankOf(userPlanId);
+  // Layer 1 failed.
+  if (env.SENTRY_DSN) {
+    Sentry.addBreadcrumb({
+      category: 'model-fallback',
+      message: `Layer 1 (${layer1ModelId}) failed for ${persona || requestedModelId}. Reason: ${l1Result.error?.message || l1Result.response?.status}`,
+      level: 'warning'
+    });
+  } else {
+    console.warn(`Layer 1 (${layer1ModelId}) failed for ${persona || requestedModelId}. Reason: ${l1Result.error?.message || l1Result.response?.status}`);
+  }
 
-  let lastResult = null;
-
-  for (let i = startIndex; i < orderedModels.length; i++) {
-    const currentModelId = orderedModels[i];
-    const currentTier = MODEL_CATALOG_TIERS[currentModelId];
-    
-    // Only attempt if the user is entitled to this tier
-    if (rankOf(currentTier) > userRank) {
-      continue;
-    }
-
-    const result = await callWithRetry(currentModelId, payload, env);
-    
-    if (result.ok) {
-      if (currentModelId !== requestedModelId) {
-        // Fallback occurred
+  // 2. Layer 2 (GitHub Models)
+  const layer2ModelId = pair ? pair.layer2 : null;
+  let l2Result = { ok: false };
+  if (layer2ModelId) {
+    if (!env.GITHUB_MODELS_TOKEN) {
+      console.warn("GitHub Models token missing, skipping Layer 2.");
+    } else {
+      l2Result = await callWithRetry(layer2ModelId, payload, env, true, l1Timeout);
+      if (l2Result.ok) {
         if (env.SENTRY_DSN) {
           Sentry.addBreadcrumb({
-            category: 'model-fallback',
-            message: `Model fallback triggered: ${requestedModelId} failed, served by ${currentModelId}`,
-            level: 'warning'
+            category: 'model-fallback-success',
+            message: `Layer 2 (${layer2ModelId}) served request for ${persona || requestedModelId}.`,
+            level: 'info'
           });
-        } else {
-          console.warn(`Model fallback triggered: ${requestedModelId} failed, served by ${currentModelId}`);
         }
+        return { ok: true, response: l2Result.response, servedByModel: layer2ModelId };
       }
-      return { ok: true, response: result.response, servedByModel: currentModelId };
-    }
-    
-    lastResult = result;
-    
-    // Log the failure of this specific model in the chain
-    if (env.SENTRY_DSN) {
-      Sentry.addBreadcrumb({
-         category: 'model-fallback-failure',
-         message: `Model ${currentModelId} failed during fallback chain.`,
-         level: 'warning'
-      });
+      
+      // Layer 2 failed.
+      if (env.SENTRY_DSN) {
+        Sentry.addBreadcrumb({
+          category: 'model-fallback-failure',
+          message: `Layer 2 (${layer2ModelId}) also failed for ${persona || requestedModelId}. Reason: ${l2Result.error?.message || l2Result.response?.status}`,
+          level: 'warning'
+        });
+      } else {
+        console.warn(`Layer 2 (${layer2ModelId}) failed for ${persona || requestedModelId}. Reason: ${l2Result.error?.message || l2Result.response?.status}`);
+      }
     }
   }
 
-  // If we exhaust the fallback chain, AGENT 5 (Ultimate Fallback) takes over.
-  // We use Cloudflare's native edge AI, which bypasses all external network calls.
+  // 3. Layer 3 (Cloudflare Native AI) - Skip for intent classifier
+  if (isIntent) {
+    return { 
+      ok: false, 
+      response: l2Result.response || l1Result.response, 
+      error: l2Result.error || l1Result.error, 
+      servedByModel: null 
+    };
+  }
+  
   try {
     if (env.SENTRY_DSN) {
       Sentry.addBreadcrumb({
          category: 'model-fallback-agent5',
-         message: `All external APIs exhausted. Engaging Agent 5 (Cloudflare Native AI) for ${requestedModelId}.`,
+         message: `All external APIs exhausted. Engaging Layer 3 (Cloudflare Native AI) for ${persona || requestedModelId}.`,
          level: 'warning'
       });
     }
@@ -179,10 +188,15 @@ export async function callModelWithFallback(requestedModelId, payload, env, user
     if (env.SENTRY_DSN) {
       Sentry.addBreadcrumb({
          category: 'model-fallback-exhausted',
-         message: `Agent 5 completely failed. System is down.`,
+         message: `Layer 3 completely failed. System is down.`,
          level: 'error'
       });
     }
-    return { ok: false, response: lastResult?.response, error: agent5Error, servedByModel: null };
+    return { 
+      ok: false, 
+      response: l2Result.response || l1Result.response, 
+      error: agent5Error, 
+      servedByModel: null 
+    };
   }
 }

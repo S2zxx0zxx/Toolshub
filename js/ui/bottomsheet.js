@@ -19,20 +19,20 @@ export const MODEL_CATALOG = [
   {
     category: 'MINI',
     models: [
-      { id: 'llama-3.3-70b-versatile', label: 'Digilite', tag: '(medium)', sub: 'General Chats', dailyLimit: 100000, requiredTier: 'free' }
+      { id: 'llama-3.3-70b-versatile', persona: 'digilite', label: 'Digilite', tag: '(medium)', sub: 'General Chats', dailyLimit: 100000, requiredTier: 'free' }
     ]
   },
   {
     category: 'FULL',
     models: [
-      { id: 'groq/compound-mini', label: 'DigiPro', tag: '(High)', sub: 'Fastest Ever You Think', dailyLimit: 500000, requiredTier: 'monthly' },
-      { id: 'gpt-4o-mini', label: 'Maya', tag: '(</> Max)', sub: 'Expert-level code likhti hai — copy-paste ready. (Live execution coming in Pro)', dailyLimit: 50000, requiredTier: '6month' }
+      { id: 'groq/compound-mini', persona: 'digipro', label: 'DigiPro', tag: '(High)', sub: 'Fastest Ever You Think', dailyLimit: 500000, requiredTier: 'monthly' },
+      { id: 'groq/compound', persona: 'maya', label: 'Maya', tag: '(</> Max)', sub: 'Expert-level code likhti hai — copy-paste ready. (Live execution coming in Pro)', dailyLimit: 50000, requiredTier: '6month' }
     ]
   },
   {
     category: 'FLAGSHIP',
     models: [
-      { id: 'groq/compound', label: 'Maya Pro', tag: '(Stay Tuned)', sub: 'Premium features coming', dailyLimit: 70000, requiredTier: 'yearly' }
+      { id: 'groq/compound', persona: 'mayaPro', label: 'Maya Pro', tag: '(Stay Tuned)', sub: 'Premium features coming', dailyLimit: 70000, requiredTier: 'yearly' }
     ]
   }
 ];
@@ -49,8 +49,8 @@ export const BottomSheet = (() => {
     return rankOf(currentPlan) >= rankOf(requiredTier);
   }
   
-  function findModel(id) {
-    return MODEL_CATALOG.flatMap(c => c.models).find(m => m.id === id);
+  function findModelByPersona(persona) {
+    return MODEL_CATALOG.flatMap(c => c.models).find(m => m.persona === persona);
   }
 
   const exhaustedModels = new Set(); // In-memory, resets on page reload
@@ -232,16 +232,22 @@ export const BottomSheet = (() => {
     });
   }
 
-  function updateModelChip(modelId) {
+  function updateModelChip(persona) {
     const chip = document.querySelector('#modelChip span');
-    const model = findModel(modelId);
+    const model = findModelByPersona(persona);
     if (chip && model) {
       chip.textContent = model.label + (model.tag ? ' ' + model.tag : '');
     }
   }
 
   function restoreModelChip() {
-    const selectedId = LocalSettings.getSelectedChatModel();
+    let selectedId = LocalSettings.getSelectedChatModel();
+    // Legacy migration
+    if (selectedId === 'llama-3.3-70b-versatile') selectedId = 'digilite';
+    if (selectedId === 'groq/compound-mini') selectedId = 'digipro';
+    if (selectedId === 'gpt-4o-mini') selectedId = 'maya';
+    if (selectedId === 'groq/compound') selectedId = 'mayaPro';
+
     if (selectedId) {
       updateModelChip(selectedId);
     } else {
@@ -265,7 +271,12 @@ export const BottomSheet = (() => {
     const list = document.getElementById('modelSheetList');
     if (!list) return;
 
-    let current = LocalSettings.getSelectedChatModel() || 'llama-3.3-70b-versatile';
+    let current = LocalSettings.getSelectedChatModel() || 'digilite';
+    // Legacy migration
+    if (current === 'llama-3.3-70b-versatile') current = 'digilite';
+    if (current === 'groq/compound-mini') current = 'digipro';
+    if (current === 'gpt-4o-mini') current = 'maya';
+    if (current === 'groq/compound') current = 'mayaPro';
 
     list.innerHTML = '';
     
@@ -277,11 +288,11 @@ export const BottomSheet = (() => {
 
       group.models.forEach(model => {
         const row = document.createElement('button');
-        const isComingSoon = model.id === 'groq/compound';
+        const isComingSoon = model.persona === 'mayaPro' && model.id === 'groq/compound' && false; // Removing coming soon block logic for now, was hardcoded
         const canAccess = userCanAccess(model.requiredTier);
         
-        row.className = `list-row ${model.id === current ? 'is-selected' : ''} ${(!canAccess || isComingSoon) ? 'is-disabled' : ''}`;
-        row.dataset.modelId = model.id;
+        row.className = `list-row ${model.persona === current ? 'is-selected' : ''} ${(!canAccess || isComingSoon) ? 'is-disabled' : ''}`;
+        row.dataset.persona = model.persona;
         
         if (isComingSoon) {
           row.style.opacity = '0.5';
@@ -326,9 +337,9 @@ export const BottomSheet = (() => {
             return;
           }
           
-          const modelId = row.dataset.modelId;
-          LocalSettings.setSelectedChatModel(modelId);
-          updateModelChip(modelId);
+          const p = row.dataset.persona;
+          LocalSettings.setSelectedChatModel(p);
+          updateModelChip(p);
           closeModelSheet();
         });
         
@@ -548,3 +559,4 @@ export const BottomSheet = (() => {
 
   return { init, openAddSheet, closeAddSheet, openToolSheet, closeToolSheet, openModelSheet, closeModelSheet, openReportBugSheet, closeReportBugSheet, updateReportBugCounter, userCanAccess, MODEL_CATALOG };
 })();
+
