@@ -340,7 +340,7 @@
 
 /* Modifier specifically for Fast Responses and Code & Logic which have extra baked-in #1E1E22 padding in the PNG itself */
 .home-cap-cell-img--zoom {
-  transform: scale(1.25); /* Increased zoom to perfectly crop the baked-in top/bottom padding off the edges */
+  transform: scale(1.27) translate(5%, -1%); /* Zooms slightly more to remove the top gap, and translates right to prevent left-side text cutoff */
   transform-origin: center;
 }
 
