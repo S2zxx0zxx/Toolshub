@@ -33,6 +33,7 @@
   <link rel="stylesheet" href="./css/components/bugReport.css?v=42">
   <link rel="stylesheet" href="./css/components/advancedControls.css?v=42">
   <link rel="stylesheet" href="./css/layout/home.css?v=43">
+<link rel="stylesheet" href="./css/layout/home-upgraded.css?v=1">
   <link rel="stylesheet" href="./css/exclusive/exclusive-tokens.css?v=1">
   <link rel="stylesheet" href="./css/exclusive/exclusive-layout.css?v=1">
   <link rel="stylesheet" href="./css/exclusive/exclusive-home.css?v=1">
@@ -210,28 +211,30 @@
       <!-- ---- HOME SCROLL BODY ---- -->
       <div class="home-content">
 
-        <!-- === SECTION 1: HERO === -->
+        <!-- === SECTION 1: HERO UPGRADED === -->
         <section class="home-hero">
-          <div class="home-hero-blob"></div>
-          <!-- ADDITIVE: second directional glow from top-right corner -->
-          <div class="home-hero-glow-2 home-glow-corner home-glow-corner--top-right" aria-hidden="true"></div>
+          <div class="home-hero-particles" aria-hidden="true"></div>
           <div class="home-hero-inner">
             <div class="home-hero-badge">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2 L14.5 9.5 L22 12 L14.5 14.5 L12 22 L9.5 14.5 L2 12 L9.5 9.5 Z"/></svg>
-              One workspace &middot; Every tool
+              <span>31+ AI-Powered Tools</span>
             </div>
             <h1 class="home-hero-headline">
               Your entire toolkit,<br><em>finally in one place.</em>
             </h1>
             <p class="home-hero-sub">
-              Write, research, Build, create. ToolsHub brings together everything you reach for &mdash; smarter, faster, together.
+              Write, research, code, create. ToolsHub brings together everything you need &mdash; smarter, faster, together.
             </p>
             <div class="home-hero-ctas">
-              <button class="btn btn-primary" data-home-cta="chat">Open ToolsHub</button>
-              <button class="btn btn-ghost" id="homeGhostCta">See what&rsquo;s inside &darr;</button>
+              <button class="btn btn-primary" data-home-cta="chat">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:18px;height:18px;margin-right:8px;"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                Start Creating
+              </button>
+              <button class="btn btn-ghost" id="homeGhostCta">
+                Explore Tools &darr;
+              </button>
             </div>
           </div>
-          <!-- ADDITIVE: floating animated logo card — hidden on mobile (<640px) via CSS -->
           <div class="home-hero-logo-card home-float-anim" aria-hidden="true">
             <img src="assets/icon-master.png" alt="" width="52" height="52" loading="eager" decoding="async">
           </div>
@@ -457,6 +460,26 @@
               <div class="home-cat-name">Files &amp; Images</div>
               <div class="home-cat-count">5 tools</div>
             </div>
+          </div>
+        </section>
+
+        <!-- === SECTION STATS: COUNTERS === -->
+        <section class="home-stats reveal">
+          <div class="home-stat">
+            <div class="home-stat-number" data-target="31">0</div>
+            <div class="home-stat-label">AI-Powered Tools</div>
+          </div>
+          <div class="home-stat">
+            <div class="home-stat-number" data-target="6">0</div>
+            <div class="home-stat-label">Tool Categories</div>
+          </div>
+          <div class="home-stat">
+            <div class="home-stat-number" data-target="15">0</div>
+            <div class="home-stat-label">Code Languages</div>
+          </div>
+          <div class="home-stat">
+            <div class="home-stat-number" data-target="100">0</div>
+            <div class="home-stat-label">Free to Start</div>
           </div>
         </section>
 
