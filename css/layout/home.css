@@ -290,11 +290,11 @@
 .home-cap-icon {
   width: 36px; height: 36px;
   border-radius: var(--r-md);
-  background: var(--accent-soft);
+  background: rgba(168, 85, 247, 0.15); /* Bright purple background for high visibility */
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--accent);
+  color: #C084FC; /* Bright purple for high visibility on dark cards */
   flex-shrink: 0;
 }
 .home-cap-icon svg { width: 18px; height: 18px; }
