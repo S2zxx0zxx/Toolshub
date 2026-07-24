@@ -4,112 +4,68 @@ import { aiApi } from '../services/aiApi.js';
 import { getAllToolSchemas } from './toolSchemas.js';
 import { executeAgentTool } from './agentToolBridge.js';
 import { PLANS } from '../config/plans.js';
+import { SmartRouter } from './smartRouter.js';
+import { RealtimeTools } from '../tools/realtimeTools.js';
 
-const AGENT_INSTRUCTIONS = `
---- AGENT INSTRUCTIONS ---
-You have access to a set of specialized tools to assist the user.
+const AGENT_INSTRUCTIONS = `You are ToolsHub AI Agent. You can:
+1. Use tools to help the user (calculator, weather, search, code tools)
+2. Generate websites with the generate_website tool
+3. Answer questions using your knowledge
+4. Write code, explain code, analyze code
 
-REASONING MODE (Chain-of-Thought):
-Before calling any tool, think through the approach in a <thinking> block:
-1. What is the user actually asking for?
-2. What tools do I need?
-3. What order should I use them?
-4. What could go wrong?
-5. What's the best approach?
+Rules:
+- Use tools when they provide better answers
+- For websites: use generate_website tool with complete HTML
+- For code: provide complete, working code
+- For calculations: use calculator tool
+- For weather: use weather tool
+- For search: use search tool
+- Always give helpful, accurate responses`;
 
-PLANNING MODE (for complex tasks):
-For tasks requiring 3+ steps, first create a plan:
-1. Break the task into sub-tasks
-2. Identify which tools solve each sub-task
-3. Execute step by step
-4. Verify each result before moving on
-
-TOOL USAGE RULES:
-- Do not guess or hallucinate answers that tools can provide
-- If multiple tools are needed, call them sequentially (one at a time)
-- After each tool call, analyze the result before deciding next step
-- If a tool fails, try an alternative approach before giving up
-- When you have enough information, provide a final answer with NO tool_calls
-
-ERROR RECOVERY:
-- If a tool returns an error, don't stop — try a different approach
-- If weather fails, try web search for weather data
-- If search fails, use your knowledge and note the limitation
-- Always give the user a useful response, even if tools fail
-
-RESPONSE FORMAT:
-- Use markdown formatting for clarity
-- Include code blocks for code
-- Use tables for structured data
-- Use bullet points for lists
-- Keep responses focused and actionable
-
-generate_website CRITICAL RULE:
-Step 1: Write a <thinking> block to plan the website structure
-Step 2: Emit the generate_website tool call with the planned content
-`;
-
-const MAX_STEPS = { free: 8, monthly: 12, '6month': 15, yearly: 20 };
-
-function getStepsForPlan(planId) {
-  return MAX_STEPS[planId] || MAX_STEPS.free;
-}
+const MAX_STEPS_DEFAULT = 8;
+const MAX_STEPS_MAX_TIER = 12;
 
 function formatDataResult(toolId, result) {
   if (!result) return 'No data returned.';
   
   if (toolId === 'weather' && result) {
-    const location = result.location || 'the requested location';
-    const temp = result.temperature ?? '?';
-    const wind = result.windspeed ?? '?';
-    const desc = result.description || '';
-    return `**Weather in ${location}:** ${temp}°C${desc ? ` — ${desc}` : ''}, wind ${wind} km/h.`;
+    return `Weather in ${result.location || 'location'}: ${result.temperature ?? '?'}°C, wind ${result.windspeed ?? '?'} km/h.`;
   }
-  
   if (toolId === 'calculator' && result) {
-    return `**${result.original_expression} = ${result.result}**`;
+    return `${result.original_expression} = ${result.result}`;
   }
-  
   if (toolId === 'search' && result) {
-    const answer = result.answer ? `**Summary:** ${result.answer}\n\n` : '';
-    const results = (result.results || []).slice(0, 5);
-    if (results.length === 0) return answer || 'No search results found.';
-    const list = results.map((r, i) => `${i + 1}. **${r.title}**\n   ${r.url}\n   ${r.snippet || ''}`).join('\n\n');
-    return `${answer}**Sources:**\n${list}`;
+    const answer = result.answer ? `Summary: ${result.answer}\n` : '';
+    const top = (result.results || []).slice(0, 3).map(r => `- ${r.title}: ${r.url}`).join('\n');
+    return `${answer}${top}`.trim() || JSON.stringify(result);
   }
-  
-  if (toolId === 'github_list_files' && result) {
-    const files = typeof result === 'string' ? result.split('\n') : [];
-    if (files.length === 0) return 'No files found in repository.';
-    return `**Repository Files (${files.length} total):**\n\`\`\`\n${files.slice(0, 50).join('\n')}${files.length > 50 ? '\n... and ' + (files.length - 50) + ' more' : ''}\n\`\`\``;
-  }
-  
-  if (toolId === 'github_read_file' && result) {
-    const content = typeof result === 'string' ? result : JSON.stringify(result, null, 2);
-    return `\`\`\`\n${content}\n\`\`\``;
-  }
-  
-  return typeof result === 'string' ? result : JSON.stringify(result, null, 2);
+  return JSON.stringify(result);
 }
 
-function estimateTaskComplexity(userMessage) {
-  const msg = userMessage.toLowerCase();
-  const complexKeywords = ['build', 'create', 'design', 'develop', 'implement', 'full', 'complete', 'entire', 'website', 'app', 'application', 'project', 'system', 'architecture'];
-  const mediumKeywords = ['analyze', 'compare', 'research', 'write', 'generate', 'list', 'find', 'search', 'review', 'explain'];
-  
-  const complexCount = complexKeywords.filter(k => msg.includes(k)).length;
-  const mediumCount = mediumKeywords.filter(k => msg.includes(k)).length;
-  
-  if (complexCount >= 2) return 'complex';
-  if (complexCount >= 1 || mediumCount >= 2) return 'medium';
-  return 'simple';
+// Pre-process with Smart Router
+function preProcessMessage(userMessage) {
+  // Check for direct tool execution
+  const routerResult = SmartRouter.route(userMessage);
+  return routerResult;
 }
 
 export async function executeAgentTask(userMessage, conversationHistory, options = {}) {
   try {
     const currentPlanId = LocalSettings.getCurrentPlan ? LocalSettings.getCurrentPlan() : 'free';
-    const maxSteps = getStepsForPlan(currentPlanId);
-    const complexity = estimateTaskComplexity(userMessage);
+    const activePlan = PLANS.find(p => p.id === currentPlanId) || PLANS[0];
+    let maxSteps = (activePlan.label === 'Max') ? MAX_STEPS_MAX_TIER : MAX_STEPS_DEFAULT;
+    
+    // Pre-process with Smart Router
+    const routerResult = await preProcessMessage(userMessage);
+    
+    // If direct tool execution, return immediately
+    if (routerResult.type === 'direct') {
+      return {
+        success: true,
+        message: formatDataResult(routerResult.tool, routerResult.result),
+        toolUsed: routerResult.tool
+      };
+    }
     
     const builtContext = ContextManager.buildContext(conversationHistory || [], options.toolResults || []);
     const messages = [
@@ -122,8 +78,6 @@ export async function executeAgentTask(userMessage, conversationHistory, options
     
     let step = 0;
     let lastPartialText = null;
-    let toolCallCount = 0;
-    let errorCount = 0;
     
     while (step < maxSteps) {
       step++;
@@ -131,10 +85,10 @@ export async function executeAgentTask(userMessage, conversationHistory, options
       const response = await aiApi.chatAgentRound(messages, schemas);
 
       if (step === 1 && response.meta && response.meta.maxSteps) {
-        // Allow server to override max steps
+        maxSteps = response.meta.maxSteps;
       }
       
-      const responseMessage = response.choices?.[0]?.message;
+      const responseMessage = response.choices && response.choices[0] && response.choices[0].message;
       if (!responseMessage) {
         throw new Error("Invalid response format from AI provider.");
       }
@@ -148,15 +102,9 @@ export async function executeAgentTask(userMessage, conversationHistory, options
         
         for (const toolCall of responseMessage.tool_calls) {
           const toolId = toolCall.function.name;
-          toolCallCount++;
 
           if (options.onStep) {
-            options.onStep({ 
-              stepNumber: step, 
-              toolId, 
-              status: 'running',
-              thinking: responseMessage.content || null
-            });
+            options.onStep({ stepNumber: step, toolId, status: 'running' });
           }
 
           let parsedParams = {};
@@ -166,6 +114,7 @@ export async function executeAgentTask(userMessage, conversationHistory, options
             console.warn(`Failed to parse arguments for tool ${toolId}`);
           }
 
+          // Handle generate_website - return HTML artifact
           if (toolId === 'generate_website') {
             return {
               success: true,
@@ -179,24 +128,40 @@ export async function executeAgentTask(userMessage, conversationHistory, options
             };
           }
           
+          // Handle realtime tools
+          if (toolId === 'calculator') {
+            const result = RealtimeTools.calculate(parsedParams.expression);
+            return {
+              success: true,
+              message: `**${result.original} = ${result.formatted}**`,
+              toolUsed: 'calculator'
+            };
+          }
+          
+          if (toolId === 'weather') {
+            const result = await RealtimeTools.getWeather ? RealtimeTools.getWeather(parsedParams.city) : null;
+            if (result) {
+              return {
+                success: true,
+                message: `Weather in ${parsedParams.city}: ${result.temperature}°C`,
+                toolUsed: 'weather'
+              };
+            }
+          }
+          
           let toolResponseText = "";
           let stepStatus = 'complete';
           
           const toolResult = await executeAgentTool(toolId, parsedParams);
           
           if (!toolResult.success) {
-            errorCount++;
-            toolResponseText = `Tool error: ${toolResult.error}. Trying alternative approach...`;
+            toolResponseText = `Error: ${toolResult.error}`;
             stepStatus = 'error';
-            
-            if (errorCount > 3) {
-              toolResponseText = `Multiple tool failures encountered. Providing best answer with available information.`;
-            }
           } else {
             if (toolResult.kind === 'ui-trigger') {
-              toolResponseText = `The ${toolId} tool panel has been opened for you.`;
+              toolResponseText = `The ${toolId} tool has been opened for you.`;
             } else if (toolResult.kind === 'content') {
-              const CONTENT_GEN_TIMEOUT_MS = 25000;
+              const CONTENT_GEN_TIMEOUT_MS = 20000;
               try {
                 const contentGenPromise = aiApi.chatAgentRound([
                   { role: "system", content: toolResult.result.systemPromptHint },
@@ -209,11 +174,9 @@ export async function executeAgentTask(userMessage, conversationHistory, options
 
                 const contentGenResponse = await Promise.race([contentGenPromise, timeoutPromise]);
                 const choice = contentGenResponse?.choices?.[0]?.message?.content;
-                toolResponseText = choice || "Content generation returned empty.";
+                toolResponseText = choice ? choice : "Content generation returned empty.";
               } catch (err) {
                 toolResponseText = `Content generation failed: ${err.message}`;
-                stepStatus = 'error';
-                errorCount++;
               }
             } else {
               toolResponseText = formatDataResult(toolId, toolResult.result);
@@ -238,20 +201,18 @@ export async function executeAgentTask(userMessage, conversationHistory, options
       } else {
         return {
           success: true,
-          message: responseMessage.content,
-          stats: { stepsUsed: step, toolsCalled: toolCallCount, errors: errorCount }
+          message: responseMessage.content
         };
       }
     }
     
     const partialMessage = lastPartialText
-      || "Task completed partially. Could you narrow the request or ask me to continue?";
+      || "I made progress but couldn't finish. Could you narrow the request?";
     
     return {
       success: true,
       truncated: true,
-      message: partialMessage,
-      stats: { stepsUsed: step, toolsCalled: toolCallCount, errors: errorCount }
+      message: partialMessage
     };
 
   } catch (error) {
@@ -259,7 +220,7 @@ export async function executeAgentTask(userMessage, conversationHistory, options
     return {
       success: false,
       error: 'agent-error',
-      message: "An error occurred while processing your task. Please try again.",
+      message: "An error occurred. Please try again.",
       technicalError: error.message
     };
   }

@@ -1,16 +1,14 @@
 import { aiApi } from '../services/aiApi.js';
 import { PromptManager } from './prompt.js';
-import { getAllToolSchemas } from './toolSchemas.js';
 
 export const IntentEngine = (() => {
   
-  // 1. Rule-Based Fallbacks for fast routing without AI API calls
+  // Fast rule-based detection
   const rules = [
     {
       id: 'calculator_rule',
       tool: 'calculator',
       test: (text) => {
-        // Arithmetic expressions: numbers and operators only
         const clean = text.trim();
         const isMath = /^[0-9]+(\s*[\+\-\*\/]\s*[0-9]+)+$/.test(clean);
         if (isMath) return { expression: clean };
@@ -21,7 +19,6 @@ export const IntentEngine = (() => {
       id: 'weather_rule',
       tool: 'weather',
       test: (text) => {
-        // "weather in X", "what's the weather in X", "weather X"
         const m = text.trim().match(/\bweather\b(?:\s+in)?\s+([a-zA-Z\s]{2,30})\s*\??$/i);
         if (m) return { city: m[1].trim() };
         return null;
@@ -31,7 +28,6 @@ export const IntentEngine = (() => {
       id: 'search_rule',
       tool: 'search',
       test: (text) => {
-        // "search for X", "google X", "look up X", "search X"
         const m = text.trim().match(/^(?:search(?:\s+for)?|google|look\s+up)\s+(.+)$/i);
         if (m) return { query: m[1].trim() };
         return null;
@@ -41,7 +37,6 @@ export const IntentEngine = (() => {
       id: 'general_chat_rule',
       tool: null,
       test: (text) => {
-        // Pure conversational / greeting — safely skip AI classification
         const clean = text.trim().toLowerCase();
         const greetings = /^(hi|hello|hey|howdy|greetings|good\s+(morning|afternoon|evening|night)|what'?s\s+up|how\s+are\s+you|thanks?|thank\s+you|ok|okay|yes|no|sure|bye|goodbye|see\s+you)[\s!?.]*$/;
         if (greetings.test(clean)) {
@@ -57,7 +52,6 @@ export const IntentEngine = (() => {
     for (const rule of rules) {
       const match = rule.test(text);
       if (match) {
-        // Special sentinel for "definitely general chat, no tool needed"
         if (match === '__general_chat__') {
           return {
             intent: 'general_chat',
@@ -79,49 +73,34 @@ export const IntentEngine = (() => {
       }
     }
 
-    // Phase 2: AI Classification (Fallback)
-    // We construct a specific prompt asking Groq to classify the intent as JSON.
-    const allTools = getAllToolSchemas();
-    const toolsListStr = allTools.map(t => `- "${t.function.name}": ${t.function.description.split('\n')[0]}`).join('\n');
-    const toolNamesStr = allTools.map(t => `"${t.function.name}"`).join(' | ');
-
-    const intentPrompt = `
-You are an Intent Classification engine.
-Analyze the user's input and determine if they require a tool execution.
-Available Tools:
-${toolsListStr}
-
-Output STRICTLY valid JSON only, no markdown formatting.
-Format:
+    // Phase 2: AI Classification (only for ambiguous queries)
+    const intentPrompt = `Classify this user message. Return JSON only:
 {
-  "intent": "general_chat" | ${toolNamesStr},
-  "requiresTool": boolean,
-  "tool": string | null,
-  "confidence": number (0.0 to 1.0),
-  "parameters": {}
+  "intent": "general_chat" or tool name,
+  "requiresTool": true/false,
+  "tool": tool name or null,
+  "confidence": 0-1
 }
-`;
-    
-    // We only send the last few messages plus the intent prompt to keep it fast and cheap
+Tools: calculator, weather, search, generate_website, github_list_files, github_read_file`;
+
     const aiContext = [
       { role: 'system', content: intentPrompt },
-      ...context.slice(-4), // keep last 4 context messages for reference
       { role: 'user', content: text }
     ];
 
     try {
       const response = await Promise.race([
         aiApi.chatCompletionJson(aiContext),
-        new Promise((_, reject) => setTimeout(() => reject(new Error('Intent classification timeout')), 4000))
+        new Promise((_, reject) => setTimeout(() => reject(new Error('Intent timeout')), 3000))
       ]);
       if (response && response.intent) {
         return response;
       }
     } catch (e) {
-      console.warn('Intent parsing failed, falling back to general chat:', e);
+      console.warn('Intent parsing failed:', e);
     }
 
-    // Fallback if AI fails or returns weird output
+    // Default to general chat
     return {
       intent: 'general_chat',
       requiresTool: false,
@@ -131,7 +110,5 @@ Format:
     };
   }
 
-  return {
-    detectIntent
-  };
+  return { detectIntent };
 })();
