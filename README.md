@@ -664,28 +664,84 @@ Over the last evolution cycles, ToolsHub has graduated to a **Production-Ready**
 
 ---
 
-## 🔮 6. Future Roadmap (For AI Agents)
+## 🔮 6. New Features & Capabilities (v6.0)
+
+### 🧠 AI Agent Engine (Upgraded)
+- **Chain-of-Thought Reasoning:** AI thinks before acting with `<thinking>` blocks
+- **Dynamic Task Complexity:** 8-20 steps based on plan tier and task complexity
+- **Smart Error Recovery:** Auto-retry and alternative approaches on tool failures
+- **Context Window:** Expanded to 100 messages with smart summarization
+- **Task Decomposition:** Complex tasks broken into manageable sub-tasks
+
+### 🔧 Tool Intelligence System
+- **Tool Chaining:** Auto-chain tools (Research → Write → Post)
+- **Smart Selection:** AI suggests best tools based on user intent
+- **Result Formatting:** Rich cards, tables, and interactive elements
+- **Usage Tracking:** Learn user preferences over time
+
+### 💻 Code Assistant (Claude Code Killer)
+- **Code Analysis:** Quality scoring, security audit, performance review
+- **Code Generation:** Production-ready code from descriptions
+- **Code Review:** Detailed PR-style feedback
+- **Code Explanation:** Step-by-step walkthrough with analogies
+- **Multi-Language:** 15+ languages supported
+
+### 📁 Project Workspace (Notion Killer)
+- **Projects:** Organize work by project
+- **Tasks:** Kanban-style task management
+- **Notes:** Rich text notes with tags
+- **Stats:** Progress tracking and analytics
+
+### 🔬 Research Engine (Perplexity Killer)
+- **Deep Research:** Multi-source analysis with citations
+- **Trend Analysis:** Market trends and insights
+- **Comparisons:** Side-by-side option analysis
+- **Fact Checking:** Claim verification with sources
+
+### 📝 Content Suite (Jasper Killer)
+- **Blog Writer:** SEO-optimized full articles
+- **Social Media:** All platforms (Instagram, Twitter, LinkedIn, YouTube, Facebook)
+- **Email Writer:** Professional emails for any purpose
+- **Ad Copy:** High-converting marketing copy
+
+### 🛠 Developer Tools
+- **Git Integration:** Commit messages, PR descriptions
+- **API Builder:** Generate complete endpoints
+- **Test Generator:** Unit tests for any code
+- **Documentation:** Auto-generate docs
+- **Docker:** Production-ready Dockerfiles
+
+---
+
+## 🔮 7. Future Roadmap (For AI Agents)
 
 If you are an AI tasked with upgrading this system, you must know what has already been built vs what is upcoming.
 
 ### A. Advanced Agentic Workflows (Agent Mode)
-- **Current State:** ReAct (Reason-Act) workflow stability achieved.
-- **Future Plan:** Allow agents to parallelize tool calls natively and handle asynchronous sub-agent spawning.
+- **Current State:** Chain-of-Thought reasoning with dynamic steps achieved.
+- **Future Plan:** Multi-agent collaboration, parallel tool execution, sub-agent spawning.
 
 ### B. Connectors Architecture (External Data)
-- **Current State:** Connectors registry (`connectorsRegistry.js`) built and shipped as honest empty-states pending backend implementations.
-- **Future Plan:** Implement OAuth flows in the Cloudflare Worker to fetch private data from Notion, Slack, and Google Drive securely.
+- **Current State:** Connectors registry built with GitHub integration.
+- **Future Plan:** OAuth flows for Notion, Slack, Google Drive, Twitter, LinkedIn.
 
 ### C. RAG (Retrieval-Augmented Generation)
-- **Current State:** A complete RAG pipeline is implemented with chunking, duplicate detection, and Hinglish intent parsing.
-- **Future Plan:** Expand vector storage scale and add visual/multimodal document parsing.
+- **Current State:** Complete RAG pipeline with chunking and vector search.
+- **Future Plan:** Multimodal RAG (images, PDFs), cross-document reasoning.
 
-### D. File Uploads & Vision
-- **Future Plan:** Integrate LLaVA/Vision models via Groq. Update `chatEngine.js` to accept Image inputs (Base64), routing to a Vision-capable endpoint (`llama-3.2-11b-vision-preview`).
+### D. Vision & File Processing
+- **Current State:** Basic image/PDF tools.
+- **Future Plan:** Vision models for image understanding, OCR, document analysis.
+
+### E. Real-time Collaboration
+- **Future Plan:** Shared workspaces, real-time editing, team features.
+
+### F. Offline Intelligence
+- **Future Plan:** On-device AI models for offline capabilities.
 
 ---
 
-## 🛠 7. Deployment Playbook
+## 🛠 8. Deployment Playbook
 
 If a deployment is requested, execute exactly this sequence:
 
@@ -710,4 +766,17 @@ firebase deploy --only hosting
 ```
 
 ---
-*End of Codex. You are now initialized with absolute knowledge of the current state of ToolsHub.*
+
+## 📊 9. Architecture Stats
+
+| Component | Count | Status |
+|-----------|-------|--------|
+| Total Tools | 40+ | Active |
+| AI Agents | 5 | Active |
+| Code Languages | 15+ | Supported |
+| Content Formats | 10+ | Active |
+| Research Sources | 5+ | Integrated |
+| Project Features | 8 | Active |
+
+---
+*End of Codex. You are now initialized with absolute knowledge of the current state of ToolsHub v6.0.*

@@ -430,6 +430,193 @@ export function getAllToolSchemas() {
         }
       }
     },
+
+    // --- TYPE E: Code Assistant Tools ---
+    {
+      type: "function",
+      function: {
+        name: "code_analyze",
+        description: "Analyze code for quality, bugs, security issues, and improvements. Use when the user shares code and wants analysis.",
+        parameters: {
+          type: "object",
+          properties: {
+            code: { type: "string", description: "The code to analyze" },
+            language: { type: "string", description: "Programming language (auto-detected if not provided)" }
+          },
+          required: ["code"]
+        }
+      }
+    },
+    {
+      type: "function",
+      function: {
+        name: "code_review",
+        description: "Perform a detailed code review with security, performance, and maintainability feedback.",
+        parameters: {
+          type: "object",
+          properties: {
+            code: { type: "string", description: "The code to review" },
+            language: { type: "string", description: "Programming language" }
+          },
+          required: ["code"]
+        }
+      }
+    },
+    {
+      type: "function",
+      function: {
+        name: "code_explain",
+        description: "Explain code in simple terms with step-by-step walkthrough.",
+        parameters: {
+          type: "object",
+          properties: {
+            code: { type: "string", description: "The code to explain" },
+            language: { type: "string", description: "Programming language" }
+          },
+          required: ["code"]
+        }
+      }
+    },
+    {
+      type: "function",
+      function: {
+        name: "code_generate",
+        description: "Generate production-ready code from a description.",
+        parameters: {
+          type: "object",
+          properties: {
+            description: { type: "string", description: "What the code should do" },
+            language: { type: "string", description: "Target programming language" }
+          },
+          required: ["description"]
+        }
+      }
+    },
+
+    // --- TYPE F: Research Tools ---
+    {
+      type: "function",
+      function: {
+        name: "research_topic",
+        description: "Conduct deep research on a topic with citations and analysis.",
+        parameters: {
+          type: "object",
+          properties: {
+            topic: { type: "string", description: "The topic to research" },
+            depth: { type: "string", enum: ["quick", "medium", "deep"], description: "Research depth" }
+          },
+          required: ["topic"]
+        }
+      }
+    },
+    {
+      type: "function",
+      function: {
+        name: "compare_options",
+        description: "Compare multiple options with pros, cons, and recommendations.",
+        parameters: {
+          type: "object",
+          properties: {
+            options: { type: "array", items: { type: "string" }, description: "Options to compare" },
+            criteria: { type: "string", description: "Comparison criteria" }
+          },
+          required: ["options"]
+        }
+      }
+    },
+
+    // --- TYPE G: Content Tools ---
+    {
+      type: "function",
+      function: {
+        name: "write_blog",
+        description: "Write a complete SEO-optimized blog post.",
+        parameters: {
+          type: "object",
+          properties: {
+            topic: { type: "string", description: "Blog post topic" },
+            keywords: { type: "array", items: { type: "string" }, description: "Target keywords" }
+          },
+          required: ["topic"]
+        }
+      }
+    },
+    {
+      type: "function",
+      function: {
+        name: "write_email",
+        description: "Write a professional email for various purposes.",
+        parameters: {
+          type: "object",
+          properties: {
+            type: { type: "string", enum: ["cold", "followup", "newsletter", "promotional", "business"], description: "Email type" },
+            details: { type: "string", description: "Email details and context" }
+          },
+          required: ["type", "details"]
+        }
+      }
+    },
+    {
+      type: "function",
+      function: {
+        name: "generate_ad_copy",
+        description: "Generate high-converting ad copy for marketing campaigns.",
+        parameters: {
+          type: "object",
+          properties: {
+            product: { type: "string", description: "Product or service to advertise" },
+            platform: { type: "string", description: "Advertising platform" }
+          },
+          required: ["product"]
+        }
+      }
+    },
+
+    // --- TYPE H: Developer Tools ---
+    {
+      type: "function",
+      function: {
+        name: "git_commit_message",
+        description: "Generate a conventional commit message from code changes.",
+        parameters: {
+          type: "object",
+          properties: {
+            diff: { type: "string", description: "The code diff or changes" }
+          },
+          required: ["diff"]
+        }
+      }
+    },
+    {
+      type: "function",
+      function: {
+        name: "generate_api_endpoint",
+        description: "Generate a complete API endpoint with validation and error handling.",
+        parameters: {
+          type: "object",
+          properties: {
+            description: { type: "string", description: "What the endpoint should do" },
+            framework: { type: "string", description: "Backend framework (express, fastify, etc.)" }
+          },
+          required: ["description"]
+        }
+      }
+    },
+    {
+      type: "function",
+      function: {
+        name: "generate_tests",
+        description: "Generate unit tests for given code.",
+        parameters: {
+          type: "object",
+          properties: {
+            code: { type: "string", description: "Code to generate tests for" },
+            framework: { type: "string", description: "Testing framework (jest, mocha, etc.)" }
+          },
+          required: ["code"]
+        }
+      }
+    },
   ];
 
   // Dynamically append tools from ExecutionRegistry
