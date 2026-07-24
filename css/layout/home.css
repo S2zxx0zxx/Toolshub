@@ -270,9 +270,10 @@
   /* Cells will automatically stretch to equal heights */
 }
 
+/* ---------- Capability cell — base (text/icon version) ---------- */
 .home-cap-cell {
-  background: #1E1E22; /* Match image cards perfectly */
-  border: none;
+  background: #1E1E22 radial-gradient(circle at 100% 50%, rgba(139, 92, 246, 0.25) 0%, transparent 60%);
+  border: 1px solid rgba(255, 255, 255, 0.05);
   box-shadow: 0 4px 24px rgba(0,0,0,0.55), 0 1px 6px rgba(0,0,0,0.35);
   border-radius: var(--r-lg);
   padding: var(--sp-5);
