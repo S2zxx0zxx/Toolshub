@@ -691,10 +691,11 @@
 /* ---------- SECTION 7: SOCIAL PROOF ---------- */
 .home-proof {
   text-align: center;
-  padding: var(--sp-7) 0;
+  padding: 0 0 var(--sp-7) 0;
   background: var(--bg-surface);
   border-radius: var(--r-xl);
   border: 1px solid var(--border-subtle);
+  overflow: hidden;
 }
 
 .home-proof-avatars {
