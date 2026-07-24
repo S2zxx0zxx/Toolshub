@@ -375,12 +375,13 @@
                 <span class="home-feature-tag tag-soon">Coming Soon</span>
               </div>
               <p class="home-feature-desc">Share workspaces, co-create content, and keep your whole team on the same page &mdash; arriving later this year.</p>
-              <div class="home-feature-mini" style="opacity: 0.5;">
-                <!-- ADDITIVE: initials speech-bubble pills — same generic-initials convention as social-proof avatars. Inside the same 0.5 opacity wrapper so they don't look more "live" than the feature. -->
-                <div class="home-name-pill" style="top:-24px;left:12px;transform:rotate(-3deg);" aria-hidden="true">P. S.</div>
-                <div class="home-name-pill" style="top:-24px;right:12px;transform:rotate(2deg);" aria-hidden="true">A. K.</div>
-                <span class="home-mini-chip">Shared workspace</span>
-                <span class="home-mini-chip">Live edits</span>
+              <div class="home-feature-mini home-feature-mini--img">
+                <img
+                  src="./assets/home/team-collaboration.png"
+                  alt=""
+                  class="home-feature-mini-img"
+                  loading="lazy"
+                />
               </div>
             </div>
 
@@ -490,21 +491,7 @@
         <!-- === SECTION 7: SOCIAL PROOF === -->
         <section class="home-section reveal">
           <div class="home-proof">
-            <!-- ADDITIVE: trust badge — truthful PWA capability. [COPY REVIEW] Update wording before launch if preferred. -->
-            <div class="home-proof-badge">
-              <span class="home-proof-badge-stars">★★★★★</span>
-              PWA &middot; Works Offline
-            </div>
-            <div class="home-proof-avatars">
-              <!-- Generic initials avatars — replace with real user stats before launch -->
-              <div class="home-proof-avatar">R</div>
-              <div class="home-proof-avatar">A</div>
-              <div class="home-proof-avatar">P</div>
-              <div class="home-proof-avatar">S</div>
-              <div class="home-proof-avatar">K</div>
-              <!-- [REPLACE X] Update count before launch -->
-              <div class="home-proof-avatar more">+X</div>
-            </div>
+            <img src="./assets/home/trusted-by.png" alt="PWA and Trusted Users" style="width: 100%; max-width: 500px; height: auto; display: block; margin: 0 auto 24px auto;" loading="lazy" />
             <!-- [REPLACE X] Insert real active workspace count before launch -->
             <p class="home-proof-text">Trusted by growing teams</p>
             <p class="home-proof-sub">Creators, students, and professionals building with ToolsHub every day</p>
