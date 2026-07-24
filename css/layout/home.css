@@ -109,7 +109,7 @@
   border: 1px solid rgba(255,255,255,0.14);
   font-size: var(--fs-xs);
   font-weight: 600;
-  color: rgba(255,255,255,0.85);
+  color: #e65100; /* Dark orange for high contrast */
   margin-bottom: var(--sp-5);
   letter-spacing: 0.02em;
   text-transform: uppercase;
@@ -130,7 +130,7 @@
 }
 .home-hero-headline em {
   font-style: normal;
-  color: #ffffff; /* Pure white — was gold #c8890a */
+  color: #e65100; /* Dark orange */
 }
 
 .home-hero-sub {
