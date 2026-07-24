@@ -53,7 +53,7 @@ export default withSentry((env) => {
     const url = new URL(request.url);
 
     // 1.5 Public Health Check Endpoint (For UptimeRobot)
-    if (request.method === 'GET' && (url.pathname === '/health' || url.pathname === '/api/health')) {
+    if ((request.method === 'GET' || request.method === 'HEAD') && (url.pathname === '/health' || url.pathname === '/api/health')) {
       return new Response('OK', { status: 200, headers: corsHeaders });
     }
 
