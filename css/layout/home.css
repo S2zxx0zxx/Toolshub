@@ -340,7 +340,8 @@
 
 /* Modifier specifically for Fast Responses and Code & Logic which have extra baked-in #1E1E22 padding in the PNG itself */
 .home-cap-cell-img--zoom {
-  transform: scale(1.12); /* Zooms 12% to perfectly crop the baked-in black padding off the edges, making them fit exactly like Smart Assistance */
+  transform: scale(1.25); /* Increased zoom to perfectly crop the baked-in top/bottom padding off the edges */
+  transform-origin: center;
 }
 
 /* ---------- SECTION 4: FEATURE BENTO ---------- */
