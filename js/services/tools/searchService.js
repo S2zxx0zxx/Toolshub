@@ -27,7 +27,7 @@ export const SearchService = (() => {
       return {
         query: query,
         answer: data.answer || null,
-        results: data.results.map(r => ({
+        results: (data.results || []).map(r => ({
           title: r.title,
           snippet: r.content,
           url: r.url

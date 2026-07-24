@@ -41,6 +41,18 @@
   opacity: 1;
   transform: translateX(-50%) translateY(0);
 }
+#toastContainer.toast-success {
+  border-color: var(--success, #4caf6d);
+  background: color-mix(in srgb, var(--bg-surface-3) 85%, var(--success, #4caf6d));
+}
+#toastContainer.toast-error {
+  border-color: var(--danger, #e05d5d);
+  background: color-mix(in srgb, var(--bg-surface-3) 85%, var(--danger, #e05d5d));
+}
+#toastContainer.toast-info {
+  border-color: var(--info, #4a9ce0);
+  background: color-mix(in srgb, var(--bg-surface-3) 85%, var(--info, #4a9ce0));
+}
 
 /* ---- SUB-SCREENS (Profile, Billing, Manage Tools) ----
    Identical transition mechanic to .screen-settings:

@@ -21,7 +21,6 @@ export const LocalSettings = (() => {
     CURRENT_PLAN:       'toolshub_current_plan',        // string plan id
     AGENT_INTRO:        'toolshub_agent_intro',         // boolean
     TOOL_USAGE:         'th_tool_usage',                // { [toolId]: count }
-    GITHUB_TOKEN:       'toolshub_github_token',        // string PAT
     GITHUB_REPO:        'toolshub_github_repo',          // string full repo name "owner/repo"
     SUBSCRIPTION_STATUS:'toolshub_sub_status',           // 'active' | 'inactive' | etc.
     PAYMENT_METHOD:     'toolshub_payment_method',       // e.g. "Visa •••• 1234" or "UPI"

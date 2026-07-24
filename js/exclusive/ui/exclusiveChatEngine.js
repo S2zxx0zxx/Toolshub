@@ -28,9 +28,13 @@ export const ExclusiveChatEngine = (() => {
   }
 
   function renderEmptyState() {
-    document.getElementById('exEmptyState').style.display = 'flex';
-    document.getElementById('exMsgList').style.display = 'none';
-    document.getElementById('exMsgList').innerHTML = '';
+    const emptyState = document.getElementById('exEmptyState');
+    const msgList = document.getElementById('exMsgList');
+    if (emptyState) emptyState.style.display = 'flex';
+    if (msgList) {
+      msgList.style.display = 'none';
+      msgList.innerHTML = '';
+    }
   }
 
   function newChat() {
@@ -41,7 +45,8 @@ export const ExclusiveChatEngine = (() => {
       createdAt: Date.now(),
       updatedAt: Date.now()
     };
-    document.getElementById('exChatTitle').textContent = 'New Exclusive Chat';
+    const chatTitle = document.getElementById('exChatTitle');
+    if (chatTitle) chatTitle.textContent = 'New Exclusive Chat';
     renderEmptyState();
   }
 

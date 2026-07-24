@@ -1,13 +1,10 @@
 import { FirebaseAdmin } from './firebaseAdmin.js';
 
 export async function handleAdminUsageStats(request, env, corsHeaders) {
-  // 1. Very basic check: Developer UID must be set in env, and passed as ?uid= query param
-  // Note to developer: This is a simplistic check. Ensure ADMIN_UID is set in wrangler secrets.
-  const url = new URL(request.url);
-  const callerUid = url.searchParams.get('uid');
-  
-  if (!env.ADMIN_UID || callerUid !== env.ADMIN_UID) {
-    return new Response('Unauthorized: Not an admin or ADMIN_UID not configured.', { status: 401, headers: corsHeaders });
+  // Require Bearer token auth (not query param)
+  const authHeader = request.headers.get('Authorization') || '';
+  if (!authHeader.startsWith('Bearer ') || !env.ADMIN_UID || authHeader.split(' ')[1] !== env.ADMIN_UID) {
+    return new Response('Unauthorized', { status: 401, headers: corsHeaders });
   }
 
   try {
@@ -66,6 +63,10 @@ export async function handleAdminUsageStats(request, env, corsHeaders) {
   }
 }
 
+function escapeHtml(str) {
+  return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+}
+
 function parseMap(mapValueObj) {
   const result = {};
   if (mapValueObj && mapValueObj.mapValue && mapValueObj.mapValue.fields) {
@@ -80,13 +81,13 @@ function generateAdminHtml(records) {
   // A clean, simple view matching basic design tokens
   let rowsHtml = records.map(r => `
     <tr style="border-bottom: 1px solid #333;">
-      <td style="padding: 12px; font-weight: 500;">${r.date}</td>
-      <td style="padding: 12px; color: #10b981;">${r.totalRequests}</td>
+      <td style="padding: 12px; font-weight: 500;">${escapeHtml(r.date)}</td>
+      <td style="padding: 12px; color: #10b981;">${escapeHtml(r.totalRequests)}</td>
       <td style="padding: 12px;">
-        ${Object.entries(r.modelUsage).map(([m, c]) => `<div style="font-size: 0.9em"><span style="color:#a1a1aa">${m}:</span> ${c}</div>`).join('')}
+        ${Object.entries(r.modelUsage).map(([m, c]) => `<div style="font-size: 0.9em"><span style="color:#a1a1aa">${escapeHtml(m)}:</span> ${escapeHtml(c)}</div>`).join('')}
       </td>
       <td style="padding: 12px;">
-        ${Object.entries(r.toolUsage).map(([t, c]) => `<div style="font-size: 0.9em"><span style="color:#a1a1aa">${t}:</span> ${c}</div>`).join('')}
+        ${Object.entries(r.toolUsage).map(([t, c]) => `<div style="font-size: 0.9em"><span style="color:#a1a1aa">${escapeHtml(t)}:</span> ${escapeHtml(c)}</div>`).join('')}
       </td>
     </tr>
   `).join('');

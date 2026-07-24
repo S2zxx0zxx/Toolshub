@@ -288,24 +288,16 @@ export const BottomSheet = (() => {
 
       group.models.forEach(model => {
         const row = document.createElement('button');
-        const isComingSoon = model.persona === 'mayaPro' && model.id === 'groq/compound' && false; // Removing coming soon block logic for now, was hardcoded
         const canAccess = userCanAccess(model.requiredTier);
         
-        row.className = `list-row ${model.persona === current ? 'is-selected' : ''} ${(!canAccess || isComingSoon) ? 'is-disabled' : ''}`;
+        row.className = `list-row ${model.persona === current ? 'is-selected' : ''} ${!canAccess ? 'is-disabled' : ''}`;
         row.dataset.persona = model.persona;
-        
-        if (isComingSoon) {
-          row.style.opacity = '0.5';
-          row.style.cursor = 'not-allowed';
-        }
         
         const isExhausted = exhaustedModels.has(model.id);
         const label = isExhausted ? `⚠️ ${model.label}` : model.label;
         
         let tierUI = '';
-        if (isComingSoon) {
-            tierUI = `<span class="mode-pill-tier" style="background:var(--bg-surface-3);">Soon</span>`;
-        } else if (!canAccess) {
+        if (!canAccess) {
             tierUI = `<span class="mode-pill-lock"><span class="mode-pill-lock-text">${model.requiredTier.toUpperCase()}</span><svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg></span>`;
         } else {
             let tierName = 'Free';
@@ -322,13 +314,11 @@ export const BottomSheet = (() => {
           </div>
           <div class="list-row-trail">
             ${tierUI}
-            ${canAccess && !isComingSoon ? `<svg class="access-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>` : ''}
+            ${canAccess ? `<svg class="access-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>` : ''}
           </div>
         `;
         
         row.addEventListener('click', () => {
-          if (isComingSoon) return;
-          
           if (!canAccess) {
             closeModelSheet();
             setTimeout(() => {

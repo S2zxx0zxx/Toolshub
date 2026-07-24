@@ -35,8 +35,9 @@ export const ToolExecutor = (() => {
     // 4. Safe Execution with Timeout
     try {
       // 15 seconds timeout
+      let timeoutId;
       const timeoutPromise = new Promise((_, reject) => {
-        setTimeout(() => reject(new Error("Tool execution timed out after 15 seconds.")), 15000);
+        timeoutId = setTimeout(() => reject(new Error("Tool execution timed out after 15 seconds.")), 15000);
       });
       
       // Execute the tool logic alongside the timeout
@@ -44,6 +45,9 @@ export const ToolExecutor = (() => {
         tool.execute(parameters),
         timeoutPromise
       ]);
+      
+      // Clear timeout on success
+      if (timeoutId) clearTimeout(timeoutId);
       
       return _buildResult(true, data, null, toolId, startTime, tool.version);
     } catch (err) {

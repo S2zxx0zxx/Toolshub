@@ -1,6 +1,5 @@
 export const DEV_ACCOUNTS = [
-  'satyamk82476@gmail.com',
-  'styamk82476@gmail.com'
+  'satyamk82476@gmail.com'
 ];
 
 /**

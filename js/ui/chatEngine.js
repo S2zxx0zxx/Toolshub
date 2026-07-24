@@ -555,11 +555,6 @@ export const Chat = (() => {
     renderMessages(); // re-render to attach action buttons on final state
   }
 
-  async function persist() {
-    if (currentChat) await CloudDB.saveConversation(currentChat);
-    await Sidebar.renderHistory();
-  }
-
 
   function init() {
     const textarea = document.getElementById('inputTextarea');

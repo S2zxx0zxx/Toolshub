@@ -18,7 +18,11 @@ export const ExclusiveAccess = (() => {
     if (user && isDevAccount(user.email)) {
       return true;
     }
-    // Phase 1: Coming Soon — always false for regular users
+    // Check localStorage for paid unlock
+    try {
+      if (localStorage.getItem(EXCLUSIVE_KEY) === 'true') return true;
+    } catch (e) {}
+    // Phase 1: Coming Soon — false for regular users without paid unlock
     return false;
   }
 

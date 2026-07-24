@@ -17,11 +17,14 @@ export const Toast = (() => {
   }
 
   function show(message, opts = {}) {
-    // backwards compatibility for Toast.show('msg', 2800)
+    // backwards compatibility for Toast.show('msg', 2800) or Toast.show('msg', 'success')
     if (typeof opts === 'number') {
       opts = { duration: opts };
+    } else if (typeof opts === 'string') {
+      opts = { type: opts };
     }
     const duration = opts.duration !== undefined ? opts.duration : 2800;
+    const type = opts.type || 'default';
     
     const el = _ensure();
     if (!el) return;
@@ -33,6 +36,12 @@ export const Toast = (() => {
     }
 
     el.textContent = message;
+    
+    // Apply type-based styling
+    el.classList.remove('toast-success', 'toast-error', 'toast-info');
+    if (type === 'success') el.classList.add('toast-success');
+    else if (type === 'error') el.classList.add('toast-error');
+    else if (type === 'info') el.classList.add('toast-info');
     
     // Clear previous onclick if any
     el.onclick = null;

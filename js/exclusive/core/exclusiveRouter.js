@@ -28,7 +28,8 @@ export const ExclusiveRouter = (() => {
     // On mobile, navigating should close the sidebar
     if (window.matchMedia('(max-width: 860px)').matches) {
       document.getElementById('exclusiveShell')?.removeAttribute('data-sidebar');
-      document.getElementById('exclusiveSidebarOverlay').style.display = 'none';
+      const overlay = document.getElementById('exclusiveSidebarOverlay');
+      if (overlay) overlay.style.display = 'none';
     }
 
     Events.publish('EXCLUSIVE_NAVIGATED', screenId);

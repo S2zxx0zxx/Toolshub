@@ -157,7 +157,7 @@
 .empty-sub {
   font-size: var(--fs-base);
   color: var(--text-muted);
-  margin-top: -var(--sp-3);
+  margin-top: calc(-1 * var(--sp-3));
 }
 
 /* suggested prompt cards */

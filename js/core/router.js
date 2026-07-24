@@ -11,7 +11,7 @@ export const Router = (() => {
     currentScreen = screen;
     sessionStorage.setItem('toolshub_active_screen', screen);
     const app = document.getElementById('app');
-    app.dataset.screen = screen;
+    if (app) app.dataset.screen = screen;
 
     // Push to browser history so the native back button works within the app
     history.pushState({ screen }, '', location.href);

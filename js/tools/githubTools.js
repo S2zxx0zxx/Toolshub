@@ -44,15 +44,16 @@ export const GithubTools = (() => {
     
     // Fetch recursive tree
     const treeData = await _githubApiFetch(`/repos/${repo}/git/trees/${branch}?recursive=1`);
-    if (treeData.truncated) {
-      // If truncated, we just return the first chunk, maybe warn
-    }
     
     const files = treeData.tree
       .filter(item => item.type === 'blob')
       .map(item => item.path);
       
-    return files.join('\n');
+    let result = files.join('\n');
+    if (treeData.truncated) {
+      result = `[WARNING: Repository too large - showing partial file list]\n${result}`;
+    }
+    return result;
   }
 
   async function readGithubFile(params) {
@@ -60,7 +61,8 @@ export const GithubTools = (() => {
     if (!repo) throw new Error("No active GitHub repository selected.");
     const { path } = params;
     
-    const content = await _githubApiFetch(`/repos/${repo}/contents/${path}`, true);
+    const encodedPath = path.split('/').map(encodeURIComponent).join('/');
+    const content = await _githubApiFetch(`/repos/${repo}/contents/${encodedPath}`, true);
     return content;
   }
   
@@ -69,7 +71,7 @@ export const GithubTools = (() => {
     if (!repo) throw new Error("No active GitHub repository selected.");
     const { query } = params;
     
-    const searchData = await _githubApiFetch(`/search/code?q=${encodeURIComponent(query)}+repo:${repo}`);
+    const searchData = await _githubApiFetch(`/search/code?q=${encodeURIComponent(query)}+repo:${encodeURIComponent(repo)}`);
     
     const results = searchData.items.map(item => ({
       path: item.path,

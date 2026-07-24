@@ -16,6 +16,10 @@ export const PermissionLayer = (() => {
     const user = Auth.getCurrentUser();
     if (tool.requiresAuth && !user) return false;
 
+    // Check user's tool access preference
+    const toolAccess = LocalSettings.getToolAccess();
+    if (toolAccess === 'off' && !tool.alwaysAvailable) return false;
+
     const planId = LocalSettings.getCurrentPlan();
     const userPermissions = planId === 'free' ? ['basic'] : ['basic', 'premium'];
 

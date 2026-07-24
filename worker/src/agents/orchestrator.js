@@ -47,9 +47,15 @@ Evaluate the following user message and return:
     const body = JSON.parse(bodyText);
     const orchestratorDecision = JSON.parse(body.choices[0].message.content);
     
-    return orchestratorDecision.target || 'chat';
+    return validateTarget(orchestratorDecision.target);
   } catch (e) {
     console.warn("Orchestration failed, defaulting to 'chat':", e.message);
     return 'chat'; // Failsafe
   }
+}
+
+const VALID_TARGETS = ['chat', 'coder', 'creator'];
+
+function validateTarget(target) {
+  return VALID_TARGETS.includes(target) ? target : 'chat';
 }

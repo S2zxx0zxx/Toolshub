@@ -331,6 +331,14 @@ export const ChangePlanModal = (() => {
         }
       };
       
+      if (typeof Razorpay === 'undefined') {
+        if (Toast) Toast.show('Payment service is loading. Please try again.', 'error');
+        if (confirmBtn) {
+          confirmBtn.disabled = false;
+          confirmBtn.textContent = 'Confirm';
+        }
+        return;
+      }
       const rzp = new Razorpay(options);
       rzp.on('payment.failed', function (response){
         console.error('Payment Failed:', response.error);

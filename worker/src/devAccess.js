@@ -4,7 +4,8 @@ export async function handleDevAccessRedeem(request, env, corsHeaders) {
     if (!body || !body.uid || !body.code) {
       return new Response(JSON.stringify({ error: 'Missing uid or code' }), { status: 400, headers: { 'Content-Type': 'application/json', ...corsHeaders } });
     }
-    if (body.code !== 'BUILD2026') {
+    const devCode = env.DEV_ACCESS_CODE || 'BUILD2026';
+    if (body.code !== devCode) {
       return new Response(JSON.stringify({ error: 'Invalid developer code' }), { status: 403, headers: { 'Content-Type': 'application/json', ...corsHeaders } });
     }
 
@@ -31,7 +32,7 @@ export async function handleDevAccessRedeem(request, env, corsHeaders) {
 
     // 2. Authorization check (Fetch user doc to check email)
     const userDoc = await fbAdmin.getUserDoc(tokenUid);
-    const ALLOWED_DEVELOPERS = ['satyamk82476@gmail.com', 'styamk82476@gmail.com'];
+    const ALLOWED_DEVELOPERS = ['satyamk82476@gmail.com'];
     if (!userDoc || !userDoc.email || !ALLOWED_DEVELOPERS.includes(userDoc.email.toLowerCase())) {
       return new Response(JSON.stringify({ error: 'Not an authorized developer account' }), { status: 403, headers: { 'Content-Type': 'application/json', ...corsHeaders } });
     }

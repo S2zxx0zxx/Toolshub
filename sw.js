@@ -78,8 +78,6 @@ const urlsToCache = [
   './js/config/suggestionPool.js',
   './js/config/api.js',
   // js/env.js removed — file is deprecated (contains only window.ENV = {}) and not imported anywhere
-  // === JS TOOLS EXTRA ===
-  './js/tools/connectorsRegistry.js',
   // === JS AI EXTRA ===
   './js/ai/agentToolBridge.js',
   // === JS EXCLUSIVE ===
@@ -101,7 +99,7 @@ self.addEventListener('install', event => {
     caches.open(CACHE_NAME).then(async cache => {
       const requests = urlsToCache.map(url => {
         const fetchUrl = new URL(url, self.registration.scope);
-        fetchUrl.search = '?cb=' + Date.now(); // Cache-bust HTTP cache
+        fetchUrl.searchParams.set('cb', Date.now()); // Cache-bust HTTP cache
         return fetch(fetchUrl.href).then(response => {
           if (!response.ok) throw new Error(`Status ${response.status}`);
           return cache.put(url, response);

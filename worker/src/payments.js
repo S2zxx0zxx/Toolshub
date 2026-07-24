@@ -108,9 +108,14 @@ export async function handlePaymentRequest(request, env, corsHeaders) {
         return new Response(JSON.stringify({ error: 'Invalid signature' }), { status: 400, headers: corsHeaders });
       }
 
+      // Validate plan duration exists
+      const duration = PLAN_DURATIONS[planId];
+      if (!duration) {
+        return new Response(JSON.stringify({ error: 'Invalid plan' }), { status: 400, headers: corsHeaders });
+      }
+
       // Update Firestore
       const now = Date.now();
-      const duration = PLAN_DURATIONS[planId];
       const expiresAt = now + duration;
       
       const subscriptionData = {
@@ -148,8 +153,15 @@ export async function handlePaymentRequest(request, env, corsHeaders) {
         const notes = paymentEntity.notes || {};
         const { uid, planId } = notes;
 
-        if (uid && planId) {
+        if (uid && planId && PLAN_DURATIONS[planId]) {
           const fbAdmin = new FirebaseAdmin(env.FIREBASE_SERVICE_ACCOUNT);
+          
+          // Idempotency check: skip if this payment was already processed
+          const userDoc = await fbAdmin.getUserDoc(uid);
+          if (userDoc?.subscription?.lastPaymentId === paymentEntity.id) {
+            return new Response('OK', { status: 200 });
+          }
+          
           const now = Date.now();
           const duration = PLAN_DURATIONS[planId];
           const expiresAt = now + duration;

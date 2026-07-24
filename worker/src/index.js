@@ -12,12 +12,24 @@ import { routeRequest } from './agents/orchestrator.js';
 import { runCoderAgent } from './agents/coder.js';
 import { runCreatorAgent } from './agents/creator.js';
 
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*', // Fixed: wildcard to prevent CORS blocks
-  'Access-Control-Allow-Methods': 'GET,HEAD,POST,OPTIONS',
-  'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-  'Access-Control-Max-Age': '86400',
-};
+const ALLOWED_ORIGINS = [
+  'https://toolshub-87859.web.app',
+  'https://toolshub-87859.firebaseapp.com',
+  'http://localhost:5000',
+  'http://localhost:3000',
+  'http://127.0.0.1:5000',
+];
+
+function getCorsHeaders(request) {
+  const origin = request?.headers?.get('Origin') || '';
+  const allowedOrigin = ALLOWED_ORIGINS.includes(origin) ? origin : ALLOWED_ORIGINS[0];
+  return {
+    'Access-Control-Allow-Origin': allowedOrigin,
+    'Access-Control-Allow-Methods': 'GET,HEAD,POST,OPTIONS',
+    'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+    'Access-Control-Max-Age': '86400',
+  };
+}
 
 import { checkRateLimit, checkPaymentRateLimit } from './rateLimiter.js';
 
@@ -40,6 +52,7 @@ export default withSentry((env) => {
 }, {
   async fetch(request, env, ctx) {
     env.ctx = ctx;
+    const corsHeaders = getCorsHeaders(request);
     try {
 
     // 1. Handle CORS Preflight (OPTIONS)
@@ -421,7 +434,8 @@ export default withSentry((env) => {
     }
     } catch (unhandledException) {
       console.error("Unhandled Exception in fetch:", unhandledException);
-      return new Response(JSON.stringify({ error: unhandledException.message, stack: unhandledException.stack }), { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+      Sentry.captureException(unhandledException);
+      return new Response(JSON.stringify({ error: 'Internal Server Error' }), { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
     }
   },
   

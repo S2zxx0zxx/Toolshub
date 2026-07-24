@@ -1,5 +1,4 @@
 import { LocalSettings } from '../services/localSettings.js';
-import { PromptManager } from './prompt.js';
 import { ContextManager } from './context.js';
 import { aiApi } from '../services/aiApi.js';
 import { getAllToolSchemas } from './toolSchemas.js';
@@ -118,9 +117,11 @@ export async function executeAgentTask(userMessage, conversationHistory, options
           
           // Call the tool bridge
           const toolResult = await executeAgentTool(toolId, parsedParams);
+          let stepStatus = 'complete';
           
           if (!toolResult.success) {
             toolResponseText = `Error calling tool: ${toolResult.error}`;
+            stepStatus = 'error';
           } else {
             // d. kind: "ui-trigger"
             if (toolResult.kind === 'ui-trigger') {
@@ -164,7 +165,7 @@ export async function executeAgentTask(userMessage, conversationHistory, options
             options.onStep({
               stepNumber: step,
               toolId: toolId,
-              status: 'complete',
+              status: stepStatus,
               result: toolResponseText
             });
           }

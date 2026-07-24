@@ -24,7 +24,7 @@ function checkRateLimitMap(ip) {
 
 const paymentRateLimits = new Map();
 const PAYMENT_RATE_LIMIT_WINDOW_MS = 60000;
-const PAYMENT_MAX_REQUESTS_PER_WINDOW = 100; // Looser limit for payments
+const PAYMENT_MAX_REQUESTS_PER_WINDOW = 20;
 
 function checkPaymentRateLimitMap(ip) {
   const now = Date.now();

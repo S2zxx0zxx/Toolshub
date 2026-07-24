@@ -90,7 +90,14 @@ export const HomeScreen = (() => {
   function initCategoryCards() {
     document.querySelectorAll('.home-cat-card[data-nav-chat]').forEach(card => {
       card.addEventListener('click', () => {
+        const category = card.dataset.navChat;
         goToChat();
+        // Dispatch event to open tool sheet with this category after navigation
+        if (category) {
+          setTimeout(() => {
+            document.dispatchEvent(new CustomEvent('toolshub:open-category', { detail: { category } }));
+          }, 300);
+        }
       });
     });
   }

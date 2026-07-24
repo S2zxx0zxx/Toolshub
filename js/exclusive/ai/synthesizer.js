@@ -15,7 +15,7 @@ export const Synthesizer = (() => {
       const chars = rawResponses[0].split('');
       for (const c of chars) {
         yield c;
-        await new Promise(r => setTimeout(r, 10));
+        await new Promise(r => setTimeout(r, 2));
       }
       return;
     }
