@@ -2,12 +2,10 @@
 <html lang="en" data-theme="dark">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="ToolsHub Terms of Use - Acceptable use policies, rate limits, and subscription plans.">
   <title>Terms of Use — ToolsHub</title>
-  <link rel="icon" href="./assets/favicon.ico?v=3" sizes="any">
-  <link rel="icon" href="./assets/icon-192x192.png?v=3" type="image/png">
-  <link rel="apple-touch-icon" href="./assets/icon-180x180.png?v=3">
+  <link rel="icon" href="./assets/favicon.ico" sizes="any">
   <link rel="stylesheet" href="./css/core/variables.css?v=42">
   <style>
     body {
@@ -21,32 +19,25 @@
     .container {
       max-width: 800px;
       margin: 0 auto;
-      padding: var(--sp-6) var(--sp-4);
-    }
-    h1, h2, h3 {
-      font-family: var(--font-serif);
-      color: var(--text-primary);
-      margin-top: var(--sp-6);
-      margin-bottom: var(--sp-3);
+      padding: 40px 20px;
     }
     h1 {
-      font-size: var(--fs-2xl);
-      color: var(--accent);
-      border-bottom: 1px solid var(--border-subtle);
-      padding-bottom: var(--sp-3);
+      font-family: var(--font-display);
+      font-size: 2rem;
+      margin-bottom: 2rem;
+      color: var(--text-primary);
     }
     h2 {
-      font-size: var(--fs-xl);
+      font-size: 1.25rem;
+      margin-top: 2rem;
+      color: var(--text-primary);
     }
-    p, ul {
+    p {
       color: var(--text-secondary);
-      margin-bottom: var(--sp-4);
-    }
-    li {
-      margin-bottom: var(--sp-2);
+      margin-bottom: 1rem;
     }
     a {
-      color: var(--accent);
+      color: var(--primary);
       text-decoration: none;
     }
     a:hover {
@@ -55,65 +46,94 @@
     .back-link {
       display: inline-flex;
       align-items: center;
-      gap: var(--sp-2);
-      margin-bottom: var(--sp-6);
-      font-weight: 500;
+      gap: 8px;
+      margin-bottom: 2rem;
+      color: var(--text-secondary);
+      text-decoration: none;
     }
-    .footer {
-      margin-top: var(--sp-8);
-      padding-top: var(--sp-4);
-      border-top: 1px solid var(--border-subtle);
-      color: var(--text-muted);
-      font-size: var(--fs-sm);
-      text-align: center;
+    .back-link:hover {
+      color: var(--text-primary);
+      text-decoration: none;
+    }
+    ul {
+      color: var(--text-secondary);
+      padding-left: 20px;
+    }
+    li {
+      margin-bottom: 0.5rem;
     }
   </style>
 </head>
 <body>
   <div class="container">
-    <a href="./index.html" class="back-link">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><polyline points="15 18 9 12 15 6"/></svg>
+    <a href="./" class="back-link">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20">
+        <path d="M19 12H5M12 19l-7-7 7-7"/>
+      </svg>
       Back to ToolsHub
     </a>
     
     <h1>Terms of Use</h1>
-
-    <h2>What ToolsHub Is</h2>
-    <p>ToolsHub is an AI-native productivity application developed by DigiRise India. It is designed to enhance your workflow by combining advanced AI chat capabilities with powerful utility tools.</p>
-
-    <h2>Acceptable Use</h2>
-    <p>By using ToolsHub, you agree to the following:</p>
+    <p><em>Last updated: July 2024</em></p>
+    
+    <h2>1. Acceptance of Terms</h2>
+    <p>By accessing or using ToolsHub ("the Service"), you agree to be bound by these Terms of Use. If you do not agree, do not use the Service.</p>
+    
+    <h2>2. Description of Service</h2>
+    <p>ToolsHub is an AI-powered productivity platform that provides conversational AI, content creation tools, code assistance, file utilities, and other productivity features.</p>
+    
+    <h2>3. User Accounts</h2>
+    <p>You may create an account using email/password or Google Sign-In. You are responsible for maintaining the confidentiality of your account credentials.</p>
+    
+    <h2>4. Acceptable Use</h2>
+    <p>You agree NOT to:</p>
     <ul>
-      <li>You will not abuse the AI models or use them for illegal, harmful, or malicious purposes.</li>
-      <li>You will not attempt to extract, bypass, or reverse-engineer API keys, backend secrets, or security mechanisms.</li>
-      <li>Rate limits apply to ensure fair usage. We enforce a limit of 30 requests per minute per IP address at the Cloudflare Worker level. Exceeding these limits may result in temporary blocks.</li>
+      <li>Use the Service for illegal purposes</li>
+      <li>Attempt to gain unauthorized access to any part of the Service</li>
+      <li>Use automated tools to access the Service without permission</li>
+      <li>Generate harmful, offensive, or illegal content</li>
+      <li>Resell or redistribute the Service without authorization</li>
     </ul>
-
-    <h2>Accounts</h2>
-    <p>To access full features, you can create an account using Firebase Authentication (via email/password or Google Sign-In). A guest mode is also available, but please note that guest data is stored entirely locally on your device and is not backed up to our servers.</p>
-
-    <h2>Subscription Plans</h2>
-    <p>ToolsHub offers multiple tiers for its users:</p>
+    
+    <h2>5. Rate Limits</h2>
+    <p>To ensure fair usage:</p>
     <ul>
-      <li><strong>Free</strong></li>
-      <li><strong>Starter:</strong> ₹99/month</li>
-      <li><strong>Pro:</strong> ₹349/total</li>
-      <li><strong>Max:</strong> ₹999/year</li>
+      <li>Free tier: 15 requests per day</li>
+      <li>Starter plan: Unlimited requests</li>
+      <li>Pro plan: Unlimited requests</li>
+      <li>Max plan: Unlimited requests</li>
     </ul>
-    <p><em>Note: Payments are processed securely via Razorpay. Plans are one-time purchases for the stated period and do not auto-renew. Pricing is as shown in-app at the time of purchase. Please refer to our <a href="./refund-policy.html">Refund & Cancellation Policy</a> for more details.</em></p>
-
-    <h2>Content Ownership</h2>
-    <p>You retain full rights and ownership over the input (prompts, queries, files) you provide to ToolsHub. However, any AI-generated output is provided "as-is," without warranties of any kind regarding accuracy or uniqueness.</p>
-
-    <h2>Termination</h2>
-    <p>DigiRise India reserves the right to suspend or terminate accounts immediately and without prior notice in cases of rate limit abuse, attempted security breaches, or violation of these Terms of Use.</p>
-
-    <h2>Contact</h2>
-    <p>If you have any questions regarding these Terms, please contact us at: <a href="mailto:digiriseindia@gmail.com">digiriseindia@gmail.com</a></p>
-
-    <div class="footer">
-      Last updated: 20 July 2026
-    </div>
+    
+    <h2>6. Subscription Plans</h2>
+    <p>ToolsHub offers the following plans:</p>
+    <ul>
+      <li><strong>Free:</strong> Basic access with daily limits</li>
+      <li><strong>Starter (₹99/month):</strong> Unlimited chat and tools</li>
+      <li><strong>Pro (₹349/6 months):</strong> Everything + Agent Mode</li>
+      <li><strong>Max (₹999/year):</strong> Everything + Deep Research + Custom Connectors</li>
+      <li><strong>Exclusive (₹299/month add-on):</strong> Code Mode + Design Mode</li>
+    </ul>
+    
+    <h2>7. Payments</h2>
+    <p>Payments are processed securely via Razorpay. All prices are in Indian Rupees (INR). See our <a href="./refund-policy.html">Refund Policy</a> for details.</p>
+    
+    <h2>8. Content Ownership</h2>
+    <p>You retain ownership of content you create using ToolsHub. We do not claim ownership over your outputs.</p>
+    
+    <h2>9. Privacy</h2>
+    <p>Your privacy is important. See our <a href="./privacy.html">Privacy Policy</a> for details on data collection and usage.</p>
+    
+    <h2>10. Termination</h2>
+    <p>We reserve the right to terminate or suspend your account for violation of these terms.</p>
+    
+    <h2>11. Limitation of Liability</h2>
+    <p>ToolsHub is provided "as is" without warranties. We are not liable for any damages arising from use of the Service.</p>
+    
+    <h2>12. Changes to Terms</h2>
+    <p>We may update these terms from time to continued use constitutes acceptance of changes.</p>
+    
+    <h2>13. Contact</h2>
+    <p>Questions? Email us at <a href="mailto:digiriseindia@gmail.com">digiriseindia@gmail.com</a></p>
   </div>
 </body>
 </html>

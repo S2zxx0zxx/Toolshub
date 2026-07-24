@@ -1,130 +1,63 @@
-const CACHE_NAME = 'toolshub-cache-v55';
+const CACHE_NAME = 'toolshub-cache-v1';
+
 const urlsToCache = [
   './',
   './index.html',
-  './terms.html',
-  './privacy.html',
-  './refund-policy.html',
-  './manifest.json',
-  // === CSS ===
   './css/core/variables.css',
   './css/layout/layout.css',
-  './css/layout/home.css',
   './css/components/components.css',
-  './css/components/personaPicker.css',
-  './css/components/changePlan.css',
-  './css/layout/sidebar.css',
+  './css/layout/home.css',
   './css/layout/chat.css',
-  './css/components/bottomsheet.css',
-  './css/components/tools.css',
-  './css/layout/screens-extra.css',
-  './css/layout/status.css',
-  './css/components/inline-extracted.css',
-  './css/components/chatHistory.css',
-  './css/components/bugReport.css',
-  './css/components/advancedControls.css',
-  // === CSS EXCLUSIVE ===
-  './css/exclusive/exclusive-tokens.css',
-  './css/exclusive/exclusive-layout.css',
-  './css/exclusive/exclusive-home.css',
-  './css/exclusive/exclusive-chat.css',
-  './css/exclusive/exclusive-mastertool.css',
-  // === JS CORE ===
+  './css/layout/sidebar.css',
   './js/core/app.js',
-  './js/core/events.js',
   './js/core/router.js',
-  // === JS SERVICES ===
-  './js/services/localSettings.js',
-  './js/services/firebase.js',
-  './js/services/auth.js',
-  './js/services/cloudDb.js',
-  './js/services/aiApi.js',
-  './js/services/ragService.js',
-  './js/services/overlayManager.js',
-  // === JS TOOLS ===
-  './js/tools/registry.js',
-  './js/tools/utilityTools.js',
-  './js/tools/fileTools.js',
-  './js/tools/permissions.js',
-  './js/tools/executor.js',
-  './js/tools/githubTools.js',
-  './js/tools/connectorsRegistry.js',
-  // === JS UI ===
-  './js/ui/sidebar.js',
-  './js/ui/homeScreen.js',
-  './js/ui/bottomsheet.js',
-  './js/ui/chatEngine.js',
-  './js/ui/toast.js',
-  './js/ui/changePlanModal.js',
-  './js/ui/personaPicker.js',
-  './js/ui/advancedControls.js',
-  './js/ui/connectorsSheet.js',
-  './js/ui/statusScreen.js',
-  // === JS AI ===
+  './js/core/events.js',
+  './js/ai/agentEngine.js',
+  './js/ai/router.js',
+  './js/ai/intent.js',
   './js/ai/prompt.js',
   './js/ai/context.js',
-  './js/ai/intent.js',
-  './js/ai/router.js',
-  './js/ai/agentEngine.js',
   './js/ai/toolSchemas.js',
-  // === JS SERVICES/TOOLS ===
-  './js/services/tools/calculatorService.js',
-  './js/services/tools/weatherService.js',
-  './js/services/tools/searchService.js',
-  // === JS CONFIG ===
+  './js/ai/smartRouter.js',
+  './js/tools/registry.js',
+  './js/tools/executor.js',
+  './js/tools/utilityTools.js',
+  './js/tools/fileTools.js',
+  './js/tools/githubTools.js',
+  './js/tools/realtimeTools.js',
+  './js/ui/chatEngine.js',
+  './js/ui/sidebar.js',
+  './js/ui/toast.js',
+  './js/services/aiApi.js',
+  './js/services/auth.js',
+  './js/services/cloudDb.js',
+  './js/services/firebase.js',
+  './js/services/localSettings.js',
+  './js/config/api.js',
   './js/config/plans.js',
   './js/config/personas.js',
-  './js/config/planVocabulary.js',
-  './js/config/suggestionPool.js',
-  './js/config/api.js',
-  // js/env.js removed — file is deprecated (contains only window.ENV = {}) and not imported anywhere
-  // === JS AI EXTRA ===
-  './js/ai/agentToolBridge.js',
-  // === JS EXCLUSIVE ===
-  './js/exclusive/state/exclusiveAccess.js',
-  './js/exclusive/core/exclusiveRouter.js',
-  './js/exclusive/ui/exclusiveShell.js',
-  './js/exclusive/ui/exclusiveHomeScreen.js',
-  './js/exclusive/ui/exclusiveChatEngine.js',
-  './js/exclusive/ui/modelPickerExclusive.js',
-  './js/exclusive/ai/modelDecisionEngine.js',
-  './js/exclusive/ai/masterTool.js',
-  './js/exclusive/ai/synthesizer.js'
+  './manifest.json'
 ];
 
 self.addEventListener('install', event => {
-  // Force this new SW to take over immediately — no waiting
   self.skipWaiting();
   event.waitUntil(
-    caches.open(CACHE_NAME).then(async cache => {
-      const requests = urlsToCache.map(url => {
-        const fetchUrl = new URL(url, self.registration.scope);
-        fetchUrl.searchParams.set('cb', Date.now()); // Cache-bust HTTP cache
-        return fetch(fetchUrl.href).then(response => {
-          if (!response.ok) throw new Error(`Status ${response.status}`);
-          return cache.put(url, response);
-        }).catch(err => console.warn(`[SW] Failed to cache ${url}:`, err));
+    caches.open(CACHE_NAME).then(cache => {
+      return cache.addAll(urlsToCache).catch(err => {
+        console.warn('[SW] Some files failed to cache:', err);
       });
-      await Promise.allSettled(requests);
-      console.log(`[SW] Cache ${CACHE_NAME} installed.`);
     })
   );
 });
 
 self.addEventListener('activate', event => {
-  // Take control of all open pages immediately
-  const cacheWhitelist = [CACHE_NAME];
   event.waitUntil(
     Promise.all([
-      clients.claim(),
+      self.clients.claim(),
       caches.keys().then(cacheNames => {
         return Promise.all(
-          cacheNames.map(cacheName => {
-            if (!cacheWhitelist.includes(cacheName)) {
-              console.log('[SW] Deleting old cache:', cacheName);
-              return caches.delete(cacheName);
-            }
-          })
+          cacheNames.filter(name => name !== CACHE_NAME)
+            .map(name => caches.delete(name))
         );
       })
     ])
@@ -132,26 +65,28 @@ self.addEventListener('activate', event => {
 });
 
 self.addEventListener('fetch', event => {
-  // Never intercept non-GET requests (POST for API calls)
   if (event.request.method !== 'GET') return;
-
-  // Never cache cross-origin API calls (Firebase, Groq, etc.)
+  
   const url = new URL(event.request.url);
   if (url.origin !== self.location.origin) return;
-
+  
   event.respondWith(
-    // Network-first strategy: try fresh from network, fallback to cache on failure
-    fetch(event.request).then(response => {
-      // Cache the fresh response for offline use
-      if (response.ok) {
-        const resClone = response.clone();
-        caches.open(CACHE_NAME).then(cache => cache.put(event.request, resClone));
-      }
-      return response;
-    }).catch(() => {
-      // Network failed (offline): serve from cache
-      return caches.match(event.request).then(cachedResponse => {
-        return cachedResponse || new Response('Resource unavailable offline', { status: 503, statusText: 'Service Unavailable' });
+    caches.match(event.request).then(response => {
+      if (response) return response;
+      
+      return fetch(event.request).then(fetchResponse => {
+        if (!fetchResponse || fetchResponse.status !== 200) return fetchResponse;
+        
+        const responseToCache = fetchResponse.clone();
+        caches.open(CACHE_NAME).then(cache => {
+          cache.put(event.request, responseToCache);
+        });
+        
+        return fetchResponse;
+      }).catch(() => {
+        if (event.request.destination === 'document') {
+          return caches.match('./index.html');
+        }
       });
     })
   );
