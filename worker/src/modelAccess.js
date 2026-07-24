@@ -4,7 +4,7 @@ export const MODEL_CATALOG_TIERS = {
   'llama-3.1-8b-instant': 'free',     // Used for internal intent classification — must be free-tier
   'gpt-4o-mini': '6month',
   'groq/compound': 'yearly',
-  'groq/compound-mini': 'yearly'
+  'groq/compound-mini': 'monthly'
 };
 
 export function rankOf(tier) {
