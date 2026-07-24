@@ -450,23 +450,22 @@
   margin-bottom: calc(-1 * var(--sp-5)); 
   height: auto;
   min-height: 0;
-  background: transparent;
+  background: #1E1E22;
   border-radius: 0;
   overflow: hidden; 
   clip-path: none;
   border: none;
-  aspect-ratio: 16 / 10; /* Slightly taller to accommodate the image better */
+  aspect-ratio: 16 / 9; /* Creates the crop box naturally */
 }
 
 .home-feature-mini-img {
   display: block;
   width: 100%;
   height: 100%;
-  object-fit: cover; 
-  object-position: center bottom; /* Align to bottom center per user request */
+  object-fit: cover; /* Perfectly crops without distortion, just like capability cards */
+  object-position: top center; /* Aligns to top so we don't crop top UI elements */
   margin: 0;
-  transform: scale(1.15) translateY(-4%); /* Zoom in and pull up to hide top white space */
-  transform-origin: center bottom;
+  transform: scale(1.01);
 }
 
 .home-mini-chip {
