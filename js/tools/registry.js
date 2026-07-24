@@ -158,6 +158,8 @@ export const ToolSelector = (() => {
   ];
 
   let activeToolId = null;
+  // Tracks whether this tool was freshly selected (context should inject for the next message only)
+  let toolFreshlySelected = false;
 
   function findTool(toolId) {
     for (const cat of DATA) {
@@ -266,6 +268,7 @@ export const ToolSelector = (() => {
 
   function clearActiveTool() {
     activeToolId = null;
+    toolFreshlySelected = false;
     
     // Reset chip label and icon
     const chipLabel = document.getElementById('toolChipLabel');
@@ -302,6 +305,7 @@ export const ToolSelector = (() => {
     const found = findTool(toolId);
     if (!found) return;
     activeToolId = toolId;
+    toolFreshlySelected = true; // Reset: new selection, context is fresh again
 
     // Track usage for dynamic pinning (Issue 6)
     if (LocalSettings) LocalSettings.recordToolUsage(toolId);
@@ -365,7 +369,19 @@ export const ToolSelector = (() => {
   }
 
   function getActiveTool() {
-    return activeToolId ? findTool(activeToolId) : null;
+    if (!activeToolId) return null;
+    const result = findTool(activeToolId);
+    if (!result) return null;
+    // mode: 'utility' tools always inject (they have an execute function).
+    // mode: 'prompt-template' tools only inject context once (freshly selected)
+    // to prevent tool context from leaking into unrelated topics in the same chat.
+    const isUtility = result.tool.mode === 'utility';
+    const isFresh = toolFreshlySelected;
+    // Mark as consumed — next getActiveTool call for prompt-template will see isFresh=false
+    if (!isUtility && isFresh) {
+      toolFreshlySelected = false;
+    }
+    return { ...result, mode: isUtility ? 'utility' : 'prompt-template', isFresh };
   }
 
   // ---------- RENDER: suggested prompt cards on empty state ----------

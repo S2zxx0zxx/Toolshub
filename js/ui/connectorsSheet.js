@@ -33,6 +33,7 @@ export const ConnectorsSheet = (() => {
       const isGithub = connector.id === 'github';
       const token = isGithub ? LocalSettings.getGithubToken() : null;
       const repo = isGithub ? LocalSettings.getGithubRepo() : null;
+      const githubUser = isGithub ? LocalSettings.getGithubUser?.() : null;
       const isConnected = !!token;
       
       const el = document.createElement('div');
@@ -47,7 +48,7 @@ export const ConnectorsSheet = (() => {
         if (isConnected) {
           extraHtml = `
             <div style="margin-top: var(--sp-3); font-size: var(--fs-xs);">
-              <div style="color: var(--success); margin-bottom: var(--sp-2);">✓ Connected</div>
+              <div style="color: var(--success); margin-bottom: var(--sp-2);">✓ Connected${githubUser ? ` as @${githubUser}` : ''}</div>
               <input type="text" id="githubRepoInput" value="${repo || ''}" placeholder="owner/repo (e.g. facebook/react)" class="project-new-input" style="width: 100%; margin-bottom: var(--sp-2);">
               <button id="githubSaveRepoBtn" class="btn btn-primary" style="padding: 4px 12px; font-size: var(--fs-xs);">Set Active Repo</button>
               <button id="githubDisconnectBtn" class="btn" style="padding: 4px 12px; font-size: var(--fs-xs); margin-left: var(--sp-2);">Disconnect</button>
@@ -91,14 +92,54 @@ export const ConnectorsSheet = (() => {
           el.querySelector('#githubDisconnectBtn').addEventListener('click', () => {
             LocalSettings.setGithubToken(null);
             LocalSettings.setGithubRepo(null);
+            LocalSettings.setGithubUser(null);
             render();
           });
         } else {
-          el.querySelector('#githubConnectBtn').addEventListener('click', () => {
+          el.querySelector('#githubConnectBtn').addEventListener('click', async () => {
             const val = el.querySelector('#githubTokenInput').value.trim();
-            if (val) {
-              LocalSettings.setGithubToken(val);
-              render();
+            if (!val) return;
+
+            const btn = el.querySelector('#githubConnectBtn');
+            btn.disabled = true;
+            btn.textContent = 'Verifying…';
+
+            // Remove any previous error
+            const prevErr = el.querySelector('#githubTokenError');
+            if (prevErr) prevErr.remove();
+
+            try {
+              const res = await fetch('https://api.github.com/user', {
+                headers: {
+                  'Authorization': `Bearer ${val}`,
+                  'Accept': 'application/vnd.github+json'
+                }
+              });
+
+              if (res.ok) {
+                const user = await res.json();
+                LocalSettings.setGithubToken(val);
+                LocalSettings.setGithubUser(user.login);
+                render();
+              } else {
+                const errDiv = document.createElement('div');
+                errDiv.id = 'githubTokenError';
+                errDiv.style.cssText = 'color:var(--danger, #ef4444);font-size:var(--fs-xs);margin-top:var(--sp-2);';
+                errDiv.textContent = res.status === 401
+                  ? 'Invalid token — GitHub rejected it. Check and try again.'
+                  : `GitHub error (${res.status}). Check your token and try again.`;
+                btn.after(errDiv);
+                btn.disabled = false;
+                btn.textContent = 'Connect GitHub';
+              }
+            } catch (e) {
+              const errDiv = document.createElement('div');
+              errDiv.id = 'githubTokenError';
+              errDiv.style.cssText = 'color:var(--danger, #ef4444);font-size:var(--fs-xs);margin-top:var(--sp-2);';
+              errDiv.textContent = 'Network error. Check your connection and try again.';
+              btn.after(errDiv);
+              btn.disabled = false;
+              btn.textContent = 'Connect GitHub';
             }
           });
         }

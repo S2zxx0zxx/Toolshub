@@ -101,7 +101,13 @@ IDENTITY & PRODUCT KNOWLEDGE — only surface this when the user actually asks; 
     // Dynamically add context about the currently active tool
     if (typeof ToolSelector !== 'undefined') {
       const activeToolData = ToolSelector.getActiveTool();
-      if (activeToolData && activeToolData.tool) {
+      // Utility tools (word counter, QR, etc.) always inject context.
+      // Prompt-template tools only inject on the first message after selection —
+      // prevents "Instagram Caption" context leaking into a coding question in the same chat.
+      const shouldInject = activeToolData && activeToolData.tool &&
+        (activeToolData.mode === 'utility' || activeToolData.isFresh);
+
+      if (shouldInject) {
         const t = activeToolData.tool;
           prompt += `\n\nACTIVE TOOL CONTEXT: The user is currently using the "${t.title}" tool`;
           if (t.sub) {

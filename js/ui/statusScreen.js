@@ -14,6 +14,13 @@ export const StatusScreen = (() => {
 
     // Build base HTML
     container.innerHTML = `
+      <div class="settings-topbar">
+        <button id="statusBackBtn" aria-label="Back" class="btn-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+        </button>
+        <span class="settings-topbar-title">System Status</span>
+        <span></span>
+      </div>
       <div class="status-container">
         <header class="status-header">
           <h1 class="status-title">ToolsHub System Status</h1>
@@ -35,6 +42,11 @@ export const StatusScreen = (() => {
         </section>
       </div>
     `;
+
+    // Wire back button
+    document.getElementById('statusBackBtn')?.addEventListener('click', () => {
+      import('../core/router.js').then(m => m.Router.navigate('settings'));
+    });
 
     subscribeToStatus();
     subscribeToIncidents();

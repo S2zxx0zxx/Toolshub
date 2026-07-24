@@ -838,6 +838,9 @@ const Settings = (() => {
             await CloudDB.clearAllConversations();
             Toast.show('Chat history cleared.');
             closeGenericConfirm();
+            // Refresh sidebar immediately — data is genuinely gone, UI must match
+            Sidebar.setChats([]);
+            Chat.newChat();
           } catch (e) {
             console.error('Clear history failed:', e);
             Toast.show('Failed to clear chat history.');
@@ -1095,6 +1098,35 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
     if (subPeriod) {
       subPeriod.textContent = currentPlanId === 'free' ? 'Forever free' : `Renews: ${planObj.priceLabel}${planObj.periodLabel}`;
+    }
+
+    // ---- BILLING SCREEN: wire real plan/status/payment/monthly data ----
+    const billingPlanName = document.getElementById('billingPlanName');
+    const billingPlanStatus = document.getElementById('billingPlanStatus');
+    const billingPaymentMethod = document.getElementById('billingPaymentMethod');
+    const billingMonthlyUsage = document.getElementById('billingMonthlyUsage');
+
+    if (billingPlanName) billingPlanName.textContent = planObj.label;
+
+    if (billingPlanStatus) {
+      const subStatusVal = LocalSettings.getSubscriptionStatus?.() || null;
+      const isActive = currentPlanId !== 'free' && subStatusVal === 'active';
+      billingPlanStatus.textContent = isActive ? 'Active' : currentPlanId === 'free' ? 'Free' : (subStatusVal || 'Inactive');
+      billingPlanStatus.className = `billing-plan-badge${isActive ? '' : ' is-inactive'}`;
+    }
+
+    if (billingPaymentMethod) {
+      const pm = LocalSettings.getPaymentMethod?.();
+      billingPaymentMethod.textContent = pm || 'No payment on file';
+    }
+
+    if (billingMonthlyUsage) {
+      billingMonthlyUsage.textContent = '…';
+      CloudDB.getMonthlyUsage().then(count => {
+        if (billingMonthlyUsage) {
+          billingMonthlyUsage.textContent = count !== null ? String(count) : '—';
+        }
+      });
     }
 
     renderUsageBlock();

@@ -22,7 +22,9 @@ export const LocalSettings = (() => {
     AGENT_INTRO:        'toolshub_agent_intro',         // boolean
     TOOL_USAGE:         'th_tool_usage',                // { [toolId]: count }
     GITHUB_TOKEN:       'toolshub_github_token',        // string PAT
-    GITHUB_REPO:        'toolshub_github_repo',         // string full repo name "owner/repo"
+    GITHUB_REPO:        'toolshub_github_repo',          // string full repo name "owner/repo"
+    SUBSCRIPTION_STATUS:'toolshub_sub_status',           // 'active' | 'inactive' | etc.
+    PAYMENT_METHOD:     'toolshub_payment_method',       // e.g. "Visa •••• 1234" or "UPI"
   };
 
   function _safeGet(key, fallback) {
@@ -203,6 +205,32 @@ export const LocalSettings = (() => {
     },
     setGithubRepo(repo) {
       _safeSet(KEYS.GITHUB_REPO, repo);
+    },
+    getGithubUser() {
+      return window.__github_user_in_memory || null;
+    },
+    setGithubUser(login) {
+      if (login === null) {
+        delete window.__github_user_in_memory;
+      } else {
+        window.__github_user_in_memory = login;
+      }
+    },
+
+    // ---------- SUBSCRIPTION STATUS ----------
+    getSubscriptionStatus() {
+      return _safeGet(KEYS.SUBSCRIPTION_STATUS, null);
+    },
+    setSubscriptionStatus(status) {
+      _safeSet(KEYS.SUBSCRIPTION_STATUS, status);
+    },
+
+    // ---------- PAYMENT METHOD ----------
+    getPaymentMethod() {
+      return _safeGet(KEYS.PAYMENT_METHOD, null);
+    },
+    setPaymentMethod(method) {
+      _safeSet(KEYS.PAYMENT_METHOD, method);
     },
 
     // ---------- CLEAR ALL (logout) ----------

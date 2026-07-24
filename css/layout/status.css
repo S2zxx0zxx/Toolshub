@@ -47,6 +47,16 @@
   width: 20px;
   height: 20px;
   border-radius: 50%;
+  animation: th-status-pulse 2s ease-in-out infinite;
+}
+
+@keyframes th-status-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%       { opacity: 0.65; transform: scale(0.88); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .status-icon { animation: none; }
 }
 
 .status-operational {

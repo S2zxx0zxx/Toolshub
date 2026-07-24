@@ -197,6 +197,35 @@ export const CloudDB = (() => {
     }
   }
 
+  // Sum the last 30 daily usage docs — frontend aggregation (Option A).
+  // Reads at most 30 documents per call; acceptable for current user volume.
+  async function getMonthlyUsage() {
+    const uid = _uid();
+    if (!uid || !db || !fbFirestoreModule) return null;
+    try {
+      const dates = [];
+      const now = new Date();
+      for (let i = 0; i < 30; i++) {
+        const d = new Date(now);
+        d.setDate(now.getDate() - i);
+        dates.push(d.toISOString().slice(0, 10));
+      }
+      let total = 0;
+      await Promise.all(dates.map(async (dateStr) => {
+        try {
+          const snap = await fbFirestoreModule.getDoc(
+            fbFirestoreModule.doc(db, `users/${uid}/usage`, dateStr)
+          );
+          if (snap.exists()) total += snap.data().count || 0;
+        } catch (_) { /* skip missing docs silently */ }
+      }));
+      return total;
+    } catch (e) {
+      console.warn("Failed to fetch monthly usage:", e);
+      return null;
+    }
+  }
+
   async function logToolExecution(metadata) {
     const uid = _uid();
     if (!uid || !metadata || !db || !fbFirestoreModule) return;
@@ -350,8 +379,18 @@ export const CloudDB = (() => {
         const sub = data.subscription;
         if (sub && sub.status === 'active' && sub.expiresAt > Date.now()) {
           LocalSettings.setCurrentPlan(sub.planId);
+          // Cache subscription status and payment method for billing screen
+          LocalSettings.setSubscriptionStatus('active');
+          const pm = sub.paymentMethodBrand && sub.paymentMethodLast4
+            ? `${sub.paymentMethodBrand} •••• ${sub.paymentMethodLast4}`
+            : sub.paymentMethod
+              ? sub.paymentMethod.charAt(0).toUpperCase() + sub.paymentMethod.slice(1)
+              : null;
+          LocalSettings.setPaymentMethod(pm);
         } else {
           LocalSettings.setCurrentPlan('free');
+          LocalSettings.setSubscriptionStatus(sub?.status || 'inactive');
+          LocalSettings.setPaymentMethod(null);
         }
       } else {
         LocalSettings.setCurrentPlan('free');
@@ -379,6 +418,7 @@ export const CloudDB = (() => {
     clearAllConversations,
     deleteUserAccount,
     syncPlanFromServer,
-    getTodayUsage
+    getTodayUsage,
+    getMonthlyUsage
   };
 })();

@@ -160,7 +160,11 @@ export async function handlePaymentRequest(request, env, corsHeaders) {
             startedAt: now,
             expiresAt: expiresAt,
             lastPaymentId: paymentEntity.id,
-            lastOrderId: paymentEntity.order_id
+            lastOrderId: paymentEntity.order_id,
+            // Capture payment method details from Razorpay payload
+            paymentMethod: paymentEntity.method || null,          // 'card', 'upi', 'wallet', etc.
+            paymentMethodBrand: paymentEntity.card?.network || null, // 'Visa', 'Mastercard', etc.
+            paymentMethodLast4: paymentEntity.card?.last4 || null    // '1234'
           };
 
           // To make it idempotent, we could read first, but the REST API updateMask just updates the fields.
